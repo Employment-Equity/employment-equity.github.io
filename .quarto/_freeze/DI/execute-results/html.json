@@ -1,0 +1,16 @@
+{
+  "hash": "b7a8d8a70f1c9bad56269ef4195b1f07",
+  "result": {
+    "markdown": "---\ntitle: \"About the Disproportionality Index\"\nformat: html\neditor: visual\ntheme: default\n---\n\n\n\n\n## Estimating Median Salary\n\n[Median salaries](LINK) for each group were estimated using the following formula:\n\n$$median = L + \\frac{ (\\frac{n}{2} – F) }{f}  * w$$ \n\n\n## Calculating DI\nIn this analysis, Disproportionality Index (DI) is used as a measure of equitable representation. It is calculated as below.\n\n$$\\frac{\\%_{Group\\: X; \\:salary\\: range \\: i}}{\\% _{All \\:Employees; \\:salary\\: range \\: i}} = DI _{Group\\:X; \\:salary\\:range\\:i}$$\n\nFor example, 23.51% of Black employees and 16.70% of all employees are are within the \\<60K salary range. This gives us a DI of 1.41.\n\n$$ DI_{Black \\: employees; <60K } =\\frac{23.51\\%}{16.70\\%} = 1.41$$\n\nFor a table of DI's per year, [please see here](LINK).\n\n## Understanding DI - An Example\n\nSuppose that we have a department of 500 employees. There are two groups of self-identifying minority employees, A and B. Group C is composed of the majority at 460 employees. Groups A and B make up 4% of employees at 20 employees each, which happens to mirror the Canadian population. At a glance, representation seems equal.\n\n\n::: {.cell}\n::: {.cell-output-display}\n![](DI_files/figure-html/Plot-1-1.png){width=672}\n:::\n:::\n\n\nHowever, if you take a closer look at how the 20 employees from group A and B are distributed across salary levels, a different story appears. Group A is equally distributed among salary level, but the majority of group B employees remain at the lowest salary levels.\n\n![Salary Scaffold](images/salary-scaffold.png)\n\nCalculating DI further illustrates the differences in salary distribution. Above a DI of 1, a group's representation at a salary level is higher than the average of all employees. Below a DI of 1, a group's representation at a salary level is lower than the average of all employees.\n\n\n::: {.cell}\n::: {.cell-output-display}\n![](DI_files/figure-html/Plot 2-DI Example-1.png){width=672}\n:::\n:::\n",
+    "supporting": [
+      "DI_files"
+    ],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

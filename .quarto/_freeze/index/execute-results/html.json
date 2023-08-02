@@ -1,0 +1,14 @@
+{
+  "hash": "262a75c02dd449b180be4ad633d3d0b5",
+  "result": {
+    "markdown": "---\ntitle: \"About\"\nformat: html\neditor: visual\ntheme: default\n---\n\n\n\n\n# The Analysis\n\nHere we demonstrate the systemic career stagnation faced by Black employees in the public service. This data is based on self identification of equity-deserving groups, and represents pre-tax salary ranges excluding bonuses and promotions, [publically available here](https://www.canada.ca/en/treasury-board-secretariat/services/innovation/human-resources-statistics/diversity-inclusion-statistics.html). Each data series from 2017 to 2021 represents the salaries of public servants (excluding the CRA) at a single time point, not reflecting changes across an entire year. The most recent data was collected in March of 2021. Please note that this data was imputed for suppressed numbers [(see here for more information)](LINK). Furthermore, Black employee data is contained within visual minority (VM) data. However, Indigenous data is not contained with the VM category, and are separately analyzed, in accordance with data collection under the Employment Equity Act. For more information and to access the scripts used to produce this analysis, visit the project's [GitHub repository](https://github.com/klaxonklaxoff/ee_dv).\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

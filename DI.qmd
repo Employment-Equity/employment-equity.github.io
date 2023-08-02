@@ -1,0 +1,122 @@
+---
+title: "About the Disproportionality Index"
+format: html
+editor: visual
+theme: default
+---
+
+
+```{r setup, include=FALSE}
+
+# Load required packages
+library(dplyr)
+library(ggplot2)
+library(png)
+library(ggimage)
+library(ggwaffle) #devtools::install_github("liamgilbey/ggwaffle")
+library(emojifont)
+library(MetBrewer)
+library(tidyverse)
+
+```
+
+## Estimating Median Salary
+
+[Median salaries](LINK) for each group were estimated using the following formula:
+
+$$median = L + \frac{ (\frac{n}{2} – F) }{f}  * w$$ 
+
+
+## Calculating DI
+In this analysis, Disproportionality Index (DI) is used as a measure of equitable representation. It is calculated as below.
+
+$$\frac{\%_{Group\: X; \:salary\: range \: i}}{\% _{All \:Employees; \:salary\: range \: i}} = DI _{Group\:X; \:salary\:range\:i}$$
+
+For example, 23.51% of Black employees and 16.70% of all employees are are within the \<60K salary range. This gives us a DI of 1.41.
+
+$$ DI_{Black \: employees; <60K } =\frac{23.51\%}{16.70\%} = 1.41$$
+
+For a table of DI's per year, [please see here](LINK).
+
+## Understanding DI - An Example
+
+Suppose that we have a department of 500 employees. There are two groups of self-identifying minority employees, A and B. Group C is composed of the majority at 460 employees. Groups A and B make up 4% of employees at 20 employees each, which happens to mirror the Canadian population. At a glance, representation seems equal.
+
+```{r Plot-1, echo = FALSE}
+# Create dataframe with group numbers repeated
+Dept_data <- tibble(Group_count = rep("A", 20) %>% 
+                      c(rep("B", 20)) %>% 
+                      c(rep("C", 460)) )
+
+# Move data to waffle object for plotting
+Dept_data_waffle <- waffle_iron(Dept_data, 
+                                aes_d(group = Group_count), 
+                                rows = 20) %>% 
+  mutate(label = fontawesome('fa-male'))
+
+
+## Plot symbols -----------------------------------------------
+
+# Create color palette 
+colors <- c(met.brewer("Johnson", 5)[c(1,5)], "#808080")
+
+# Plot as waffle   
+ggplot(Dept_data_waffle, aes(x, y, colour = group)) + 
+  geom_text(aes(label=label), 
+            family = 'fontawesome-webfont', 
+            size = 5) +
+  coord_equal() + 
+  scale_colour_manual(values = c(colors)) + 
+  theme_waffle()  +
+  theme(axis.title.x = element_blank(),
+        axis.title.y = element_blank(), 
+        text = element_text(size = 12)) + 
+  guides(color = guide_legend(title="Group"))
+  
+  
+```
+
+However, if you take a closer look at how the 20 employees from group A and B are distributed across salary levels, a different story appears. Group A is equally distributed among salary level, but the majority of group B employees remain at the lowest salary levels.
+
+![Salary Scaffold](images/salary-scaffold.png)
+
+Calculating DI further illustrates the differences in salary distribution. Above a DI of 1, a group's representation at a salary level is higher than the average of all employees. Below a DI of 1, a group's representation at a salary level is lower than the average of all employees.
+
+```{r Plot 2-DI Example, echo = FALSE, message = FALSE, warning = FALSE}
+Group <- c(rep("A", 5), rep("B", 5))
+Salary <- c("<60.0K", "60.0-69.9K", "70.0-84.9K", "85.0-99.9K", "100.0K+", "<60.0K", "60.0-69.9K", "70.0-84.9K", "85.0-99.9K", "100.0K+")
+DI <- c(.75, 1, 1.25, 1, 1, 1.5, 1.5, 1, .75, .25)
+
+Salary_di <- data.frame(Group, Salary, DI)
+
+Salary_di$Salary <- factor(Salary_di$Salary, levels = c("<60.0K", "60.0-69.9K", "70.0-84.9K", "85.0-99.9K", "100.0K+"))
+
+colors <- c(met.brewer("Johnson", 5)[c(1,5)])
+
+ggplot(Salary_di) +
+  geom_bar(stat = "identity",
+           position = "dodge",
+           aes(x = Group,
+               y = DI,
+               fill = Group, 
+               alpha = Salary)) +
+  theme_minimal() +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    axis.line = element_line(colour = "black"), 
+    text = element_text(size = 15),
+    legend.text = element_text(size = 12)
+  ) +
+  scale_fill_manual  (values = colors, 
+  ) +
+  labs(title = NULL,
+       x = "Group",
+       y = "Disproportionality Index",
+       fill = NULL) + 
+  guides(fill="none") +
+    geom_hline(yintercept = 1, 
+             linetype = "dashed")
+
+```

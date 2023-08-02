@@ -1,0 +1,149 @@
+[
+  {
+    "objectID": "Employment-Equity.html",
+    "href": "Employment-Equity.html",
+    "title": "Employment-Equity",
+    "section": "",
+    "text": "Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see https://quarto.org."
+  },
+  {
+    "objectID": "Employment-Equity.html#running-code",
+    "href": "Employment-Equity.html#running-code",
+    "title": "Employment-Equity",
+    "section": "Running Code",
+    "text": "Running Code\nWhen you click the Render button a document will be generated that includes both content and the output of embedded code. You can embed code like this:\n\n1 + 1\n\n[1] 2\n\n\nYou can add options to executable code like this\n\n\n[1] 4\n\n\nThe echo: false option disables the printing of code (only output is displayed)."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Home",
+    "section": "",
+    "text": "This analysis explores the salary distributions of Canadian Public Service Employees in employment equity groups. For more information and to access the scripts used to produce this analysis, visit the project’s GitHub repository or see our publication in the 2023 ISI World Statistical Congress proceedings."
+  },
+  {
+    "objectID": "index.html#running-code",
+    "href": "index.html#running-code",
+    "title": "Employment Equity: An Analysis of Distribution of Salary Ranges of Public Service of Canada Employees",
+    "section": "Running Code",
+    "text": "Running Code\nWhen you click the Render button a document will be generated that includes both content and the output of embedded code. You can embed code like this:\n\n1 + 1\n\n[1] 2\n\n\nYou can add options to executable code like this\n\n\n[1] 4\n\n\nThe echo: false option disables the printing of code (only output is displayed)."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "about.qmd",
+    "section": "",
+    "text": "Practice"
+  },
+  {
+    "objectID": "DI.html",
+    "href": "DI.html",
+    "title": "About the Disproportionality Index",
+    "section": "",
+    "text": "Median salaries for each group were estimated using the following formula:\n\\[median = L + \\frac{ (\\frac{n}{2} – F) }{f}  * w\\]"
+  },
+  {
+    "objectID": "DI.html#explaining-the-disproportionality-index---an-example",
+    "href": "DI.html#explaining-the-disproportionality-index---an-example",
+    "title": "Understanding the Data",
+    "section": "Explaining the Disproportionality Index - An Example",
+    "text": "Explaining the Disproportionality Index - An Example\nSuppose that we have a department of 500 employees. There are two groups of self-identifying minority employees, A and B. Group C is composed of the majority at 460 employees. Groups A and B make up 4% of employees at 20 employees each, which happens to mirror the Canadian population. At a glance, representation seems equal.\n\n\n\n\n\nHowever, if you take a closer look at how the 20 employees from group A and B are distributed across salary levels, a different story appears. Group A is equally distributed among salary level, but the majority of group B employees remain at the lowest salary levels.\n\n\n\nsalary Scaffold\n\n\nCalculating DI further illustrates the differences in salary distribution. Above a DI of 1, a group’s representation at a salary level is higher than the average of all employees. Below a DI of 1, a group’s representation at a salary level is lower than the average of all employees"
+  },
+  {
+    "objectID": "Visualizations.html",
+    "href": "Visualizations.html",
+    "title": "Visualizations",
+    "section": "",
+    "text": "YearAll EmployeesNon-Visible Minority EmployeesVisible Minority EmployeesBlack EmployeesIndigenous EmployeesEmployees with Disabilities202281,30082,05078,40071,90078,40078,000202179,90080,45077,10071,15077,45077,050202076,90077,50074,25067,25073,35073,100201975,75076,20073,65067,45072,40072,700201872,45072,55071,95068,50070,45071,200201769,55069,60069,25065,45067,25067,800"
+  },
+  {
+    "objectID": "FAQ.html",
+    "href": "FAQ.html",
+    "title": "FAQ",
+    "section": "",
+    "text": "In 2021, the Canadian Privy Council Clerk made a Call to Action on Anti-Racism, Equity, and Inclusion, urging the Government of Canada to take action against the effects of racism and discrimination within the Canadian Public Service. In particular, the call to action recommends that specific and targeted measures be taken to address the lack of diverse leadership. This analysis addresses one of the Privy Clerk’s recommended actions, which is to:\n“[Measure] progress and [drive] improvements in the employee workplace experience by monitoring disaggregated survey results and related operational data (for example, promotion and mobility rates, tenure)…” (sic)\n\n\nThe Non-Visible Minority (non-VM) category contains data from any employee who has not self-identified as a visible minority.\nA few caveats are that it is possible that this category includes: - employees who are visible minorities that have chosen not to self-identify - members of other equity deserving groups.\nIn 2022, this group made up approximately 85% of all core Public Service employees.\n\n\n\nIndigenous employees are not included in the VM group. Due to the Employment Equity Act’s classifications of the group, Indigenous employees’ data is collected separately from the VM group.\n\n\n\nYes, Black employees are a subset of the VM group.\n\n\n\nTo examine the effects of covariates, the Disproportionality Index (DI) would be need to be calculated directly from microdata (individual data) rather than aggregated counts, which is what is available on the Treasury Board site. This microdata contains personal and confidential information, and must be handled by personnel with the required security clearance. We highly recommend that DI be calculated on the complete and original dataset.\nThe Treasury Board reports data on employee: * Location * Occupational group/category * Number of executives * Salary * Age * Tenure * Language\nDepending on data linkages and format, it could be possible to quantify the effects of these covariates.\n\n\n\nAs with the previous question, to quantify uncertainty and determine the statistical significance of the differences between groups, the Disproportionality Index (DI) would be need to be calculated directly from microdata, which is what is available on the Treasury Board site. This microdata contains personal and confidential information, and must be handled by personnel with the required security clearance. We highly recommend that DI be calculated on the complete and original dataset.\n\n\n\nThe Employment Equity Act and the concept of Equality at large in Canada operates within the legal framework of equal outcomes, which means that employers have an obligation to ensure that employees success is not dependent on their race, gender, or any other factor related to the designated employment equity groups. This data illustrates that equal outcomes are not being achieved in the core Public Service, and therefore we defer to the recommendations outlined in the Privy Council Clerk’s Call to Action on Anti-Racism, Equity, and Inclusion in the Federal Public Service for further action on resolving the career marginalization that Black public servants face."
+  },
+  {
+    "objectID": "FAQ.html#what-about-the-effects-of-age-tenure-official-languages-spoken-and-other-covariates-how-do-they-play-into-black-employees-representation-is-it-possible-they-explain-the-differences-we-see",
+    "href": "FAQ.html#what-about-the-effects-of-age-tenure-official-languages-spoken-and-other-covariates-how-do-they-play-into-black-employees-representation-is-it-possible-they-explain-the-differences-we-see",
+    "title": "FAQ",
+    "section": "What about the effects of age, tenure, official languages spoken, and other covariates? How do they play into Black employees’ representation? Is it possible they explain the differences we see?",
+    "text": "What about the effects of age, tenure, official languages spoken, and other covariates? How do they play into Black employees’ representation? Is it possible they explain the differences we see?\nTo improve the certainty of this analysis and quantify statistical uncertainty, the disproportionality index (DI) would be need to be calculated from microdata (individual data) rather than aggregated counts, which is what is available on the Treasury Board site. We highly recommend that DI be calculated on the complete and original dataset.\nSecondly, the Employment Equity Act and the concept of Equality at large in Canada operates within the legal framework of equal outcomes, which means that employers have an obligation to ensure that employees success is not dependant on their race, gender, or any other factor that they cannot control. This data demonstrates that equal outcomes are not being acheived in the public service, and therefore we defer to the recommendations outlined in the Privy Council Clerk’s Call to Action on Anti-Racism, Equity, and Inclusion in the Federal Public Service for further steps on resolving these differences."
+  },
+  {
+    "objectID": "FAQ.html#are-the-observed-differences-statistically-significant",
+    "href": "FAQ.html#are-the-observed-differences-statistically-significant",
+    "title": "FAQ",
+    "section": "Are the observed differences statistically significant?",
+    "text": "Are the observed differences statistically significant?\nAs for the question above, the microdata is required to determine statistical significance of the differences."
+  },
+  {
+    "objectID": "Visualizations.html#disproportionality-tables",
+    "href": "Visualizations.html#disproportionality-tables",
+    "title": "Visualizations",
+    "section": "Disproportionality Tables",
+    "text": "Disproportionality Tables\n\n202220212020201920182017\n\n\n\n\n\n All EmployeesBlack EmployeesAll Visible Minority EmployeesNon-Visible Minority EmployeesIndigenous EmployeesEmployees with DisabilitiesSalary RangePercentDIPercentDIPercentDIPercentDIPercentDIPercentDILess than $60,00012.88119.011.4814.241.1112.530.9714.341.1114.331.11$60,000 to $69,99916.90124.211.4319.261.1416.310.9717.341.0318.191.08$70,000 to $84,99920.58120.150.9820.230.9820.671.0022.151.0819.600.95$85,000 to $99,99920.81116.160.7819.960.9621.021.0123.021.1119.510.94Over $100,000K24.52116.680.6822.840.9324.951.0218.570.7623.080.94All ranges100.001100.001.00100.001.00100.001.00100.001.00100.001.00\n\n\n\n\n\n\n\n All EmployeesBlack EmployeesAll Visible Minority EmployeesNon-Visible Minority EmployeesIndigenous EmployeesEmployees with DisabilitiesSalary RangePercentDIPercentDIPercentDIPercentDIPercentDIPercentDILess than $60,00016.70123.731.4217.891.0716.430.9817.911.0718.541.11$60,000 to $69,99917.56123.861.3619.671.1217.060.9718.611.0619.311.10$70,000 to $84,99923.14120.940.9022.070.9523.391.0124.461.0621.070.91$85,000 to $99,99919.30115.720.8118.680.9719.451.0121.971.1419.190.99Over $100,000K23.30115.750.6821.690.9323.671.0217.050.7321.900.94All ranges100.001100.001.00100.001.00100.001.00100.001.00100.001.00\n\n\n\n\n\n\n\n All EmployeesBlack EmployeesAll Visible Minority EmployeesNon-Visible Minority EmployeesIndigenous EmployeesEmployees with DisabilitiesSalary RangePercentDIPercentDIPercentDIPercentDIPercentDIPercentDILess than $60,00023.82134.751.4625.611.0823.430.9826.571.1226.851.13$60,000 to $69,99917.56119.781.1318.661.0617.320.9918.431.0518.641.06$70,000 to $84,99919.84116.320.8218.550.9320.111.0122.931.1617.390.88$85,000 to $99,99918.32115.360.8417.870.9818.421.0118.261.0019.071.04Over $100,000K20.47113.790.6719.310.9420.721.0113.800.6718.050.88All ranges100.001100.001.00100.001.00100.001.00100.001.00100.001.00\n\n\n\n\n\n\n\n All EmployeesBlack EmployeesAll Visible Minority EmployeesNon-Visible Minority EmployeesIndigenous EmployeesEmployees with DisabilitiesSalary RangePercentDIPercentDIPercentDIPercentDIPercentDIPercentDILess than $60,00025.20136.601.4527.741.1024.690.9827.871.1128.501.13$60,000 to $69,99917.13117.661.0317.511.0217.061.0018.471.0817.301.01$70,000 to $84,99921.41117.360.8119.730.9221.751.0224.321.1418.890.88$85,000 to $99,99917.96116.280.9117.720.9918.011.0017.330.9618.561.03Over $100,000K18.30112.110.6617.310.9518.501.0112.020.6616.750.92All ranges100.001100.001.00100.001.00100.001.00100.001.00100.001.00\n\n\n\n\n\n\n\n All EmployeesBlack EmployeesAll Visible Minority EmployeesNon-Visible Minority EmployeesIndigenous EmployeesEmployees with DisabilitiesSalary RangePercentDIPercentDIPercentDIPercentDIPercentDIPercentDILess than $60,00025.87134.691.3428.091.0925.450.9828.691.1128.801.11$60,000 to $69,99919.40117.950.9318.710.9619.531.0119.991.0318.830.97$70,000 to $84,99919.94118.560.9318.620.9320.181.0123.681.1918.460.93$85,000 to $99,99916.93116.020.9517.181.0116.881.0016.220.9617.601.04Over $100,000K17.87112.780.7217.400.9717.951.0011.420.6416.310.91All ranges100.001100.001.00100.001.00100.001.00100.001.00100.001.00\n\n\n\n\n\n\n\n All EmployeesBlack EmployeesAll Visible Minority EmployeesNon-Visible Minority EmployeesIndigenous EmployeesEmployees with DisabilitiesSalary RangePercentDIPercentDIPercentDIPercentDIPercentDIPercentDILess than $55,00023.74131.811.3425.421.0723.440.9927.361.1527.221.15$55,000 to $64,99917.53117.481.0017.130.9817.601.0018.151.0417.781.01$65,000 to $79,99922.66120.430.9021.090.9322.941.0125.911.1419.570.86$80,000 to $94,99917.66116.620.9418.171.0317.570.9917.010.9618.491.05Over $95,000K18.42113.660.7418.200.9918.461.0011.580.6316.940.92All ranges100.001100.001.00100.001.00100.001.00100.001.00100.001.00"
+  },
+  {
+    "objectID": "Visualizations.html#plot-1-di-of-all-groups-by-salary-range-2022",
+    "href": "Visualizations.html#plot-1-di-of-all-groups-by-salary-range-2022",
+    "title": "Visualizations",
+    "section": "Plot 1: DI of all groups by salary range (2022)",
+    "text": "Plot 1: DI of all groups by salary range (2022)\nThe dotted line represents equitable representation (a DI of 1). It can been seen that Black employees are overrepresented at the lower salary ranges and underrepresented at higher ranges compared to the other groups. As can be seen by the “Non-Visible Minority Employees” bars, an equal DI across all salary ranges should be expected."
+  },
+  {
+    "objectID": "DI.html#calculating-di",
+    "href": "DI.html#calculating-di",
+    "title": "About the Disproportionality Index",
+    "section": "Calculating DI",
+    "text": "Calculating DI\nIn this analysis, Disproportionality Index (DI) is used as a measure of equitable representation. It is calculated as below.\n\\[\\frac{\\%_{Group\\: X; \\:salary\\: range \\: i}}{\\% _{All \\:Employees; \\:salary\\: range \\: i}} = DI _{Group\\:X; \\:salary\\:range\\:i}\\]\nFor example, 23.51% of Black employees and 16.70% of all employees are are within the <60K salary range. This gives us a DI of 1.41.\n\\[ DI_{Black \\: employees; <60K } =\\frac{23.51\\%}{16.70\\%} = 1.41\\]\nFor a table of DI’s per year, please see here."
+  },
+  {
+    "objectID": "DI.html#understanding-di---an-example",
+    "href": "DI.html#understanding-di---an-example",
+    "title": "About the Disproportionality Index",
+    "section": "Understanding DI - An Example",
+    "text": "Understanding DI - An Example\nSuppose that we have a department of 500 employees. There are two groups of self-identifying minority employees, A and B. Group C is composed of the majority at 460 employees. Groups A and B make up 4% of employees at 20 employees each, which happens to mirror the Canadian population. At a glance, representation seems equal.\n\n\n\n\n\nHowever, if you take a closer look at how the 20 employees from group A and B are distributed across salary levels, a different story appears. Group A is equally distributed among salary level, but the majority of group B employees remain at the lowest salary levels.\n\n\n\nSalary Scaffold\n\n\nCalculating DI further illustrates the differences in salary distribution. Above a DI of 1, a group’s representation at a salary level is higher than the average of all employees. Below a DI of 1, a group’s representation at a salary level is lower than the average of all employees."
+  },
+  {
+    "objectID": "index.html#limitations",
+    "href": "index.html#limitations",
+    "title": "Home",
+    "section": "Limitations",
+    "text": "Limitations\nThis analysis cannot account for the effects of additional factors such as age, gender, job qualification, and tenure. The data in it’s current form is also not amenable to calculating measures of uncertainty and determining statistical difference."
+  },
+  {
+    "objectID": "index.html#conclusions",
+    "href": "index.html#conclusions",
+    "title": "Home",
+    "section": "Conclusions",
+    "text": "Conclusions\nThis analysis indicates that additional challenges may be faced by Black public servants in the Government of Canada. The results also highlight that more information may be able to be yielded from further investigation into the Treasury Board’s disaggregated microdata.\nA Call to Action on Anti-Racism, Equity, and Inclusion has already been made as of 2021, encouraging those in positions of power to take action to address racism and discrimination in the Federal Public Service. The anecdotal experiences of Black public servants which are validated by this analysis must be taken seriously and continued to be quantified via further analysis of the available data."
+  },
+  {
+    "objectID": "Visualizations.html#plot-2-a-direct-comparison-of-di-in-black-employees-vs.-non-visible-minority-employees-2022",
+    "href": "Visualizations.html#plot-2-a-direct-comparison-of-di-in-black-employees-vs.-non-visible-minority-employees-2022",
+    "title": "Visualizations",
+    "section": "Plot 2: A direct comparison of DI in Black Employees vs. Non-Visible Minority Employees (2022)",
+    "text": "Plot 2: A direct comparison of DI in Black Employees vs. Non-Visible Minority Employees (2022)\nThis plot zooms in on our “baseline” group and compares it to the Black employee group, which appears to be the most affected by inequity. A steady decrease in representation with each increase in salary range is clearly visible for the Black employee group."
+  },
+  {
+    "objectID": "Visualizations.html#plot-3-interactive-di-visualization",
+    "href": "Visualizations.html#plot-3-interactive-di-visualization",
+    "title": "Visualizations",
+    "section": "Plot 3: Interactive DI Visualization",
+    "text": "Plot 3: Interactive DI Visualization\nHere you can select years and groups to display. Click the drop down on the left to filter by year. Click each group’s text under the subgroup heading on the right to remove and add data. Use your mouse to select a section to zoom into. You can also hover over each bars to see each individual data point.\n\n\n\n\n\n\nYear"
+  },
+  {
+    "objectID": "Visualizations.html#plot-4-interactive-comparison-quintile-visualization",
+    "href": "Visualizations.html#plot-4-interactive-comparison-quintile-visualization",
+    "title": "Visualizations",
+    "section": "Plot 4: Interactive Comparison Quintile Visualization",
+    "text": "Plot 4: Interactive Comparison Quintile Visualization"
+  },
+  {
+    "objectID": "index.html#the-data",
+    "href": "index.html#the-data",
+    "title": "Home",
+    "section": "The Data",
+    "text": "The Data\nThe data represents pre-tax salary ranges excluding bonuses and promotions, publicly available here. Each data series from 2017 to 2022 represents the salaries of public servants (excluding the CRA) at a single time point, not reflecting changes across an entire year.\nThe collection of the data used in this analysis follows standards set by the Employment Equity act, meaning that 4 “equity-deserving groups” (defined as women, indigenous people, people with disabilities, and visible minorities) are surveyed. This data is particularly interesting as it is disaggregated, meaning that additional questions to used identify subgroups within the equity-deserving groups were included in the survey. Therefore, when information about the visible minority group is presented, Black employees (but not Indigenous employees) are included.\nPlease note that this data was imputed for suppressed numbers (see here for more information)."
+  }
+]

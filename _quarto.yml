@@ -1,0 +1,20 @@
+project:
+  type: website
+
+website:
+  title: "Employment Equity"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - Visualizations.qmd
+      - DI.qmd
+      - FAQ.qmd
+  favicon: "images/favicon-32x32.png"
+
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
