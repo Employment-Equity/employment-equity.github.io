@@ -120,26 +120,7 @@ get_salary_data <- function(Year) {
 lapply(years, get_salary_data) %>% 
   bind_rows()
 
-# Fix 2022 data - collapse under 50K 
-# 2022 data has both "Under 25K" and "Under 50K" salaries. Here we will collapse those two categories as well as the  "25K-49K" category into "Under 50K" for consistency 
-salary_df_2022 <-
-  salary_df_2022 %>% mutate(salary_range = case_when(
-    salary_range %in% c("Under 25,000",
-                        "Under 50,000",
-                        "25,000 to 49,999") ~ "Under 50,000",
-    TRUE ~ salary_range
-  )) %>%
-  group_by(salary_range) %>%
-  summarise(
-    count_all = sum(count_all, na.rm = TRUE),
-    count_black = sum(count_black, na.rm = TRUE),
-    count_vm = sum(count_vm, na.rm = TRUE),
-    count_indigenous = sum(count_indigenous, na.rm = TRUE),
-    count_pwd = sum(count_pwd, na.rm = TRUE)
-  )
   
-
-
 # list of name of databases by year
 years_data <- paste("salary_df", years, sep = "_")
 years_data_cat <- mget(years_data)
@@ -157,6 +138,9 @@ years_data_cat <-
   mutate(salary_range = ifelse(grepl('Total', salary_range), "Total", salary_range)) %>%
   group_by(salary_range, Year) %>%  
   summarise_all(list( ~ sum(., na.rm = T)))
+
+
+
 
 # Imputation: add in imputed values to replace suppressed numbers 
 imputation_data <- read.csv("imputation_estimates.csv", encoding = "UTF-8")
@@ -199,6 +183,26 @@ for (i in 1:nrow(imputation_data)){
     select(-c(old_val)) %>%
              mutate(count_non_vm = count_all - count_vm) # calculate non vm (all - vm's)
 }
+
+# Fix 2022 data - collapse under 50K 
+# 2022 data has both "Under 25K" and "Under 50K" salaries. Here we will collapse those two categories as well as the  "25K-49K" category into "Under 50K" for consistency 
+years_data_cat <-
+  years_data_cat %>% mutate(salary_range = case_when(
+    salary_range %in% c("Under 25,000",
+                        "Under 50,000",
+                        "25,000 to 49,999") ~ "Under 50,000",
+    TRUE ~ salary_range
+  )) %>%
+  group_by(salary_range, Year) %>%
+  summarise(
+    count_all = sum(count_all, na.rm = TRUE),
+    count_black = sum(count_black, na.rm = TRUE),
+    count_vm = sum(count_vm, na.rm = TRUE),
+    count_indigenous = sum(count_indigenous, na.rm = TRUE),
+    count_pwd = sum(count_pwd, na.rm = TRUE), 
+    count_non_vm = count_all - count_vm
+  )
+
 
 # Clear workspace of unneeded df's and functions in saved memory
 rm(salary_df_2017, salary_df_2018, salary_df_2019, salary_df_2020, salary_df_2021, salary_df_2022, url, get_salary_data, remove_bullish, remove_spaces)
@@ -463,7 +467,7 @@ di_df_2022 <- years_data_cat %>%
   mutate(
     range_group = case_when(# group salary ranges into quintiles
       salary_range %in% c(
-        "Under 25,000",
+        "Under 50,000",
         "25,000 to 49,999",
         "50,000 to 54,999",
         "55,000 to 59,999"
