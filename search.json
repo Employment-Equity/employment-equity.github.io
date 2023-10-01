@@ -4,7 +4,14 @@
     "href": "Visualizations.html",
     "title": "Tables and Visualizations",
     "section": "",
-    "text": "YearAll EmployeesNon-Visible Minority EmployeesVisible Minority EmployeesBlack EmployeesIndigenous EmployeesEmployees with Disabilities202281,30082,05078,35071,80078,40078,000202179,90080,45077,10071,15077,45077,050202076,90077,50074,25067,25073,35073,100201975,75076,20073,65067,45072,40072,700201872,45072,55071,95068,50070,45071,200201769,55069,60069,25065,45067,25067,800"
+    "text": ":::\n:::"
+  },
+  {
+    "objectID": "Visualizations.html#median-salary-table",
+    "href": "Visualizations.html#median-salary-table",
+    "title": "Tables and Visualizations",
+    "section": "Median Salary Table",
+    "text": "Median Salary Table\n\n\n\nYearAll EmployeesNon-Visible Minority EmployeesVisible Minority EmployeesBlack EmployeesIndigenous EmployeesEmployees with Disabilities202281,30082,05078,35071,80078,40078,000202179,90080,45077,10071,15077,45077,050202076,90077,50074,25067,25073,35073,100201975,75076,20073,65067,45072,40072,700201872,45072,55071,95068,50070,45071,200201769,55069,60069,25065,45067,25067,800\n\n\nMedian salaries (CDN per annum) of Canadian core public service employees from 2017-2021, rounded to the nearest $50. Median salary was estimated with Formula 1. Orange values indicate a higher value than the “all employees” group, and blue values indicate a lower value per year. Data from Treasury Board of Canada Secretariat Diversity and Inclusion Statistics."
   },
   {
     "objectID": "Visualizations.html#disproportionality-tables",
@@ -46,97 +53,20 @@
     "href": "DI.html",
     "title": "About the Disproportionality Index",
     "section": "",
-    "text": "Median salaries for each group were estimated using the following formula:\n\\[median = L + \\frac{ (\\frac{n}{2} – F) }{f}  * w\\]"
-  },
-  {
-    "objectID": "DI.html#calculating-di",
-    "href": "DI.html#calculating-di",
-    "title": "About the Disproportionality Index",
-    "section": "Calculating DI",
-    "text": "Calculating DI\nIn this analysis, Disproportionality Index (DI) is used as a measure of equitable representation. It is calculated as below.\n\\[\\frac{\\%_{Group\\: X; \\:salary\\: range \\: i}}{\\% _{All \\:Employees; \\:salary\\: range \\: i}} = DI _{Group\\:X; \\:salary\\:range\\:i}\\]\nFor example, 23.51% of Black employees and 16.70% of all employees are are within the <60K salary range. This gives us a DI of 1.41.\n\\[ DI_{Black \\: employees; <60K } =\\frac{23.51\\%}{16.70\\%} = 1.41\\]\nFor a table of DI’s per year, please see here."
-  },
-  {
-    "objectID": "DI.html#understanding-di---an-example",
-    "href": "DI.html#understanding-di---an-example",
-    "title": "About the Disproportionality Index",
-    "section": "Understanding DI - An Example",
-    "text": "Understanding DI - An Example\nSuppose that we have a department of 500 employees. There are two groups of self-identifying minority employees, A and B. Group C is composed of the majority at 460 employees. Groups A and B make up 4% of employees at 20 employees each, which happens to mirror the Canadian population. At a glance, representation seems equal.\n\n\n\n\n\nHowever, if you take a closer look at how the 20 employees from group A and B are distributed across salary levels, a different story appears. Group A is equally distributed among salary level, but the majority of group B employees remain at the lowest salary levels.\n\n\n\nSalary Scaffold\n\n\nCalculating DI further illustrates the differences in salary distribution. Above a DI of 1, a group’s representation at a salary level is higher than the average of all employees. Below a DI of 1, a group’s representation at a salary level is lower than the average of all employees."
+    "text": "Median salaries for each group were estimated using the following formula:\n\\[median = L + \\frac{ (\\frac{n}{2} – F) }{f}  * w\\]\n\n\n\nIn this analysis, Disproportionality Index (DI) is used as a measure of equitable representation. It is calculated as below.\n\\[\\frac{\\%_{Group\\: X; \\:salary\\: range \\: i}}{\\% _{All \\:Employees; \\:salary\\: range \\: i}} = DI _{Group\\:X; \\:salary\\:range\\:i}\\]\nFor example, 23.51% of Black employees and 16.70% of all employees are are within the <60K salary range. This gives us a DI of 1.41.\n\\[ DI_{Black \\: employees; <60K } =\\frac{23.51\\%}{16.70\\%} = 1.41\\]\nFor a table of DI’s per year, please see here.\n\n\n\nSuppose that we have a department of 500 employees. There are two groups of self-identifying minority employees, A and B. Group C is composed of the majority at 460 employees. Groups A and B make up 4% of employees at 20 employees each, which happens to mirror the Canadian population. At a glance, representation seems equal.\n\n\n\n\n\nHowever, if you take a closer look at how the 20 employees from group A and B are distributed across salary levels, a different story appears. Group A is equally distributed among salary level, but the majority of group B employees remain at the lowest salary levels.\n\n\n\nSalary Scaffold\n\n\nCalculating DI further illustrates the differences in salary distribution. Above a DI of 1, a group’s representation at a salary level is higher than the average of all employees. Below a DI of 1, a group’s representation at a salary level is lower than the average of all employees."
   },
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "Home",
+    "title": "",
     "section": "",
-    "text": "This analysis explores the salary distributions of Canadian Public Service Employees in employment equity groups. For more information and to access the scripts used to produce this analysis, visit the project’s GitHub repository or see our publication in the 2023 ISI World Statistical Congress proceedings."
-  },
-  {
-    "objectID": "index.html#the-data",
-    "href": "index.html#the-data",
-    "title": "Home",
-    "section": "The Data",
-    "text": "The Data\nThe data represents pre-tax salary ranges excluding bonuses and promotions, publicly available here. Each data series from 2017 to 2022 represents the salaries of public servants (excluding the CRA) at a single time point, not reflecting changes across an entire year.\nThe collection of the data used in this analysis follows standards set by the Employment Equity act, meaning that 4 “equity-deserving groups” (defined as women, indigenous people, people with disabilities, and visible minorities) are surveyed. This data is particularly interesting as it is disaggregated, meaning that additional questions to used identify subgroups within the equity-deserving groups were included in the survey. Therefore, when information about the visible minority group is presented, Black employees (but not Indigenous employees) are included.\nPlease note that this data was imputed for suppressed numbers. To see exact imputed values, click here for more information."
-  },
-  {
-    "objectID": "index.html#limitations",
-    "href": "index.html#limitations",
-    "title": "Home",
-    "section": "Limitations",
-    "text": "Limitations\nThis analysis cannot account for the effects of additional factors such as age, gender, job qualification, and tenure. The data in it’s current form is also not amenable to calculating measures of uncertainty and determining statistical difference."
-  },
-  {
-    "objectID": "index.html#conclusions",
-    "href": "index.html#conclusions",
-    "title": "Home",
-    "section": "Conclusions",
-    "text": "Conclusions\nThis analysis indicates that additional challenges may be faced by Black public servants in the Government of Canada. The results also highlight that more information may be able to be yielded from further investigation into the Treasury Board’s disaggregated microdata.\nA Call to Action on Anti-Racism, Equity, and Inclusion has already been made as of 2021, encouraging those in positions of power to take action to address racism and discrimination in the Federal Public Service. The anecdotal experiences of Black public servants which are validated by this analysis must be taken seriously and continued to be quantified via further analysis of the available data."
+    "text": "This analysis explores the salary distributions of Canadian Public Service Employees in employment equity groups. For more information and to access the scripts used to produce this analysis, visit the project’s GitHub repository or see our publication in the 2023 ISI World Statistical Congress proceedings.\n\n\n\nThe data represents pre-tax salary ranges excluding bonuses and promotions, publicly available here. Each data series from 2017 to 2022 represents the salaries of public servants (excluding the CRA) at a single time point, not reflecting changes across an entire year.\nThe collection of the data used in this analysis follows standards set by the Employment Equity act, meaning that 4 “equity-deserving groups” (defined as women, indigenous people, people with disabilities, and visible minorities) are surveyed. This data is particularly interesting as it is disaggregated, meaning that additional questions to used identify subgroups within the equity-deserving groups were included in the survey. Therefore, when information about the visible minority group is presented, Black employees (but not Indigenous employees) are included.\nPlease note that this data was imputed for suppressed numbers. To see exact imputed values, click here for more information.\n\n\n\nThis analysis cannot account for the effects of additional factors such as age, gender, job qualification, and tenure. The data in it’s current form is also not amenable to calculating measures of uncertainty and determining statistical difference.\n\n\n\nThis analysis indicates that additional challenges may be faced by Black public servants in the Government of Canada. The results also highlight that more information may be able to be yielded from further investigation into the Treasury Board’s disaggregated microdata.\nA Call to Action on Anti-Racism, Equity, and Inclusion has already been made as of 2021, encouraging those in positions of power to take action to address racism and discrimination in the Federal Public Service. The anecdotal experiences of Black public servants which are validated by this analysis must be taken seriously and continued to be quantified via further analysis of the available data."
   },
   {
     "objectID": "FAQ.html",
     "href": "FAQ.html",
     "title": "FAQ",
     "section": "",
-    "text": "In 2021, the Canadian Privy Council Clerk made a Call to Action on Anti-Racism, Equity, and Inclusion, urging the Government of Canada to take action against the effects of racism and discrimination within the Canadian Public Service. In particular, the call to action recommends that specific and targeted measures be taken to address the lack of diverse leadership. This analysis addresses one of the Privy Clerk’s recommended actions, which is:\n“Measuring progress and driving improvements in the employee workplace experience by monitoring disaggregated survey results and related operational data (for example, promotion and mobility rates, tenure)…”"
-  },
-  {
-    "objectID": "FAQ.html#what-does-the-non-visible-minority-category-entail",
-    "href": "FAQ.html#what-does-the-non-visible-minority-category-entail",
-    "title": "FAQ",
-    "section": "What does the “Non-Visible Minority” category entail?",
-    "text": "What does the “Non-Visible Minority” category entail?\nThe Non-Visible Minority (non-VM) category contains data from any employee who has not self-identified as a visible minority.\nA few caveats are that it is possible that this category includes:\n\nemployees who are visible minorities that have chosen not to self-identify\nmembers of other equity deserving groups.\n\nIn 2022, this group made up approximately 85% of all core Public Service employees."
-  },
-  {
-    "objectID": "FAQ.html#are-indigenous-employees-included-in-the-visual-minority-vm-group",
-    "href": "FAQ.html#are-indigenous-employees-included-in-the-visual-minority-vm-group",
-    "title": "FAQ",
-    "section": "Are Indigenous employees included in the Visual Minority (VM) Group?",
-    "text": "Are Indigenous employees included in the Visual Minority (VM) Group?\nIndigenous employees are not included in the VM group. Due to the Employment Equity Act’s classifications of the group, Indigenous employees’ data is collected separately from the VM group."
-  },
-  {
-    "objectID": "FAQ.html#are-black-employees-included-in-the-visual-minority-vm-group",
-    "href": "FAQ.html#are-black-employees-included-in-the-visual-minority-vm-group",
-    "title": "FAQ",
-    "section": "Are Black employees included in the Visual Minority (VM) Group?",
-    "text": "Are Black employees included in the Visual Minority (VM) Group?\nYes, Black employees are a subset of the VM group."
-  },
-  {
-    "objectID": "FAQ.html#what-about-the-effects-of-level-of-education-age-tenure-ability-to-speak-official-languages-and-other-covariates-how-do-they-play-into-black-employees-representation-is-it-possible-they-explain-the-differences-we-see",
-    "href": "FAQ.html#what-about-the-effects-of-level-of-education-age-tenure-ability-to-speak-official-languages-and-other-covariates-how-do-they-play-into-black-employees-representation-is-it-possible-they-explain-the-differences-we-see",
-    "title": "FAQ",
-    "section": "What about the effects of level of education, age, tenure, ability to speak official languages, and other covariates? How do they play into Black employees’ representation? Is it possible they explain the differences we see?",
-    "text": "What about the effects of level of education, age, tenure, ability to speak official languages, and other covariates? How do they play into Black employees’ representation? Is it possible they explain the differences we see?\nTo examine the effects of covariates, the Disproportionality Index (DI) would be need to be calculated directly from microdata (individual data) rather than aggregated counts, which is what is available on the Treasury Board site. This microdata contains personal and confidential information, and must be handled by personnel with the required security clearance. We highly recommend that DI be calculated on the complete and original dataset.\nThe Treasury Board reports data on employee:\n\nLocation\nOccupational group/category\nNumber of executives\nSalary\nAge\nTenure\nLanguage\n\nDepending on data linkages and format, it could be possible to quantify the effects of these covariates."
-  },
-  {
-    "objectID": "FAQ.html#are-the-observed-differences-statistically-significant",
-    "href": "FAQ.html#are-the-observed-differences-statistically-significant",
-    "title": "FAQ",
-    "section": "Are the observed differences statistically significant?",
-    "text": "Are the observed differences statistically significant?\nAs with the previous question, to quantify uncertainty and determine the statistical significance of the differences between groups, the Disproportionality Index (DI) would be need to be calculated directly from microdata. This microdata contains personal and confidential information, and must be handled by personnel with the required security clearance. We highly recommend that DI be calculated on the complete and original dataset."
-  },
-  {
-    "objectID": "FAQ.html#if-the-differences-are-due-to-covariates-related-to-differences-in-demographics-ex-level-of-education-age-tenure-ability-to-speak-official-languages-etc-does-that-mean-that-the-differences-dont-need-to-be-addressed",
-    "href": "FAQ.html#if-the-differences-are-due-to-covariates-related-to-differences-in-demographics-ex-level-of-education-age-tenure-ability-to-speak-official-languages-etc-does-that-mean-that-the-differences-dont-need-to-be-addressed",
-    "title": "FAQ",
-    "section": "If the differences are due to covariates related to differences in demographics (ex: level of education, age, tenure, ability to speak official languages, etc), does that mean that the differences don’t need to be addressed?",
-    "text": "If the differences are due to covariates related to differences in demographics (ex: level of education, age, tenure, ability to speak official languages, etc), does that mean that the differences don’t need to be addressed?\nThe Employment Equity Act and the concept of Equality at large in Canada operate within the legal framework of equal outcomes, which means that employers have an obligation to ensure that employees success is not dependent on their race, gender, or any other factor related to the designated employment equity groups. This data illustrates that equal outcomes are not being achieved in the core Public Service, and therefore we defer to the recommendations outlined in the Privy Council Clerk’s Call to Action on Anti-Racism, Equity, and Inclusion in the Federal Public Service for further action on resolving the career marginalization that Black public servants face."
+    "text": "In 2021, the Canadian Privy Council Clerk made a Call to Action on Anti-Racism, Equity, and Inclusion, urging the Government of Canada to take action against the effects of racism and discrimination within the Canadian Public Service. In particular, the call to action recommends that specific and targeted measures be taken to address the lack of diverse leadership. This analysis addresses one of the Privy Clerk’s recommended actions, which is:\n“Measuring progress and driving improvements in the employee workplace experience by monitoring disaggregated survey results and related operational data (for example, promotion and mobility rates, tenure)…”\n\n\n\nThe Non-Visible Minority (non-VM) category contains data from any employee who has not self-identified as a visible minority.\nA few caveats are that it is possible that this category includes:\n\nemployees who are visible minorities that have chosen not to self-identify\nmembers of other equity deserving groups.\n\nIn 2022, this group made up approximately 85% of all core Public Service employees.\n\n\n\nIndigenous employees are not included in the VM group. Due to the Employment Equity Act’s classifications of the group, Indigenous employees’ data is collected separately from the VM group.\n\n\n\nYes, Black employees are a subset of the VM group.\n\n\n\nTo examine the effects of covariates, the Disproportionality Index (DI) would be need to be calculated directly from microdata (individual data) rather than aggregated counts, which is what is available on the Treasury Board site. This microdata contains personal and confidential information, and must be handled by personnel with the required security clearance. We highly recommend that DI be calculated on the complete and original dataset.\nThe Treasury Board reports data on employee:\n\nLocation\nOccupational group/category\nNumber of executives\nSalary\nAge\nTenure\nLanguage\n\nDepending on data linkages and format, it could be possible to quantify the effects of these covariates.\n\n\n\nAs with the previous question, to quantify uncertainty and determine the statistical significance of the differences between groups, the Disproportionality Index (DI) would be need to be calculated directly from microdata. This microdata contains personal and confidential information, and must be handled by personnel with the required security clearance. We highly recommend that DI be calculated on the complete and original dataset.\n\n\n\nThe Employment Equity Act and the concept of Equality at large in Canada operate within the legal framework of equal outcomes, which means that employers have an obligation to ensure that employees success is not dependent on their race, gender, or any other factor related to the designated employment equity groups. This data illustrates that equal outcomes are not being achieved in the core Public Service, and therefore we defer to the recommendations outlined in the Privy Council Clerk’s Call to Action on Anti-Racism, Equity, and Inclusion in the Federal Public Service for further action on resolving the career marginalization that Black public servants face."
   }
 ]
