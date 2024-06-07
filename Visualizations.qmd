@@ -54,7 +54,7 @@ get_salary_data <- function(Year) {
   
   
   # Progress Message 
-  message(paste("Webscraping", year, "data."))
+  message(paste("Webscraping", Year, "data."))
   
   # Match years to their index in the data
   year_dictionary <- data.frame(year = years,
@@ -137,7 +137,6 @@ end.time <- Sys.time()
 
 time.taken <- end.time - start.time
 
-message(paste("Elaspsed time of ", time.taken, " minutes."))
 
   
 # list of name of databases by year
@@ -155,9 +154,9 @@ rownames(years_data_cat) <- NULL
 
 # Aggregate "total" columns
 years_data_cat <-
-  years_data_cat %>%
-  mutate(salary_range = ifelse(grepl('Total', salary_range), "Total", salary_range)) %>%
-  group_by(salary_range, Year) %>%  
+  years_data_cat |>
+  mutate(salary_range = ifelse(grepl('Total', salary_range), "Total", salary_range)) |>
+  group_by(salary_range, Year) |>  
   summarise_all(list( ~ sum(., na.rm = T)))
 
 
@@ -172,49 +171,49 @@ imputation_data$salary_range <- str_replace_all(imputation_data$salary_range, "\
 # Loop to impute numbers into df
 for (i in 1:nrow(imputation_data)){
   # separate imputation date into groups
-  imputation_data_black <- imputation_data %>% 
+  imputation_data_black <- imputation_data |> 
     filter(Group == "count_black")
-  imputation_data_indigenous <- imputation_data %>% 
+  imputation_data_indigenous <- imputation_data |> 
     filter(Group == "count_indigenous")
-  imputation_data_vm <- imputation_data %>% 
+  imputation_data_vm <- imputation_data |> 
     filter(Group == "count_vm")
   # Use case_when to meet conditions from imputation data
-  years_data_cat <- years_data_cat %>% 
-    mutate(old_val = count_black) %>%
+  years_data_cat <- years_data_cat |> 
+    mutate(old_val = count_black) |>
     mutate(count_black = case_when(
         Year == imputation_data_black$Year[i] & 
           salary_range == imputation_data_black$salary_range[i] ~  imputation_data_black$value[i], 
         .default = old_val
       )
-    ) %>%
-    mutate(old_val = count_indigenous) %>%
+    ) |>
+    mutate(old_val = count_indigenous) |>
     mutate(count_indigenous = case_when(
         Year == imputation_data_indigenous$Year[i] & 
           salary_range == imputation_data_indigenous$salary_range[i] ~  imputation_data_indigenous$value[i], 
         .default = old_val
       )
-    ) %>%
-        mutate(old_val = count_vm) %>%
+    ) |>
+        mutate(old_val = count_vm) |>
     mutate(count_vm = case_when(
         Year == imputation_data_vm$Year[i] & 
           salary_range == imputation_data_vm$salary_range[i] ~  imputation_data_vm$value[i], 
         .default = old_val
       )
-    ) %>%
-    select(-c(old_val)) %>%
+    ) |>
+    select(-c(old_val)) |>
              mutate(count_non_vm = count_all - count_vm) # calculate non vm (all - vm's)
 }
 
 # Fix 2022 data - collapse under 50K 
 # 2022 data has both "Under 25K" and "Under 50K" salaries. Here we will collapse those two categories as well as the  "25K-49K" category into "Under 50K" for consistency 
 years_data_cat <-
-  years_data_cat %>% mutate(salary_range = case_when(
+  years_data_cat |> mutate(salary_range = case_when(
     salary_range %in% c("Under 25,000",
                         "Under 50,000",
                         "25,000 to 49,999") ~ "Under 50,000",
     TRUE ~ salary_range
-  )) %>%
-  group_by(salary_range, Year) %>%
+  )) |>
+  group_by(salary_range, Year) |>
   summarise(
     count_all = sum(count_all, na.rm = TRUE),
     count_black = sum(count_black, na.rm = TRUE),
@@ -261,14 +260,14 @@ df <-
     x = years_data_cat, # read in yearly salary data by group
     y = { # match dataset to bin categories and widths from different years
         bind_rows(
-      {temp[, c(1:2)] %>% dplyr::rename(bins = bins_2022, bin_width = bin_width_2022)},           
-    {temp[, c(3:4)] %>% dplyr::rename(bins = bins_2021, bin_width = bin_width_2021)}, 
-    {temp[, c(5:6)] %>% dplyr::rename(bins = bins_2020, bin_width = bin_width_2020)},
-    {temp[, c(7:8)] %>% dplyr::rename(bins = bins_2019, bin_width = bin_width_2019)},
-    {temp[, c(9:10)] %>% dplyr::rename(bins = bins_2018, bin_width = bin_width_2018)},
-    {temp[, c(11:12)] %>% dplyr::rename(bins = bins_2017, bin_width = bin_width_2017)},
+      {temp[, c(1:2)] |> dplyr::rename(bins = bins_2022, bin_width = bin_width_2022)},           
+    {temp[, c(3:4)] |> dplyr::rename(bins = bins_2021, bin_width = bin_width_2021)}, 
+    {temp[, c(5:6)] |> dplyr::rename(bins = bins_2020, bin_width = bin_width_2020)},
+    {temp[, c(7:8)] |> dplyr::rename(bins = bins_2019, bin_width = bin_width_2019)},
+    {temp[, c(9:10)] |> dplyr::rename(bins = bins_2018, bin_width = bin_width_2018)},
+    {temp[, c(11:12)] |> dplyr::rename(bins = bins_2017, bin_width = bin_width_2017)},
     .id = "key"
-  ) %>%
+  ) |>
   mutate(year = case_when( # add year "keys" (html pull indexes years by numbers)
     key == "1" ~ 2022,
     key == "2" ~ 2021,
@@ -276,14 +275,14 @@ df <-
     key == "4" ~ 2019,
     key == "5" ~ 2018, 
     key == "6" ~ 2017
-  )) %>% 
-  select(-key) %>%  # remove key data
+  )) |> 
+  select(-key) |>  # remove key data
   filter(!is.na(bins))
     },
     by.x = c("salary_range", "Year"),
     by.y = c("bins", "year"),
     all.x = TRUE
-  )  %>% arrange( # arrange salary ranges from lowest to highest using factors
+  )  |> arrange( # arrange salary ranges from lowest to highest using factors
     Year,
     factor(
       salary_range,
@@ -310,8 +309,8 @@ df <-
         "250,000 and over",
         "Total"
       )
-  )) %>% 
-  group_by(Year) %>% # get cumulative frequencies with cumsum()
+  )) |> 
+  group_by(Year) |> # get cumulative frequencies with cumsum()
     mutate(
       cumsum_bin_width = cumsum(bin_width), 
       cumsum_all = cumsum(count_all),
@@ -320,17 +319,17 @@ df <-
       cumsum_indigenous = cumsum(count_indigenous),
       cumsum_pwd = cumsum(count_pwd),
       cumsum_non_vm = cumsum(count_non_vm)
-    ) %>% ungroup() %>%
+    ) |> ungroup() |>
   pivot_longer( # change data to longform
     cols = c(starts_with("count"), starts_with("cumsum")),
     names_to = "group",
     values_to = "count_cumsum"
-  ) %>%
-  group_by(Year, group) %>% 
-    mutate(total = ifelse((grepl(pattern = "count_", x = group) & salary_range == "Total"), count_cumsum, NA)) %>% # if total, make cumsum NA
-  fill(total, .direction = "up") %>% 
-  ungroup() %>% 
-  mutate(half_pop = total/2) %>% # get half population per bin
+  ) |>
+  group_by(Year, group) |> 
+    mutate(total = ifelse((grepl(pattern = "count_", x = group) & salary_range == "Total"), count_cumsum, NA)) |> # if total, make cumsum NA
+  fill(total, .direction = "up") |> 
+  ungroup() |> 
+  mutate(half_pop = total/2) |> # get half population per bin
   group_by(Year, group)
 
 ```
@@ -346,12 +345,12 @@ df <-
 est_median <- function(year, ee_group) {
   # pull salary data by year and change back to wide format
   median_df <-
-    df %>%
-    filter(Year == year) %>% # filter for selected year
+    df |>
+    filter(Year == year) |> # filter for selected year
     pivot_wider(names_from = "group", # change back to wide format
                 values_from = c("count_cumsum", 
                                 "total", 
-                                "half_pop")) %>%
+                                "half_pop")) |>
      dplyr::select(-contains(c("total_cumsum", # remove unneeded cols
                                "total_count",
                                "half_pop_cumsum"))) 
@@ -448,8 +447,8 @@ round_any = function(x, accuracy, f=round){f(x/ accuracy) * accuracy}
 median_df_final$median <- round_any(median_df_final$median, accuracy = 50)
 
 # Swap to wide format for presentation
-median_df_wide <- spread(median_df_final, group, median) %>% 
-  select(med_year, all, non_vm, vm, black, indigenous, pwd) %>% 
+median_df_wide <- spread(median_df_final, group, median) |> 
+  select(med_year, all, non_vm, vm, black, indigenous, pwd) |> 
   arrange(desc(med_year))
 
 
@@ -476,10 +475,10 @@ colors <- met.brewer("Hiroshige", 5)[c(1,4)]
 colormatrix <- ifelse(median_df_wide[, -(1:2)] > median_df_wide$`All Employees`, colors[1], colors[2])
 
 # Make formatted table
-flextable(median_df_wide) %>%
-  align(align = "center", part = "body") %>%
-  align(align = "center", part = "header") %>% 
-  valign(valign = "center", part = "header") %>%
+flextable(median_df_wide) |>
+  align(align = "center", part = "body") |>
+  align(align = "center", part = "header") |> 
+  valign(valign = "center", part = "header") |>
   color(j = 3:7, color = colormatrix) 
 ```
 
@@ -516,10 +515,10 @@ format([], round(as.numeric(), nsmall=1, big.mark=" "))
 
 
 # Make formatted table
-flextable(median_df_wide) %>%
-  align(align = "center", part = "body") %>%
-  align(align = "center", part = "header") %>% 
-  valign(valign = "center", part = "header") %>%
+flextable(median_df_wide) |>
+  align(align = "center", part = "body") |>
+  align(align = "center", part = "header") |> 
+  valign(valign = "center", part = "header") |>
   color(j = 3:7, color = colormatrix) 
 ```
 
@@ -535,8 +534,8 @@ Salaires médians (en dollars canadiens par an) des employés du noyau de la fon
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 
 # In this chunk: calculate DI's and flextable 2022 data
-di_df_2022 <- years_data_cat %>%
-  filter(Year == "2022") %>%
+di_df_2022 <- years_data_cat |>
+  filter(Year == "2022") |>
   mutate(
     range_group = case_when(# group salary ranges into quintiles
       salary_range %in% c(
@@ -567,8 +566,8 @@ di_df_2022 <- years_data_cat %>%
       ) ~ "Over $100,000K",
       TRUE ~ "All ranges"
     )
-  ) %>% 
-  dplyr::group_by(range_group) %>%
+  ) |> 
+  dplyr::group_by(range_group) |>
   dplyr::summarize(
     count_all = sum(count_all, na.rm = TRUE),
     count_black = sum(count_black, na.rm = TRUE),
@@ -576,12 +575,12 @@ di_df_2022 <- years_data_cat %>%
     count_non_vm = count_all - count_vm,
     count_indigenous = sum(count_indigenous, na.rm = TRUE),
     count_pwd = sum(count_pwd, na.rm = TRUE)
-  ) %>%
+  ) |>
   ungroup()
 
 
 di_df_2022 <- 
-  di_df_2022[c(5, 1, 2, 3, 6, 4), ] %>% # reorder rows
+  di_df_2022[c(5, 1, 2, 3, 6, 4), ] |> # reorder rows
   dplyr::mutate(
     # create new column for percentage of representation within subgroup
     per_all = round(count_all / count_all[n()] * 100, 2),
@@ -605,7 +604,7 @@ di_df_2022 <-
     chart_non_vm = di_non_vm - 1,
     chart_indigenous = di_indigenous - 1,
     chart_pwd = di_pwd - 1,
-  ) %>%
+  ) |>
   dplyr::select(
     range_group,
     per_all,
@@ -630,14 +629,14 @@ di_df_2022 <-
     per_pwd,
     di_pwd,
     chart_pwd
-  ) %>% 
+  ) |> 
   mutate(year = "2022")
 
 # ---- Export Table 2022
 # Create table to show raw data 
 # Remove chart columns amd convert to flextable object
 # REMOVE YEAR TOO
-export_table_2022 <- flextable(select(di_df_2022, -contains("chart")) %>% select(-c("year")))
+export_table_2022 <- flextable(select(di_df_2022, -contains("chart")) |> select(-c("year")))
 
 # Change header labels
 export_table_2022 <- set_header_labels(export_table_2022,
@@ -672,8 +671,8 @@ export_table_2022 <-  add_header_row(
   )
 )
 
-export_table_2022 %>%
-  align(align = "center", part = "body") %>%
+export_table_2022 |>
+  align(align = "center", part = "body") |>
   align(align = "center", part = "header")
 ```
 
@@ -681,8 +680,8 @@ export_table_2022 %>%
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 # In this chunk: calculate DI's and flextable 2021 data
-di_df_2021 <- years_data_cat %>%  
-  filter(Year == "2021") %>%
+di_df_2021 <- years_data_cat |>  
+  filter(Year == "2021") |>
   mutate(range_group = case_when(
       salary_range %in% c(
         "Under 25,000",
@@ -712,19 +711,19 @@ di_df_2021 <- years_data_cat %>%
         ) ~ "Over $100,000K",
       TRUE ~ "All ranges"
     )
-  ) %>% # group salary ranges 
-  dplyr::group_by(range_group) %>%
+  ) |> # group salary ranges 
+  dplyr::group_by(range_group) |>
   dplyr::summarize(
     count_all = sum(count_all, na.rm = TRUE),
     count_black = sum(count_black, na.rm = TRUE),
     count_vm = sum(count_vm, na.rm = TRUE),
     count_non_vm = count_all - count_vm,
     count_indigenous = sum(count_indigenous, na.rm = TRUE),
-    count_pwd = sum(count_pwd, na.rm = TRUE)) %>% 
+    count_pwd = sum(count_pwd, na.rm = TRUE)) |> 
   ungroup()
 
 di_df_2021 <- 
-  di_df_2021[c(5, 1, 2, 3, 6, 4), ] %>% # reorder rows
+  di_df_2021[c(5, 1, 2, 3, 6, 4), ] |> # reorder rows
   dplyr::mutate(
     # create new column for percentage of representation within subgroup
     per_all = round(count_all / count_all[n()] * 100, 2),
@@ -748,7 +747,7 @@ di_df_2021 <-
     chart_non_vm = di_non_vm - 1,
     chart_indigenous = di_indigenous - 1,
     chart_pwd = di_pwd - 1,
-  ) %>%
+  ) |>
   dplyr::select(
     range_group,
     per_all,
@@ -773,13 +772,13 @@ di_df_2021 <-
     per_pwd,
     di_pwd,
     chart_pwd
-  ) %>% 
+  ) |> 
   mutate(year = "2021")
 
 # ---- Export Table 2021
 # Create table to show raw data 
 # Remove chart columns amd convert to flextable object
-export_table_2021 <- flextable(select(di_df_2021, -contains("chart")) %>% select(-c("year")))
+export_table_2021 <- flextable(select(di_df_2021, -contains("chart")) |> select(-c("year")))
 
 # Change header labels
 export_table_2021 <- set_header_labels(export_table_2021,
@@ -814,8 +813,8 @@ export_table_2021 <-  add_header_row(
   )
 )
 
-export_table_2021 %>%
-  align(align = "center", part = "body") %>%
+export_table_2021 |>
+  align(align = "center", part = "body") |>
   align(align = "center", part = "header")
 ```
 
@@ -823,8 +822,8 @@ export_table_2021 %>%
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 # In this chunk: calculate DI's and flextable 2020 data
-di_df_2020 <- years_data_cat %>%  
-  filter(Year == "2020") %>% mutate(
+di_df_2020 <- years_data_cat |>  
+  filter(Year == "2020") |> mutate(
     salary_range = sub(
       pattern = "    ",
       replacement = " ",
@@ -858,19 +857,19 @@ di_df_2020 <- years_data_cat %>%
       ) ~ "Over $100,000K",
       TRUE ~ "All ranges"
     )
-  ) %>% # group salary ranges into quintiles
-  dplyr::group_by(range_group) %>%
+  ) |> # group salary ranges into quintiles
+  dplyr::group_by(range_group) |>
   dplyr::summarize(
     count_all = sum(count_all, na.rm = TRUE),
     count_black = sum(count_black, na.rm = TRUE),
     count_vm = sum(count_vm, na.rm = TRUE),
     count_non_vm = count_all - count_vm,
     count_indigenous = sum(count_indigenous, na.rm = TRUE),
-    count_pwd = sum(count_pwd, na.rm = TRUE)) %>% 
+    count_pwd = sum(count_pwd, na.rm = TRUE)) |> 
   ungroup() # summarize values in predetermined salary range groups
 
 di_df_2020 <- 
-  di_df_2020[c(5, 1, 2, 3, 6, 4), ] %>% # reorder rows
+  di_df_2020[c(5, 1, 2, 3, 6, 4), ] |> # reorder rows
   dplyr::mutate(
     # create new column for percentage of representation within subgroup
     per_all = round(count_all / count_all[n()] * 100, 2),
@@ -894,7 +893,7 @@ di_df_2020 <-
     chart_non_vm = di_non_vm - 1,
     chart_indigenous = di_indigenous - 1,
     chart_pwd = di_pwd - 1,
-  ) %>%
+  ) |>
   select(
     range_group,
     per_all,
@@ -919,13 +918,13 @@ di_df_2020 <-
     per_pwd,
     di_pwd,
     chart_pwd
-  ) %>% 
+  ) |> 
   mutate(year = "2020")
 
 # ---- Export Table 2020
 # Create table to show raw data 
 # Remove chart columns amd convert to flextable object
-export_table_2020 <- flextable(select(di_df_2020, -contains("chart")) %>% select(-c("year")))
+export_table_2020 <- flextable(select(di_df_2020, -contains("chart")) |> select(-c("year")))
 
 # Change header labels
 export_table_2020 <- set_header_labels(export_table_2020,
@@ -949,8 +948,8 @@ export_table_2020 <-  add_header_row(export_table_2020,
                      colwidths = c(1, 2,2,2,2,2,2),
                      values = c(" ", "All Employees", "Black Employees", "All Visible Minority Employees", "Non-Visible Minority Employees", "Indigenous Employees", "Employees with Disabilities"))
 
-export_table_2020 %>%
-  align(align = "center", part = "body") %>%
+export_table_2020 |>
+  align(align = "center", part = "body") |>
   align(align = "center", part = "header")
 ```
 
@@ -958,8 +957,8 @@ export_table_2020 %>%
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 # In this chunk: calculate DI's and flextable 2019 data
-di_df_2019 <- years_data_cat %>%  
-  filter(Year == "2019") %>% mutate(
+di_df_2019 <- years_data_cat |>  
+  filter(Year == "2019") |> mutate(
     salary_range = sub(
       pattern = "    ",
       replacement = " ",
@@ -994,20 +993,20 @@ di_df_2019 <- years_data_cat %>%
         ) ~ "Over $100,000K",
       TRUE ~ "All ranges"
     )
-  ) %>% # group salary ranges into quintiles
-  dplyr::group_by(range_group) %>%
+  ) |> # group salary ranges into quintiles
+  dplyr::group_by(range_group) |>
   dplyr::summarize(
     count_all = sum(count_all, na.rm = TRUE),
     count_black = sum(count_black, na.rm = TRUE),
     count_vm = sum(count_vm, na.rm = TRUE),
     count_non_vm = count_all - count_vm,
     count_indigenous = sum(count_indigenous, na.rm = TRUE),
-    count_pwd = sum(count_pwd, na.rm = TRUE)) %>% 
+    count_pwd = sum(count_pwd, na.rm = TRUE)) |> 
   ungroup() # summarize values in predetermined salary range groups
 
 
 di_df_2019 <- 
-  di_df_2019[c(5, 1, 2, 3, 6, 4), ] %>% # reorder rows
+  di_df_2019[c(5, 1, 2, 3, 6, 4), ] |> # reorder rows
   dplyr::mutate(
     # create new column for percentage of representation within subgroup
     per_all = round(count_all / count_all[n()] * 100, 2),
@@ -1031,7 +1030,7 @@ di_df_2019 <-
     chart_non_vm = di_non_vm - 1,
     chart_indigenous = di_indigenous - 1,
     chart_pwd = di_pwd - 1,
-  ) %>%
+  ) |>
   select(
     range_group,
     per_all,
@@ -1056,13 +1055,13 @@ di_df_2019 <-
     per_pwd,
     di_pwd,
     chart_pwd
-  ) %>% 
+  ) |> 
   mutate(year = "2019")
 
 # ---- Export Table 2019
 # Create table to show raw data 
 # Remove chart columns amd convert to flextable object
-export_table_2019 <- flextable(select(di_df_2019, -contains("chart")) %>% select(-c("year")))
+export_table_2019 <- flextable(select(di_df_2019, -contains("chart")) |> select(-c("year")))
 
 # Change header labels
 export_table_2019 <- set_header_labels(export_table_2019,
@@ -1096,8 +1095,8 @@ export_table_2019 <-  add_header_row(
   )
 )
 
-export_table_2019 %>%
-  align(align = "center", part = "body") %>%
+export_table_2019 |>
+  align(align = "center", part = "body") |>
   align(align = "center", part = "header")
 ```
 
@@ -1105,8 +1104,8 @@ export_table_2019 %>%
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 # In this chunk: calculate DI's and flextable 2018 data
-di_df_2018 <- years_data_cat %>%  
-  filter(Year == "2018") %>% mutate(
+di_df_2018 <- years_data_cat |>  
+  filter(Year == "2018") |> mutate(
     salary_range = sub(
       pattern = "    ",
       replacement = " ",
@@ -1137,20 +1136,20 @@ di_df_2018 <- years_data_cat %>%
         ) ~ "Over $100,000K",
       TRUE ~ "All ranges"
     )
-  ) %>% # group salary ranges to match Dr. Martin's numbers
-  dplyr::group_by(range_group) %>%
+  ) |> # group salary ranges to match Dr. Martin's numbers
+  dplyr::group_by(range_group) |>
   dplyr::summarize(
     count_all = sum(count_all, na.rm = TRUE),
     count_black = sum(count_black, na.rm = TRUE),
     count_vm = sum(count_vm, na.rm = TRUE),
     count_non_vm = count_all - count_vm,
     count_indigenous = sum(count_indigenous, na.rm = TRUE),
-    count_pwd = sum(count_pwd, na.rm = TRUE)) %>% 
+    count_pwd = sum(count_pwd, na.rm = TRUE)) |> 
   ungroup() # summarize values in predetermined salary range groups
 
 
 di_df_2018 <- 
-  di_df_2018[c(5, 1, 2, 3, 6, 4), ] %>% # reorder rows
+  di_df_2018[c(5, 1, 2, 3, 6, 4), ] |> # reorder rows
   dplyr::mutate(
     # create new column for percentage of representation within subgroup
     per_all = round(count_all / count_all[n()] * 100, 2),
@@ -1174,7 +1173,7 @@ di_df_2018 <-
     chart_non_vm = di_non_vm - 1,
     chart_indigenous = di_indigenous - 1,
     chart_pwd = di_pwd - 1,
-  ) %>%
+  ) |>
   select(
     range_group,
     per_all,
@@ -1199,14 +1198,14 @@ di_df_2018 <-
     per_pwd,
     di_pwd,
     chart_pwd
-  ) %>% 
+  ) |> 
   mutate(year = "2018")
 
 
 # ---- Export Table 2018
 # Create table to show raw data 
 # Remove chart columns amd convert to flextable object
-export_table_2018 <- flextable(select(di_df_2018, -contains("chart")) %>% select(-c("year")))
+export_table_2018 <- flextable(select(di_df_2018, -contains("chart")) |> select(-c("year")))
 
 # Change header labels
 export_table_2018 <- set_header_labels(export_table_2018,
@@ -1231,8 +1230,8 @@ export_table_2018 <-  add_header_row(export_table_2018,
                      values = c(" ", "All Employees", "Black Employees", "All Visible Minority Employees", "Non-Visible Minority Employees", "Indigenous Employees", "Employees with Disabilities"))
 
 
-export_table_2018 %>%
-  align(align = "center", part = "body") %>%
+export_table_2018 |>
+  align(align = "center", part = "body") |>
   align(align = "center", part = "header")
 ```
 
@@ -1241,8 +1240,8 @@ export_table_2018 %>%
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 
 # In this chunk: calculate DI's and flextable 2017 data
-di_df_2017 <- years_data_cat %>%  
-  filter(Year == "2017") %>% dplyr::mutate(
+di_df_2017 <- years_data_cat |>  
+  filter(Year == "2017") |> dplyr::mutate(
     salary_range = sub(
       pattern = "    ",
       replacement = " ",
@@ -1268,19 +1267,19 @@ di_df_2017 <- years_data_cat %>%
                           ) ~ "Over $95,000K",
       TRUE ~ "All ranges"
     )
-  ) %>% # group salary ranges into quintiles
-  dplyr::group_by(range_group) %>%
+  ) |> # group salary ranges into quintiles
+  dplyr::group_by(range_group) |>
   dplyr::summarize(
     count_all = sum(count_all, na.rm = TRUE),
     count_black = sum(count_black, na.rm = TRUE),
     count_vm = sum(count_vm, na.rm = TRUE),
     count_non_vm = count_all - count_vm,
     count_indigenous = sum(count_indigenous, na.rm = TRUE),
-    count_pwd = sum(count_pwd, na.rm = TRUE)) %>% 
+    count_pwd = sum(count_pwd, na.rm = TRUE)) |> 
   ungroup() # summarize values in predetermined salary range groups
 
 di_df_2017 <- 
-  di_df_2017[c(5, 1, 2, 3, 6, 4), ] %>% # reorder rows
+  di_df_2017[c(5, 1, 2, 3, 6, 4), ] |> # reorder rows
   dplyr::mutate(
     # create new column for percentage of representation within subgroup
     per_all = round(count_all / count_all[n()] * 100, 2),
@@ -1304,7 +1303,7 @@ di_df_2017 <-
     chart_non_vm = di_non_vm - 1,
     chart_indigenous = di_indigenous - 1,
     chart_pwd = di_pwd - 1,
-  ) %>%
+  ) |>
   select(
     range_group,
     per_all,
@@ -1329,13 +1328,13 @@ di_df_2017 <-
     per_pwd,
     di_pwd,
     chart_pwd
-  ) %>% 
+  ) |> 
   mutate(year = "2017")
 
 # ---- Export Table 2017
 # Create table to show raw data 
 # Remove chart columns amd convert to flextable object
-export_table_2017 <- flextable(select(di_df_2017, -contains("chart")) %>% select(-c("year")))
+export_table_2017 <- flextable(select(di_df_2017, -contains("chart")) |> select(-c("year")))
 # Change header labels
 export_table_2017 <- set_header_labels(export_table_2017,
   values = list(
@@ -1369,8 +1368,8 @@ export_table_2017 <-  add_header_row(
   )
 )
 
-export_table_2017 %>%
-  align(align = "center", part = "body") %>%
+export_table_2017 |>
+  align(align = "center", part = "body") |>
   align(align = "center", part = "header")
 ```
 :::
@@ -1385,7 +1384,7 @@ export_table_2017 %>%
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 # Create table to show raw data 
 # Remove chart columns amd convert to flextable object
-export_table_2022 <- flextable(select(di_df_2022, -contains("chart")) %>% select(-c("year")))
+export_table_2022 <- flextable(select(di_df_2022, -contains("chart")) |> select(-c("year")))
 
 # Change header labels
 export_table_2022 <- set_header_labels(export_table_2022,
@@ -1420,8 +1419,8 @@ export_table_2022 <-  add_header_row(
   )
 )
 
-export_table_2022 %>%
-  align(align = "center", part = "body") %>%
+export_table_2022 |>
+  align(align = "center", part = "body") |>
   align(align = "center", part = "header")
 
 ```
@@ -1430,8 +1429,8 @@ export_table_2022 %>%
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 # In this chunk: calculate DI's and flextable 2021 data
-di_df_2021 <- years_data_cat %>%  
-  filter(Year == "2021") %>%
+di_df_2021 <- years_data_cat |>  
+  filter(Year == "2021") |>
   mutate(range_group = case_when(
       salary_range %in% c(
         "Under 25,000",
@@ -1461,19 +1460,19 @@ di_df_2021 <- years_data_cat %>%
         ) ~ "Over $100,000K",
       TRUE ~ "All ranges"
     )
-  ) %>% # group salary ranges 
-  dplyr::group_by(range_group) %>%
+  ) |> # group salary ranges 
+  dplyr::group_by(range_group) |>
   dplyr::summarize(
     count_all = sum(count_all, na.rm = TRUE),
     count_black = sum(count_black, na.rm = TRUE),
     count_vm = sum(count_vm, na.rm = TRUE),
     count_non_vm = count_all - count_vm,
     count_indigenous = sum(count_indigenous, na.rm = TRUE),
-    count_pwd = sum(count_pwd, na.rm = TRUE)) %>% 
+    count_pwd = sum(count_pwd, na.rm = TRUE)) |> 
   ungroup()
 
 di_df_2021 <- 
-  di_df_2021[c(5, 1, 2, 3, 6, 4), ] %>% # reorder rows
+  di_df_2021[c(5, 1, 2, 3, 6, 4), ] |> # reorder rows
   dplyr::mutate(
     # create new column for percentage of representation within subgroup
     per_all = round(count_all / count_all[n()] * 100, 2),
@@ -1497,7 +1496,7 @@ di_df_2021 <-
     chart_non_vm = di_non_vm - 1,
     chart_indigenous = di_indigenous - 1,
     chart_pwd = di_pwd - 1,
-  ) %>%
+  ) |>
   dplyr::select(
     range_group,
     per_all,
@@ -1522,13 +1521,13 @@ di_df_2021 <-
     per_pwd,
     di_pwd,
     chart_pwd
-  ) %>% 
+  ) |> 
   mutate(year = "2021")
 
 # ---- Export Table 2021
 # Create table to show raw data 
 # Remove chart columns amd convert to flextable object
-export_table_2021 <- flextable(select(di_df_2021, -contains("chart")) %>% select(-c("year")))
+export_table_2021 <- flextable(select(di_df_2021, -contains("chart")) |> select(-c("year")))
 
 # Change header labels
 export_table_2021 <- set_header_labels(export_table_2021,
@@ -1563,8 +1562,8 @@ export_table_2021 <-  add_header_row(
   )
 )
 
-export_table_2021 %>%
-  align(align = "center", part = "body") %>%
+export_table_2021 |>
+  align(align = "center", part = "body") |>
   align(align = "center", part = "header")
 ```
 
@@ -1572,8 +1571,8 @@ export_table_2021 %>%
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 # In this chunk: calculate DI's and flextable 2020 data
-di_df_2020 <- years_data_cat %>%  
-  filter(Year == "2020") %>% mutate(
+di_df_2020 <- years_data_cat |>  
+  filter(Year == "2020") |> mutate(
     salary_range = sub(
       pattern = "    ",
       replacement = " ",
@@ -1607,19 +1606,19 @@ di_df_2020 <- years_data_cat %>%
       ) ~ "Over $100,000K",
       TRUE ~ "All ranges"
     )
-  ) %>% # group salary ranges into quintiles
-  dplyr::group_by(range_group) %>%
+  ) |> # group salary ranges into quintiles
+  dplyr::group_by(range_group) |>
   dplyr::summarize(
     count_all = sum(count_all, na.rm = TRUE),
     count_black = sum(count_black, na.rm = TRUE),
     count_vm = sum(count_vm, na.rm = TRUE),
     count_non_vm = count_all - count_vm,
     count_indigenous = sum(count_indigenous, na.rm = TRUE),
-    count_pwd = sum(count_pwd, na.rm = TRUE)) %>% 
+    count_pwd = sum(count_pwd, na.rm = TRUE)) |> 
   ungroup() # summarize values in predetermined salary range groups
 
 di_df_2020 <- 
-  di_df_2020[c(5, 1, 2, 3, 6, 4), ] %>% # reorder rows
+  di_df_2020[c(5, 1, 2, 3, 6, 4), ] |> # reorder rows
   dplyr::mutate(
     # create new column for percentage of representation within subgroup
     per_all = round(count_all / count_all[n()] * 100, 2),
@@ -1643,7 +1642,7 @@ di_df_2020 <-
     chart_non_vm = di_non_vm - 1,
     chart_indigenous = di_indigenous - 1,
     chart_pwd = di_pwd - 1,
-  ) %>%
+  ) |>
   select(
     range_group,
     per_all,
@@ -1668,13 +1667,13 @@ di_df_2020 <-
     per_pwd,
     di_pwd,
     chart_pwd
-  ) %>% 
+  ) |> 
   mutate(year = "2020")
 
 # ---- Export Table 2020
 # Create table to show raw data 
 # Remove chart columns amd convert to flextable object
-export_table_2020 <- flextable(select(di_df_2020, -contains("chart")) %>% select(-c("year")))
+export_table_2020 <- flextable(select(di_df_2020, -contains("chart")) |> select(-c("year")))
 
 # Change header labels
 export_table_2020 <- set_header_labels(export_table_2020,
@@ -1705,8 +1704,8 @@ export_table_2020 <-  add_header_row(export_table_2020,
     "Employés autochtones",
     "Employés handicapées"))
 
-export_table_2020 %>%
-  align(align = "center", part = "body") %>%
+export_table_2020 |>
+  align(align = "center", part = "body") |>
   align(align = "center", part = "header")
 ```
 
@@ -1714,8 +1713,8 @@ export_table_2020 %>%
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 # In this chunk: calculate DI's and flextable 2019 data
-di_df_2019 <- years_data_cat %>%  
-  filter(Year == "2019") %>% mutate(
+di_df_2019 <- years_data_cat |>  
+  filter(Year == "2019") |> mutate(
     salary_range = sub(
       pattern = "    ",
       replacement = " ",
@@ -1750,20 +1749,20 @@ di_df_2019 <- years_data_cat %>%
         ) ~ "Over $100,000K",
       TRUE ~ "All ranges"
     )
-  ) %>% # group salary ranges into quintiles
-  dplyr::group_by(range_group) %>%
+  ) |> # group salary ranges into quintiles
+  dplyr::group_by(range_group) |>
   dplyr::summarize(
     count_all = sum(count_all, na.rm = TRUE),
     count_black = sum(count_black, na.rm = TRUE),
     count_vm = sum(count_vm, na.rm = TRUE),
     count_non_vm = count_all - count_vm,
     count_indigenous = sum(count_indigenous, na.rm = TRUE),
-    count_pwd = sum(count_pwd, na.rm = TRUE)) %>% 
+    count_pwd = sum(count_pwd, na.rm = TRUE)) |> 
   ungroup() # summarize values in predetermined salary range groups
 
 
 di_df_2019 <- 
-  di_df_2019[c(5, 1, 2, 3, 6, 4), ] %>% # reorder rows
+  di_df_2019[c(5, 1, 2, 3, 6, 4), ] |> # reorder rows
   dplyr::mutate(
     # create new column for percentage of representation within subgroup
     per_all = round(count_all / count_all[n()] * 100, 2),
@@ -1787,7 +1786,7 @@ di_df_2019 <-
     chart_non_vm = di_non_vm - 1,
     chart_indigenous = di_indigenous - 1,
     chart_pwd = di_pwd - 1,
-  ) %>%
+  ) |>
   select(
     range_group,
     per_all,
@@ -1812,13 +1811,13 @@ di_df_2019 <-
     per_pwd,
     di_pwd,
     chart_pwd
-  ) %>% 
+  ) |> 
   mutate(year = "2019")
 
 # ---- Export Table 2019
 # Create table to show raw data 
 # Remove chart columns amd convert to flextable object
-export_table_2019 <- flextable(select(di_df_2019, -contains("chart")) %>% select(-c("year")))
+export_table_2019 <- flextable(select(di_df_2019, -contains("chart")) |> select(-c("year")))
 
 # Change header labels
 export_table_2019 <- set_header_labels(export_table_2019,
@@ -1852,8 +1851,8 @@ export_table_2019 <-  add_header_row(
   )
 )
 
-export_table_2019 %>%
-  align(align = "center", part = "body") %>%
+export_table_2019 |>
+  align(align = "center", part = "body") |>
   align(align = "center", part = "header")
 ```
 
@@ -1861,8 +1860,8 @@ export_table_2019 %>%
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 # In this chunk: calculate DI's and flextable 2018 data
-di_df_2018 <- years_data_cat %>%  
-  filter(Year == "2018") %>% mutate(
+di_df_2018 <- years_data_cat |>  
+  filter(Year == "2018") |> mutate(
     salary_range = sub(
       pattern = "    ",
       replacement = " ",
@@ -1893,20 +1892,20 @@ di_df_2018 <- years_data_cat %>%
         ) ~ "Over $100,000K",
       TRUE ~ "All ranges"
     )
-  ) %>% # group salary ranges to match Dr. Martin's numbers
-  dplyr::group_by(range_group) %>%
+  ) |> # group salary ranges to match Dr. Martin's numbers
+  dplyr::group_by(range_group) |>
   dplyr::summarize(
     count_all = sum(count_all, na.rm = TRUE),
     count_black = sum(count_black, na.rm = TRUE),
     count_vm = sum(count_vm, na.rm = TRUE),
     count_non_vm = count_all - count_vm,
     count_indigenous = sum(count_indigenous, na.rm = TRUE),
-    count_pwd = sum(count_pwd, na.rm = TRUE)) %>% 
+    count_pwd = sum(count_pwd, na.rm = TRUE)) |> 
   ungroup() # summarize values in predetermined salary range groups
 
 
 di_df_2018 <- 
-  di_df_2018[c(5, 1, 2, 3, 6, 4), ] %>% # reorder rows
+  di_df_2018[c(5, 1, 2, 3, 6, 4), ] |> # reorder rows
   dplyr::mutate(
     # create new column for percentage of representation within subgroup
     per_all = round(count_all / count_all[n()] * 100, 2),
@@ -1930,7 +1929,7 @@ di_df_2018 <-
     chart_non_vm = di_non_vm - 1,
     chart_indigenous = di_indigenous - 1,
     chart_pwd = di_pwd - 1,
-  ) %>%
+  ) |>
   select(
     range_group,
     per_all,
@@ -1955,14 +1954,14 @@ di_df_2018 <-
     per_pwd,
     di_pwd,
     chart_pwd
-  ) %>% 
+  ) |> 
   mutate(year = "2018")
 
 
 # ---- Export Table 2018
 # Create table to show raw data 
 # Remove chart columns amd convert to flextable object
-export_table_2018 <- flextable(select(di_df_2018, -contains("chart")) %>% select(-c("year")))
+export_table_2018 <- flextable(select(di_df_2018, -contains("chart")) |> select(-c("year")))
 
 # Change header labels
 export_table_2018 <- set_header_labels(export_table_2018,
@@ -1997,8 +1996,8 @@ export_table_2018 <-  add_header_row(
 )
 
 
-export_table_2018 %>%
-  align(align = "center", part = "body") %>%
+export_table_2018 |>
+  align(align = "center", part = "body") |>
   align(align = "center", part = "header")
 ```
 
@@ -2007,8 +2006,8 @@ export_table_2018 %>%
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 
 # In this chunk: calculate DI's and flextable 2017 data
-di_df_2017 <- years_data_cat %>%  
-  filter(Year == "2017") %>% dplyr::mutate(
+di_df_2017 <- years_data_cat |>  
+  filter(Year == "2017") |> dplyr::mutate(
     salary_range = sub(
       pattern = "    ",
       replacement = " ",
@@ -2034,19 +2033,19 @@ di_df_2017 <- years_data_cat %>%
                           ) ~ "Over $95,000K",
       TRUE ~ "All ranges"
     )
-  ) %>% # group salary ranges into quintiles
-  dplyr::group_by(range_group) %>%
+  ) |> # group salary ranges into quintiles
+  dplyr::group_by(range_group) |>
   dplyr::summarize(
     count_all = sum(count_all, na.rm = TRUE),
     count_black = sum(count_black, na.rm = TRUE),
     count_vm = sum(count_vm, na.rm = TRUE),
     count_non_vm = count_all - count_vm,
     count_indigenous = sum(count_indigenous, na.rm = TRUE),
-    count_pwd = sum(count_pwd, na.rm = TRUE)) %>% 
+    count_pwd = sum(count_pwd, na.rm = TRUE)) |> 
   ungroup() # summarize values in predetermined salary range groups
 
 di_df_2017 <- 
-  di_df_2017[c(5, 1, 2, 3, 6, 4), ] %>% # reorder rows
+  di_df_2017[c(5, 1, 2, 3, 6, 4), ] |> # reorder rows
   dplyr::mutate(
     # create new column for percentage of representation within subgroup
     per_all = round(count_all / count_all[n()] * 100, 2),
@@ -2070,7 +2069,7 @@ di_df_2017 <-
     chart_non_vm = di_non_vm - 1,
     chart_indigenous = di_indigenous - 1,
     chart_pwd = di_pwd - 1,
-  ) %>%
+  ) |>
   select(
     range_group,
     per_all,
@@ -2095,12 +2094,12 @@ di_df_2017 <-
     per_pwd,
     di_pwd,
     chart_pwd
-  ) %>% 
+  ) |> 
   mutate(year = "2017")
 # ---- Export Table 2017
 # Create table to show raw data 
 # Remove chart columns amd convert to flextable object
-export_table_2017 <- flextable(select(di_df_2017, -contains("chart")) %>% select(-c("year")))
+export_table_2017 <- flextable(select(di_df_2017, -contains("chart")) |> select(-c("year")))
 # Change header labels
 export_table_2017 <- set_header_labels(export_table_2017,
 values = list(
@@ -2134,8 +2133,8 @@ export_table_2017 <-  add_header_row(
   )
 )
 
-export_table_2017 %>%
-  align(align = "center", part = "body") %>%
+export_table_2017 |>
+  align(align = "center", part = "body") |>
   align(align = "center", part = "header")
 ```
 :::
@@ -2148,10 +2147,10 @@ format_DI <- function(Year) {
   assign(paste("di_df_long", Year, sep = "_"), # create an object with year
          
          {
-           get(paste("di_df", Year, sep = "_")) %>% # pull di_df_year df's
+           get(paste("di_df", Year, sep = "_")) |> # pull di_df_year df's
              pivot_longer(cols = matches(c("per", "di", "chart")),
                           names_to = "temp",
-                          values_to = "value") %>% # reshape data so it's easier to deal with
+                          values_to = "value") |> # reshape data so it's easier to deal with
              mutate(
                # separate into unit of measure
                uom = case_when(
@@ -2168,15 +2167,15 @@ format_DI <- function(Year) {
                  grepl(pattern = "indigenous$", x = temp) ~ "Indigenous",
                  grepl(pattern = "pwd$", x = temp) ~ "Persons with disabilities"
                )
-             ) %>%
+             ) |>
              dplyr::select(
                "Salary range" = range_group,
                Value = value,
                "Unit of measure" = uom,
                Subgroup = subgroup
-             ) %>%
-             filter(`Salary range` != "All ranges") %>%
-             filter(Subgroup != "All") %>% # Remove "all" category entries
+             ) |>
+             filter(`Salary range` != "All ranges") |>
+             filter(Subgroup != "All") |> # Remove "all" category entries
              mutate(Subgroup = factor(
                Subgroup,
                levels = c(
@@ -2193,7 +2192,7 @@ format_DI <- function(Year) {
                  "Indigenous Employees",
                  "Black Employees"
                )
-             )) %>% filter(`Unit of measure` == "DI") %>% # Select only DI data
+             )) |> filter(`Unit of measure` == "DI") |> # Select only DI data
              mutate(`Salary range` = factor(
                `Salary range`,
                levels = c(
@@ -2220,7 +2219,7 @@ format_DI <- function(Year) {
                  "80.0-94.9K",
                  "95.0K+"
                )
-             )) %>%
+             )) |>
              mutate(
                quintile = dplyr::recode(
                  `Salary range`,
@@ -2245,7 +2244,7 @@ format_DI <- function(Year) {
 
 
 # Apply to all years
-lapply(years, format_DI) %>% 
+lapply(years, format_DI) |> 
   bind_rows()
 
 # Load in Appending function
@@ -2256,7 +2255,7 @@ AppendMe <- function(dfNames) {
 }
 
 # Append salary data and keep a column with names
-di_datasets <- AppendMe(paste("di_df_long", years, sep = "_"))  %>%
+di_datasets <- AppendMe(paste("di_df_long", years, sep = "_"))  |>
   mutate(
     source = dplyr::recode(
       source,
@@ -2268,12 +2267,12 @@ di_datasets <- AppendMe(paste("di_df_long", years, sep = "_"))  %>%
       di_df_long_2018 = "2018",
       di_df_long_2017 = "2017"
     )
-  ) %>%
+  ) |>
   rename(year = source) # rename source column to year
 
 # Create french dataset
 di_datasets_fr <-
-  di_datasets %>%
+  di_datasets |>
   mutate(Subgroup = factor(
                Subgroup,
                levels = c(
@@ -2290,7 +2289,7 @@ di_datasets_fr <-
                  "Employés autochtones",
                  "Employés de race noire"
                )
-             )) %>%
+             )) |>
     mutate(quintile = factor(
                quintile,
                levels = c(
@@ -2319,7 +2318,7 @@ The dotted line represents equitable representation (a DI of 1). It can been see
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width = 10, fig.height = 7.5}
 
 # Grab just 2022 data
-plot1_df <-  di_datasets %>% filter(year == "2022")
+plot1_df <-  di_datasets |> filter(year == "2022")
 
 # Make a vector with corresponding colors
 colors = met.brewer("Johnson", 5)
@@ -2363,7 +2362,7 @@ This plot zooms in on our "baseline" group and compares it to the Black employee
 
 # Grab data 
 plot2_df <-
-  di_datasets %>% filter(year == "2022" &
+  di_datasets |> filter(year == "2022" &
                            Subgroup %in% c("Non-Visible Minority Employees", "Black Employees"))
 
 # Set color palette 
@@ -2420,7 +2419,7 @@ Here you can select years and groups to display. Click the drop down on the left
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width = 10, fig.height = 10}
 # Wrap text on labels
-plot3_df <- di_datasets %>% mutate(quintile = recode(quintile,
+plot3_df <- di_datasets |> mutate(quintile = recode(quintile,
                  "Bottom 20th Percentile" = "Bottom 20th",
                  "20th to 40th Percentile" = "20th to 40th",
                  "40th to 60th Percentile" = "40th to 60th",
@@ -2480,12 +2479,12 @@ bscols(widths = c(2, NA),
 # set color pallette 
 colors <- met.brewer("Johnson", 5)[c(1,5)]
 
-plot4_df <- di_datasets %>% mutate(quintile = recode(quintile,
+plot4_df <- di_datasets |> mutate(quintile = recode(quintile,
                  "Bottom 20th Percentile" = "Bottom 20th",
                  "20th to 40th Percentile" = "20th to 40th",
                  "40th to 60th Percentile" = "40th to 60th",
                  "60th to 80th Percentile" = "60th to 80th",
-                 "Top 20th Percentile" = "Top 20th")) %>% 
+                 "Top 20th Percentile" = "Top 20th")) |> 
   filter(Subgroup %in% c("Non-Visible Minority Employees", "Black Employees"))
   
 
@@ -2532,7 +2531,7 @@ La ligne en pointillé représente la représentation équitable (ID de 1). On c
 
 # Edit labels
 # Grab just 2022 data
-plot1_df <-  di_datasets_fr %>% 
+plot1_df <-  di_datasets_fr |> 
   filter(year == "2022")
   
 
@@ -2578,10 +2577,10 @@ Ce graphique se concentre sur notre groupe de référence et le compare au group
 
 # Grab data 
 plot2_df <-
-  di_datasets_fr %>% filter(
+  di_datasets_fr |> filter(
     year == "2022" &
       Subgroup %in% c("Employés Non-Minorité visible", "Employés de race noire")
-  ) %>%
+  ) |>
   rename("Fourchette des salaires" = "Salary range")
 
 # Set color palette 
@@ -2638,7 +2637,7 @@ Vous pouvez ici sélectionner les années et les groupes à afficher. Cliquez su
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width = 10, fig.height = 10}
 # Wrap text on labels
-plot3_df <- di_datasets_fr %>%
+plot3_df <- di_datasets_fr |>
   rename("Sous-group" = "Subgroup")
 
 # Get shared data for use with crosstalk
@@ -2694,7 +2693,7 @@ bscols(widths = c(2, NA),
 # set color pallette 
 colors <- met.brewer("Johnson", 5)[c(1,5)]
 
-plot4_df <- di_datasets_fr %>% 
+plot4_df <- di_datasets_fr |> 
   filter(Subgroup %in% c("Employés Non-Minorité visible", "Employés de race noire"))
   
 
