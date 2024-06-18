@@ -7,15 +7,18 @@ editor: visual
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 
+library(tidyverse)
 library(rvest)
-library(tidyr)
 library(plotly)
 library(flextable)
 library(stringr)
 library(MetBrewer)
 library(data.table)
-library(dplyr)
 library(crosstalk)
+library(conflicted)
+
+# Set session-wide pref for library conflicts
+conflicts_prefer(dplyr::filter())
 ```
 
 ```{r echo=FALSE, message=FALSE, include = FALSE, warning=FALSE}
@@ -50,10 +53,10 @@ years <- c("2023", "2022", "2021", "2020", "2019", "2018", "2017")
     
 
 # Create function to get salary data from website over 5 years
+
 get_salary_data <- function(Year) {
   
-  
-  # Progress Message 
+  # Progress message 
   message(paste("Webscraping", Year, "data."))
   
   # Match years to their index in the data
@@ -64,63 +67,65 @@ get_salary_data <- function(Year) {
   year_index <-
     as.numeric(year_dictionary$index[year_dictionary$year == Year])
   
-  # Strings to remove
-  to_match <- c('Table', 'Total')
+  # Pull dataset with rvest
   
-  # Run data processing steps
-  assign(paste("salary_df", Year, sep = "_"),
-         
-         {
-           merge(x = {
-             ## Visible Minority and Black employees ----
-             {
-               html_nodes(read_html(paste0(
-                 url,
-                 "members-visible-minorities"
-               )), "table") |>
-                 html_table(fill = TRUE)
-             }[[year_index]][-c(1, 19), c(1:4, 25)] |> # retrieve all employees and total vm column
-               dplyr::rename(
-                 salary_range = "Salary range ($)",
-                 count_all = "All employees",
-                 count_black = "Black",
-                 count_vm = "Members of visible minorities"
-               )
-           },
-           y = {
-             ## Indigenous ----
-             {
-               html_nodes(read_html(paste0(url,
-                                           "indigenous-peoples")), "table") |>
-                 html_table(fill = TRUE)
-             }[[year_index]][-c(1, 19), c(1, 11)] |> # retrieve total indigenous column
-               dplyr::rename(salary_range = "Salary range ($)",
-                             count_indigenous = "Indigenous Peoples") |>
-               mutate(salary_range = str_remove_all(salary_range, "[$]"))
-           },
-           by = "salary_range",
-           all = TRUE) |>
-             merge(y = {
-               ## Persons with disabilities ----
-               {
-                 html_nodes(read_html(paste0(url,
-                                             "persons-disabilities")), "table") |>
-                   html_table(fill = TRUE)
-               }[[year_index]][-c(1, 19), c(1, 15)] |> # retrieve total pwd column
-                 dplyr::rename(salary_range = "Salary range ($)",
-                               count_pwd = "Persons with disabilities") |>
-                 mutate(salary_range = str_remove_all(salary_range, "[$]"))
-             },
-             by = "salary_range",
-             all = TRUE) |>
-             mutate(across(everything(), ~ replace(., . ==  "Table 1 Footnote *" , NA))) |> # replace foonote with NA
-             mutate_at(vars(matches("count")), remove_bullish) |> # remove extra characters
-             mutate_at(vars(matches("salary")), remove_spaces) |> # remove extra spaces
-             filter(!grepl("Notes", salary_range)) |> # remove unneeded columns
-             select(-c("Black"))
-         },
-         envir = globalenv())
+  assign(paste("salary_df", # Create df's for each year
+               Year, 
+               sep = "_"), {
+    merge(x = {
+    
+      ## VM and Black employees ----
+    {html_nodes(read_html(paste0( 
+      url,
+      "members-visible-minorities")), 
+      "table") |> 
+      html_table(fill = TRUE)
+    }[[year_index]][c(1:3, 25)] |> # remove unneeded cols
+     # retrieve all employees and total vm column
+    dplyr::rename( # fix col names
+      salary_range = "Salary range ($)",
+      count_all = "All employees",
+      count_black = "Black",
+      count_vm = "Members of visible minorities")},
+  
+        y = {
+  
+    # Indigenous employees----
+    {html_nodes(read_html(paste0(url, 
+                                "indigenous-peoples")), 
+               "table") |>
+      html_table(fill = TRUE)
+    }[[year_index]][c(1, 11)] |> # retrieve total indigenous column
+      dplyr::rename(salary_range = "Salary range ($)",
+                    count_indigenous = "Indigenous Peoples")   },
+    by = "salary_range",
+    all = TRUE) |> 
+    
+    merge(y = {
+  
+    ## Persons with disabilities ----
+    {html_nodes(read_html(paste0(url,
+                                "persons-disabilities")), "table") |>
+      html_table(fill = TRUE)
+    }[[year_index]][c(1, 15)] |> # retrieve total pwd column
+      dplyr::rename(salary_range = "Salary range ($)",
+                    count_pwd = "Persons with disabilities")
+    
+    },
+    by = "salary_range",
+    all = TRUE) |>
+
+    # Remove rows with salary or table 
+  filter(!grepl("^Salary|Table", salary_range)) |> 
+    mutate_at(vars(matches("count")), remove_bullish) |> # remove extra characters from counts
+    mutate_at(vars(matches("salary")), remove_spaces) |> # remove extra spaces from counts
+    filter(!grepl("Notes", salary_range))
+  },
+  envir = globalenv())
+  
 }
+
+
 
 
 # Get data for all years
@@ -143,12 +148,16 @@ time.taken <- end.time - start.time
 years_data_cat <- paste("salary_df", 
                         years, 
                         sep = "_") |> 
-  mget(years_data)
+  
+  # Concat every year's data into one df
+  mget() |> 
+  bind_rows(.id = "Year") |> 
+  mutate(Year = substr(Year, 
+                       11, 
+                       14))
 
-# Concat all year's data into a single dataframe 
-years_data_cat <- do.call("rbind", years_data_cat)
 
-# Make a year column and remove unnessecary row names
+
 years_data_cat$Year <- substr(rownames(years_data_cat), 11, 14)
 rownames(years_data_cat) <- NULL
 
