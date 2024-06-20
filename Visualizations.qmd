@@ -115,11 +115,11 @@ get_salary_data <- function(Year) {
     by = "salary_range",
     all = TRUE) |>
 
-    # Remove rows with salary or table 
-  filter(!grepl("^Salary|Table", salary_range)) |> 
-    mutate_at(vars(matches("count")), remove_bullish) |> # remove extra characters from counts
-    mutate_at(vars(matches("salary")), remove_spaces) |> # remove extra spaces from counts
-    filter(!grepl("Notes", salary_range))
+ # Remove rows with salary or table 
+  filter(!grepl("^Salary|Table|Footnote", salary_range)) |> 
+  mutate(across(where(is.character), ~na_if(., "Table 1 Footnote *"))) |> 
+  mutate_at(vars(matches("count")), remove_bullish) |> # remove extra characters from counts
+  mutate_at(vars(matches("salary")), remove_spaces) # remove extra spaces from counts
   },
   envir = globalenv())
   
@@ -144,7 +144,9 @@ end.time <- Sys.time()
 
 # Print elapse time
 time.taken <- end.time - start.time
+
 message(paste("Elaspsed time of", time.taken , "mins.", sep = " "))
+
 
   
 # list of name of databases by year
@@ -160,24 +162,22 @@ years_data_cat <- paste("salary_df",
   mutate(Year = substr(Year,
                        11,
                        14))  |>
+  
+    # Merge any rows with "Total" in name by year
   mutate(salary_range = 
            ifelse(grepl('Total', 
                         salary_range), 
                   "Total", 
                   salary_range)) |>
   
-  # Merge any rows with "Total" in name by year
   group_by(salary_range, Year) |>
-  summarise_all(list(~ sum(., na.rm = TRUE)))
+  summarise_all(list(~ sum(., na.rm = TRUE))) 
 
 # Write intermediate dataset if needed
-# |> 
-   # write.csv(file = "years_data_cat.csv")
+ # write.csv(years_data_cat, file = "years_data_cat.csv")
 
 # Read in csv version
 # years_data_cat <- read.csv("years_data_cat.csv")
-
-
 
 # Imputation: add in imputed values to replace suppressed numbers 
 imputation_data <- read.csv("imputation_estimates.csv", encoding = "UTF-8")
