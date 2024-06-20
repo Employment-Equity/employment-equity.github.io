@@ -133,41 +133,49 @@ get_salary_data <- function(Year) {
 
 # Record start time
 start.time <- Sys.time()
-  
+
+# Pull salary data for all years
+# Run time: ~ 
 lapply(years, get_salary_data)  |>
   bind_rows()
 
 # Record end time
 end.time <- Sys.time()
 
+# Print elapse time
 time.taken <- end.time - start.time
-
+message(paste("Elaspsed time of", time.taken , "mins.", sep = " "))
 
   
 # list of name of databases by year
-years_data_cat <- paste("salary_df", 
-                        years, 
-                        sep = "_") |> 
+years_data_cat <- paste("salary_df",
+                        years,
+                        sep = "_") |>
   
   # Concat every year's data into one df
-  mget() |> 
-  bind_rows(.id = "Year") |> 
-  mutate(Year = substr(Year, 
-                       11, 
-                       14))
+  mget() |>
+  bind_rows(.id = "Year") |>
+  
+  # Make a year column 
+  mutate(Year = substr(Year,
+                       11,
+                       14))  |>
+  mutate(salary_range = 
+           ifelse(grepl('Total', 
+                        salary_range), 
+                  "Total", 
+                  salary_range)) |>
+  
+  # Merge any rows with "Total" in name by year
+  group_by(salary_range, Year) |>
+  summarise_all(list(~ sum(., na.rm = TRUE)))
 
+# Write intermediate dataset if needed
+# |> 
+   # write.csv(file = "years_data_cat.csv")
 
-
-years_data_cat$Year <- substr(rownames(years_data_cat), 11, 14)
-rownames(years_data_cat) <- NULL
-
-# Aggregate "total" columns
-years_data_cat <-
-  years_data_cat |>
-  mutate(salary_range = ifelse(grepl('Total', salary_range), "Total", salary_range)) |>
-  group_by(salary_range, Year) |>  
-  summarise_all(list( ~ sum(., na.rm = T)))
-
+# Read in csv version
+# years_data_cat <- read.csv("years_data_cat.csv")
 
 
 
