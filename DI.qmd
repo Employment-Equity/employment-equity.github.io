@@ -5,7 +5,6 @@ editor: visual
 theme: default
 ---
 
-
 ```{r setup, include=FALSE}
 
 # Load required packages
@@ -20,14 +19,15 @@ library(tidyverse)
 
 ```
 
+::: {.content-visible when-profile="english"}
 ## Estimating Median Salary
 
-[Median salaries](LINK) for each group were estimated using the following formula:
+[Median salaries](https://employment-equity.github.io/Visualizations.html#median-salary-tables) for each group were estimated using the following formula:
 
-$$median = L + \frac{ (\frac{n}{2} – F) }{f}  * w$$ 
-
+$$median = L + \frac{ (\frac{n}{2} – F) }{f}  * w$$
 
 ## Calculating DI
+
 In this analysis, Disproportionality Index (DI) is used as a measure of equitable representation. It is calculated as below.
 
 $$\frac{\%_{Group\: X; \:salary\: range \: i}}{\% _{All \:Employees; \:salary\: range \: i}} = DI _{Group\:X; \:salary\:range\:i}$$
@@ -36,7 +36,7 @@ For example, 23.51% of Black employees and 16.70% of all employees are are withi
 
 $$ DI_{Black \: employees; <60K } =\frac{23.51\%}{16.70\%} = 1.41$$
 
-For a table of DI's per year, [please see here](LINK).
+For a table of DI's per year, [please see here](https://employment-equity.github.io/Visualizations.html#disproportionality-tables).
 
 ## Understanding DI - An Example
 
@@ -120,3 +120,108 @@ ggplot(Salary_di) +
              linetype = "dashed")
 
 ```
+:::
+
+::: {.content-visible when-profile="french"}
+## Estimation du salaire médian
+
+[Les salaires médians](https://employment-equity.github.io/Visualizations.html#median-salary-tables) pour chaque groupe ont été estimées à l'aide de la formule suivante:
+
+$$médian = L + \frac{ (\frac{n}{2} – F) }{f}  * w$$
+
+## Calcul de l'ID
+
+Dans cette analyse, l'indice de disproportionnalité (ID) est utilisé comme mesure de la représentation équitable. Il est calculé comme suit.
+
+$$\frac{\%_{Groupe\: X; \:échelle\: des \:salaires \: i}}{\% _{Tous \:les \:Employees; \:échelle\: des \:salaires \: i}} = DI _{Groupe\:X; \:échelle\: des \:salaires\:i}$$
+
+Par exemple, 23,51 % des employés noirs et 16,70 % de l'ensemble des employés se situent dans la fourchette salariale \<60K. Cela nous donne un DI de 1,41.
+
+$$ DI_{Employés \:de \:race \:noire \:<60K } =\frac{23.51\%}{16.70\%} = 1.41$$
+
+Pour un tableau des DI par année, [voir ici](https://employment-equity.github.io/fr/Visualizations.html#tableau-des-salaires-m%C3%A9dians).
+
+## Comprendre l'ID - Un exemple
+
+Supposons que nous ayons un département de 500 employés. Il y a deux groupes d'employés s'identifiant comme des minorités, A et B. Le groupe C est composé de la majorité, soit 460 employés. Les groupes A et B représentent 4 % des employés, soit 20 employés chacun, ce qui correspond à la population canadienne. À première vue, la représentation semble égale.
+
+```{r, echo = FALSE}
+# Create dataframe with group numbers repeated
+Dept_data <- tibble(Group_count = rep("A", 20) %>% 
+                      c(rep("B", 20)) %>% 
+                      c(rep("C", 460)) )
+
+# Move data to waffle object for plotting
+Dept_data_waffle <- waffle_iron(Dept_data, 
+                                aes_d(group = Group_count), 
+                                rows = 20) %>% 
+  mutate(label = fontawesome('fa-male'))
+
+
+## Plot symbols -----------------------------------------------
+
+# Create color palette 
+colors <- c(met.brewer("Johnson", 5)[c(1,5)], "#808080")
+
+# Plot as waffle   
+ggplot(Dept_data_waffle, aes(x, y, colour = group)) + 
+  geom_text(aes(label=label), 
+            family = 'fontawesome-webfont', 
+            size = 5) +
+  coord_equal() + 
+  scale_colour_manual(values = c(colors)) + 
+  theme_waffle()  +
+  theme(axis.title.x = element_blank(),
+        axis.title.y = element_blank(), 
+        text = element_text(size = 12)) + 
+  guides(color = guide_legend(title="Groupe"))
+  
+  
+```
+
+Toutefois, si l'on examine de plus près la répartition des 20 salariés des groupes A et B entre les différents niveaux de salaire, la situation est différente. Le groupe A est également réparti entre les niveaux de salaire, mais la majorité des salariés du groupe B restent aux niveaux de salaire les plus bas.
+
+![Échafaudage salarial](images/salary-scaffold.png)
+
+Le calcul de l'ID illustre davantage les différences dans la répartition des salaires. Au-dessus d'un ID de 1, la représentation d'un groupe à un niveau de salaire est supérieure à la moyenne de l'ensemble des salariés. En dessous de 1, la représentation d'un groupe à un niveau de salaire est inférieure à la moyenne de l'ensemble des salariés.
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+Group <- c(rep("A", 5), rep("B", 5))
+Salary <- c("<60.0K", "60.0-69.9K", "70.0-84.9K", "85.0-99.9K", "100.0K+", "<60.0K", "60.0-69.9K", "70.0-84.9K", "85.0-99.9K", "100.0K+")
+DI <- c(.75, 1, 1.25, 1, 1, 1.5, 1.5, 1, .75, .25)
+
+Salary_di <- data.frame(Group, Salary, DI)
+
+Salary_di$Salary <- factor(Salary_di$Salary, levels = c("<60.0K", "60.0-69.9K", "70.0-84.9K", "85.0-99.9K", "100.0K+"))
+
+colors <- c(met.brewer("Johnson", 5)[c(1,5)])
+
+ggplot(Salary_di) +
+  geom_bar(stat = "identity",
+           position = "dodge",
+           aes(x = Group,
+               y = DI,
+               fill = Group, 
+               alpha = Salary)) +
+  theme_minimal() +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    axis.line = element_line(colour = "black"), 
+    text = element_text(size = 15),
+    legend.text = element_text(size = 12)
+  ) +
+  scale_fill_manual(values = colors, 
+  ) +
+  labs(title = NULL,
+       x = "Groupe",
+       y = "Indice de disproportionnalité",
+       fill = NULL,
+       alpha = "Salaire") + 
+  guides(fill="none") +
+    geom_hline(yintercept = 1, 
+             linetype = "dashed")
+
+```
+:::
