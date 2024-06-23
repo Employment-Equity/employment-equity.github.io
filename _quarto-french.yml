@@ -1,0 +1,53 @@
+project:
+  type: website
+  output-dir: ./_site/fr
+
+website:
+  title: Équité dans l'emploi
+  sidebar :
+    title: Équité dans l'emploi
+    logo: images/android-chrome-512x512.png
+    pinned: true
+    align: center
+
+    tools:
+      - icon: github
+        href: https://github.com/Employment-Equity/employment-equity.github.io
+        text: Github
+      - icon: compass
+        href: https://www.canada.ca/fr/conseil-prive/organisation/greffier/appel-action-faveur-lutte-contre-racisme-equite-inclusion-fonction-publique-federale.html
+        text: "Appel à l'action du greffier du Conseil privé"
+      - icon: translate
+        href: ../
+        text: English
+
+    style: "docked"
+    search: true
+    collapse-level: 1
+    contents: 
+      - href: index.qmd
+        text: Accueil
+      - href: Visualizations.qmd
+        text: Tableaux et visualisations
+      - href: DI.qmd
+        text: "Sur l'indice de disproportionnalité"
+      - href: FAQ.qmd
+        text: FAQ
+
+  favicon: "images/favicon-32x32.png"
+  repo-url: https://github.com/Employment-Equity/employment-equity.github.io
+  repo-actions: [edit, issue]
+  
+  page-footer:
+    right: "Cette page est construite avec 💖 and [Quarto](https://quarto.org/) par [Albury C.](https://alburycatalina.github.io/)"
+    left: "Dernière mise à jour : 22 juin 2024"
+    
+lang: fr
+
+format:
+  html:
+    css: styles.css
+    toc: true
+    
+execute:
+  freeze: auto

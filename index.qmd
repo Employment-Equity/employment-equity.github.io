@@ -5,18 +5,18 @@ editor: visual
 theme: default
 ---
 
+::: {.content-visible when-profile="english"}
 ## The Analysis
 
 This analysis explores the salary distributions of Canadian Public Service Employees in employment equity groups. For more information and to access the scripts used to produce this analysis, visit the project's [GitHub repository](LINK) or see [our publication in the 2023 ISI World Statistical Congress proceedings.](https://www.isi2023.org/abstracts/submission/617/view/)
 
 ## The Data
 
-The data represents pre-tax salary ranges excluding bonuses and promotions, [publicly available here](https://www.canada.ca/en/treasury-board-secretariat/services/innovation/human-resources-statistics/diversity-inclusion-statistics.html). Each data series from 2017 to 2022 represents the salaries of public servants (excluding the CRA) at a single time point, not reflecting changes across an entire year. 
+The data represents pre-tax salary ranges excluding bonuses and promotions, [publicly available here](https://www.canada.ca/en/treasury-board-secretariat/services/innovation/human-resources-statistics/diversity-inclusion-statistics.html). Each data series from 2017 to 2022 represents the salaries of public servants (excluding the CRA) at a single time point, not reflecting changes across an entire year.
 
 The collection of the data used in this analysis follows standards set by the [Employment Equity act](https://laws-lois.justice.gc.ca/eng/acts/e-5.401/), meaning that 4 "equity-deserving groups" (defined as women, indigenous people, people with disabilities, and visible minorities) are surveyed. This data is particularly interesting as it is disaggregated, meaning that additional questions to used identify subgroups within the equity-deserving groups were included in the survey. Therefore, when information about the visible minority group is presented, Black employees (but not Indigenous employees) are included.
 
 Please note that this data was imputed for suppressed numbers [(see here for more information)](LINK).
-
 
 ## Limitations
 
@@ -24,10 +24,45 @@ This analysis cannot account for the effects of additional factors such as age, 
 
 ## Conclusions
 
-This analysis indicates that additional challenges may be faced by Black public servants in the Government of Canada. The results also highlight that more information may be able to be yielded from further investigation into the Treasury Board's disaggregated microdata. 
+This analysis indicates that additional challenges may be faced by Black public servants in the Government of Canada. The results also highlight that more information may be able to be yielded from further investigation into the Treasury Board's disaggregated microdata.
 
-A [Call to Action on Anti-Racism, Equity, and Inclusion](https://www.canada.ca/en/privy-council/corporate/clerk/call-to-action-anti-racism-equity-inclusion-federal-public-service.html) has already been made as of 2021, encouraging those in positions of power to take action to address racism and discrimination in the Federal Public Service. The anecdotal experiences of Black public servants which are validated by this analysis must be taken seriously and continued to be quantified via further analysis of the available data.  
+A [Call to Action on Anti-Racism, Equity, and Inclusion](https://www.canada.ca/en/privy-council/corporate/clerk/call-to-action-anti-racism-equity-inclusion-federal-public-service.html) has already been made as of 2021, encouraging those in positions of power to take action to address racism and discrimination in the Federal Public Service. The anecdotal experiences of Black public servants which are validated by this analysis must be taken seriously and continued to be quantified via further analysis of the available data.
+
+## Acknowledgements
+This analysis could not have been completed without the help of Brittny Vongdara, Dr. Martin Nicholas, and Shamir Kanji. 
+
+## Disclaimer
+The opinions contained on this website are personal, and not a reflection of our employers. 
+:::
 
 
+::: {.content-visible when-profile="french"}
+## L’analyse
+
+Cette analyse explore la distribution des salaires des employés de la fonction publique canadienne dans les groupes visés par l’équité en matière d’emploi. Pour plus d’informations et pour accéder aux scripts utilisés pour produire cette analyse, visitez [le dépôt GitHub du projet](dépôt GitHub du projet ) ou consultez [notre publication dans les actes du 2023 ISI World Statistical Congress.](https://www.isi2023.org/abstracts/submission/617/view)
+
+## Les données
+
+Les données représentent les fourchettes de salaires avant impôts, à l’exclusion des primes et des promotions, [accessibles au public ici](https://www.canada.ca/en/treasury-board-secretariat/services/innovation/human-resources-statistics/diversity-inclusion-statistics.html). Chaque série de données de 2017 à 2022 représente les salaires des fonctionnaires (à l’exclusion de l’ARC) à un moment donné, et ne reflète pas les changements survenus au cours d’une année entière.
+
+La collecte des données utilisées dans cette analyse suit les normes établies par la [loi sur l’équité en matière d’emploi](https://laws-lois.justice.gc.ca/eng/acts/e-5.401/), ce qui signifie que quatre “groupes méritant l’équité” (définis comme les femmes, les populations autochtones, les personnes handicapées et les minorités visibles) font l’objet d’une enquête. Ces données sont particulièrement intéressantes car elles sont désagrégées, ce qui signifie que des questions supplémentaires visant à identifier les sous-groupes au sein des groupes visés par l’équité ont été incluses dans l’enquête. Par conséquent, lorsque les informations sur les minorités visibles sont présentées, les employés noirs (mais pas les employés autochtones) sont inclus.
 
 
+## Limites
+
+Cette analyse ne peut tenir compte des effets de facteurs supplémentaires tels que l’âge, le sexe, la qualification professionnelle et la durée d’emploi. Les données, dans leur forme actuelle, ne permettent pas non plus de calculer des mesures d’incertitude et de déterminer des différences statistiques.
+
+
+## Conclusions
+
+Cette analyse indique que les fonctionnaires noirs du gouvernement du Canada peuvent être confrontés à des défis supplémentaires. Les résultats soulignent également qu’une enquête plus approfondie sur les microdonnées désagrégées du Conseil du Trésor pourrait permettre d’obtenir davantage d’informations.
+
+Un [Appel à l’action contre le racisme, l’équité et l’inclusion](https://www.canada.ca/en/privy-council/corporate/clerk/call-to-action-anti-racism-equity-inclusion-federal-public-service.html) a déjà été lancé en 2021, encourageant les personnes en position de pouvoir à prendre des mesures pour lutter contre le racisme et la discrimination dans la fonction publique fédérale. Les expériences anecdotiques des fonctionnaires noirs qui sont validées par cette analyse doivent être prises au sérieux et continuer à être quantifiées par le biais d’une analyse plus approfondie des données disponibles.
+
+## Remerciements
+Cette analyse n'aurait pas pu être réalisée sans l'aide de Brittny Vongdara, du Dr. Martin Nicolas et de Shamir Kanji.
+
+## Avis de non-responsabilité
+Les opinions exprimées sur ce site web sont personnelles et ne reflètent pas le point de vue de nos employeurs. 
+
+:::

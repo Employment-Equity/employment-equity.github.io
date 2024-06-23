@@ -1,0 +1,54 @@
+
+project:
+  type: website
+  output-dir: ./_site
+
+website:
+  title: Employment Equity
+  sidebar :
+    title: Employment Equity
+    logo: images/android-chrome-512x512.png
+    pinned: true
+    align: center
+
+    tools:
+      - icon: github
+        href: https://github.com/Employment-Equity/employment-equity.github.io
+        text: Github
+      - icon: compass
+        href: https://www.canada.ca/en/privy-council/corporate/clerk/call-to-action-anti-racism-equity-inclusion-federal-public-service.html
+        text: "Privy Council Clerk's Call to Action"
+      - icon: translate
+        href: ../fr
+        text: Francais
+
+    style: "docked"
+    search: true
+    collapse-level: 1
+    contents: 
+      - href: index.qmd
+        text: Home
+      - href: Visualizations.qmd
+        text: Tables and Visualizations
+      - href: DI.qmd
+        text: About the Disproportionality Index
+      - href: FAQ.qmd
+        text: FAQ
+  
+  favicon: "images/favicon-32x32.png"
+  repo-url: https://github.com/Employment-Equity/employment-equity.github.io
+  repo-actions: [edit, issue]
+  
+  page-footer:
+    right: "This page is built with 💖 and [Quarto](https://quarto.org/) by [Albury C.](https://alburycatalina.github.io/)"
+    left: "Last updated: June 22, 2024"
+    
+lang: en
+
+format:
+  html:
+    css: styles.css
+    toc: true
+    
+execute:
+  freeze: auto
