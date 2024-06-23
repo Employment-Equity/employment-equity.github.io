@@ -19,114 +19,13 @@ library(conflicted)
 
 # Set session-wide pref for library conflicts
 conflicts_prefer(dplyr::filter())
+conflicts_prefer(dplyr::rename())
+conflicts_prefer(dplyr::first())
 ```
 
-```{r echo=FALSE, message=FALSE, include = FALSE, warning=FALSE}
+```{r echo = FALSE, message = FALSE, include = FALSE, warning = FALSE}
 
-# Function for removing extra characters
-remove_bullish <- function(bullish_cols) {
-  as.numeric(gsub(
-    pattern = "[^0-9.-]",
-    replacement = "",
-    x = bullish_cols
-  ))
-}
-
-# Function for removing spaces and space-like characters 
-remove_spaces <- function(spacey_cols) {
-  gsub(
-    pattern = "\\s+",
-    replacement = " ",
-    x = spacey_cols
-  )
-}
-
-
-
-# Gather and clean data ----
-# Define root directory for TBS website with salary data
-url <-
-  "https://www.canada.ca/en/treasury-board-secretariat/services/innovation/human-resources-statistics/diversity-inclusion-statistics/distribution-public-service-canada-employees-designated-sub-group-salary-range-"
-
-# List of years to get data for 
-years <- c("2023", "2022", "2021", "2020", "2019", "2018", "2017")
-    
-
-# Create function to get salary data from website over 5 years
-
-get_salary_data <- function(Year) {
-  
-  # Progress message 
-  message(paste("Webscraping", Year, "data."))
-  
-  # Match years to their index in the data
-  year_dictionary <- data.frame(year = years,
-                                index = c(1:length(years)))
-  
-  # Index for year
-  year_index <-
-    as.numeric(year_dictionary$index[year_dictionary$year == Year])
-  
-  # Pull dataset with rvest
-  
-  assign(paste("salary_df", # Create df's for each year
-               Year, 
-               sep = "_"), {
-    merge(x = {
-    
-      ## VM and Black employees ----
-    {html_nodes(read_html(paste0( 
-      url,
-      "members-visible-minorities")), 
-      "table") |> 
-      html_table(fill = TRUE)
-    }[[year_index]][c(1:3, 25)] |> # remove unneeded cols
-     # retrieve all employees and total vm column
-    dplyr::rename( # fix col names
-      salary_range = "Salary range ($)",
-      count_all = "All employees",
-      count_black = "Black",
-      count_vm = "Members of visible minorities")},
-  
-        y = {
-  
-    # Indigenous employees----
-    {html_nodes(read_html(paste0(url, 
-                                "indigenous-peoples")), 
-               "table") |>
-      html_table(fill = TRUE)
-    }[[year_index]][c(1, 11)] |> # retrieve total indigenous column
-      dplyr::rename(salary_range = "Salary range ($)",
-                    count_indigenous = "Indigenous Peoples")   },
-    by = "salary_range",
-    all = TRUE) |> 
-    
-    merge(y = {
-  
-    ## Persons with disabilities ----
-    {html_nodes(read_html(paste0(url,
-                                "persons-disabilities")), "table") |>
-      html_table(fill = TRUE)
-    }[[year_index]][c(1, 15)] |> # retrieve total pwd column
-      dplyr::rename(salary_range = "Salary range ($)",
-                    count_pwd = "Persons with disabilities")
-    
-    },
-    by = "salary_range",
-    all = TRUE) |>
-
- # Remove rows with salary or table 
-  filter(!grepl("^Salary|Table|Footnote", salary_range)) |> 
-  mutate(across(where(is.character), ~na_if(., "Table 1 Footnote *"))) |> 
-  mutate_at(vars(matches("count")), remove_bullish) |> # remove extra characters from counts
-  mutate_at(vars(matches("salary")), remove_spaces) # remove extra spaces from counts
-  },
-  envir = globalenv())
-  
-}
-
-
-
+source("Functions/webscraping_fns.R")
 
 # Get data for all years
 # This step usually takes a while to run due to accessing the API
@@ -142,13 +41,10 @@ lapply(years, get_salary_data)  |>
 # Record end time
 end.time <- Sys.time()
 
-# Print elapse time
+# Print elapsed time
 time.taken <- end.time - start.time
+message(paste("Elaspsed time of", round(time.taken, digits = 2) , "mins.", sep = " "))
 
-message(paste("Elaspsed time of", time.taken , "mins.", sep = " "))
-
-
-  
 # list of name of databases by year
 years_data_cat <- paste("salary_df",
                         years,
@@ -174,16 +70,15 @@ years_data_cat <- paste("salary_df",
   summarise_all(list(~ sum(., na.rm = TRUE))) 
 
 # Write intermediate dataset if needed
- # write.csv(years_data_cat, file = "years_data_cat.csv")
+# write.csv(years_data_cat, file = "years_data_cat.csv")
 
 # Read in csv version
 # years_data_cat <- read.csv("years_data_cat.csv")
 
 # Imputation: add in imputed values to replace suppressed numbers 
-imputation_data <- read.csv("imputation_estimates.csv", encoding = "UTF-8")
+imputation_data <- read.csv("imputation_estimates.csv", encoding = "UTF-8") |> 
+  mutate(salary_range =  str_replace_all(salary_range, "\\s", " "))
 
-# Remove non-space characters and replace with spaces 
-imputation_data$salary_range <- str_replace_all(imputation_data$salary_range, "\\s", " ")
 
 # Loop to impute numbers into df
 for (i in 1:nrow(imputation_data)){
@@ -198,32 +93,33 @@ for (i in 1:nrow(imputation_data)){
   years_data_cat <- years_data_cat |> 
     mutate(old_val = count_black) |>
     mutate(count_black = case_when(
-        Year == imputation_data_black$Year[i] & 
-          salary_range == imputation_data_black$salary_range[i] ~  imputation_data_black$value[i], 
-        .default = old_val
-      )
+      Year == imputation_data_black$Year[i] & 
+        salary_range == imputation_data_black$salary_range[i] ~  imputation_data_black$value[i], 
+      .default = old_val
+    )
     ) |>
     mutate(old_val = count_indigenous) |>
     mutate(count_indigenous = case_when(
-        Year == imputation_data_indigenous$Year[i] & 
-          salary_range == imputation_data_indigenous$salary_range[i] ~  imputation_data_indigenous$value[i], 
-        .default = old_val
-      )
+      Year == imputation_data_indigenous$Year[i] & 
+        salary_range == imputation_data_indigenous$salary_range[i] ~  imputation_data_indigenous$value[i], 
+      .default = old_val
+    )
     ) |>
-        mutate(old_val = count_vm) |>
+    mutate(old_val = count_vm) |>
     mutate(count_vm = case_when(
-        Year == imputation_data_vm$Year[i] & 
-          salary_range == imputation_data_vm$salary_range[i] ~  imputation_data_vm$value[i], 
-        .default = old_val
-      )
+      Year == imputation_data_vm$Year[i] & 
+        salary_range == imputation_data_vm$salary_range[i] ~  imputation_data_vm$value[i], 
+      .default = old_val
+    )
     ) |>
     select(-c(old_val)) |>
-             mutate(count_non_vm = count_all - count_vm) # calculate non vm (all - vm's)
+    mutate(count_non_vm = count_all - count_vm) # calculate non vm (all - vm's)
 }
+
 
 # Fix 2022 data - collapse under 50K 
 # 2022 data has both "Under 25K" and "Under 50K" salaries. Here we will collapse those two categories as well as the  "25K-49K" category into "Under 50K" for consistency 
-years_data_cat <-
+years_data_clean <-
   years_data_cat |> mutate(salary_range = case_when(
     salary_range %in% c("Under 25,000",
                         "Under 50,000",
@@ -242,10 +138,10 @@ years_data_cat <-
 
 
 # Clear workspace of unneeded df's and functions in saved memory
-rm(salary_df_2017, salary_df_2018, salary_df_2019, salary_df_2020, salary_df_2021, salary_df_2022, url, get_salary_data, remove_bullish, remove_spaces)
+rm(salary_df_2017, salary_df_2018, salary_df_2019, salary_df_2020, salary_df_2021, salary_df_2022, salary_df_2023, url, remove_bullish, remove_spaces)
 
 # read in salary bin data
-temp <-read.csv("ee_dv_salarybins.csv", fileEncoding = "UTF-8-BOM")
+temp <- read.csv("ee_dv_salarybins.csv", fileEncoding = "UTF-8-BOM")
 
 # df for renaming cols
 median_colnames <- c("salary_range", 
@@ -274,24 +170,26 @@ median_colnames <- c("salary_range",
 # Create final datasets with cumulative frequencies and bins
 df <-
   merge(
-    x = years_data_cat, # read in yearly salary data by group
+    x = years_data_clean, # read in yearly salary data by group
     y = { # match dataset to bin categories and widths from different years
         bind_rows(
-      {temp[, c(1:2)] |> dplyr::rename(bins = bins_2022, bin_width = bin_width_2022)},           
-    {temp[, c(3:4)] |> dplyr::rename(bins = bins_2021, bin_width = bin_width_2021)}, 
-    {temp[, c(5:6)] |> dplyr::rename(bins = bins_2020, bin_width = bin_width_2020)},
-    {temp[, c(7:8)] |> dplyr::rename(bins = bins_2019, bin_width = bin_width_2019)},
-    {temp[, c(9:10)] |> dplyr::rename(bins = bins_2018, bin_width = bin_width_2018)},
-    {temp[, c(11:12)] |> dplyr::rename(bins = bins_2017, bin_width = bin_width_2017)},
+      {temp[, c(1:2)] |> rename(bins = bins_2023, bin_width = bin_width_2023)},    
+      {temp[, c(3:4)] |> rename(bins = bins_2022, bin_width = bin_width_2022)},           
+    {temp[, c(5:6)] |> rename(bins = bins_2021, bin_width = bin_width_2021)}, 
+    {temp[, c(7:8)] |> rename(bins = bins_2020, bin_width = bin_width_2020)},
+    {temp[, c(9:10)] |> rename(bins = bins_2019, bin_width = bin_width_2019)},
+    {temp[, c(11:12)] |> rename(bins = bins_2018, bin_width = bin_width_2018)},
+    {temp[, c(13:14)] |> rename(bins = bins_2017, bin_width = bin_width_2017)},
     .id = "key"
   ) |>
   mutate(year = case_when( # add year "keys" (html pull indexes years by numbers)
-    key == "1" ~ 2022,
-    key == "2" ~ 2021,
-    key == "3" ~ 2020,
-    key == "4" ~ 2019,
-    key == "5" ~ 2018, 
-    key == "6" ~ 2017
+    key == "1" ~ 2023,
+    key == "2" ~ 2022,
+    key == "3" ~ 2021,
+    key == "4" ~ 2020,
+    key == "5" ~ 2019,
+    key == "6" ~ 2018, 
+    key == "7" ~ 2017
   )) |> 
   select(-key) |>  # remove key data
   filter(!is.na(bins))
@@ -320,9 +218,16 @@ df <-
         "90,000 to 94,999",
         "95,000 to 99,999",
         "100,000 to 149,999",
+        "100,000 to 104,999",
+        "105,000 to 109,999",
+        "110,000 to 114,999",
+        "115,000 to 119,999",
+        "120,000 to 124,999",
+        "125,000 to 149,999",
         "150,000 to 199,999",
         "200,000 to 249,999",
         "100,000 and over",
+        "150,000 and over",
         "250,000 and over",
         "Total"
       )
@@ -348,6 +253,8 @@ df <-
   ungroup() |> 
   mutate(half_pop = total/2) |> # get half population per bin
   group_by(Year, group)
+
+rm(imputation_data, imputation_data_black, imputation_data_indigenous, imputation_data_vm, temp, years_data_cat, years_data_clean, end.time, start.time, time.taken)
 
 ```
 
@@ -428,6 +335,7 @@ est_median <- function(year, ee_group) {
 groups <- c("black", "vm", "indigenous", "pwd", "non_vm", "all")
 
 # Create empty df's 
+median_df_2023 <- data.frame(median = NA, med_year = NA, group = NA)
 median_df_2022 <- data.frame(median = NA, med_year = NA, group = NA)
 median_df_2021 <- data.frame(median = NA, med_year = NA, group = NA)
 median_df_2020 <- data.frame(median = NA, med_year = NA, group = NA)
@@ -436,6 +344,9 @@ median_df_2018 <- data.frame(median = NA, med_year = NA, group = NA)
 median_df_2017 <- data.frame(median = NA, med_year = NA, group = NA)
 
 # Get median for all years and groups
+for (i in 1:length(groups)){
+  median_df_2023[i,] <- est_median("2023", groups[i])
+}
 for (i in 1:length(groups)){
   median_df_2022[i,] <- est_median("2022", groups[i])
 }
@@ -455,9 +366,22 @@ for (i in 1:length(groups)){
   median_df_2017[i,] <- est_median("2017", groups[i])
 }
 # Concat all median df's together with rbind
-median_df_final <- rbind(median_df_2022, median_df_2021, median_df_2020, median_df_2019, median_df_2018, median_df_2017)
+median_df_final <- rbind(median_df_2023,
+                         median_df_2022,
+                         median_df_2021,
+                         median_df_2020,
+                         median_df_2019,
+                         median_df_2018,
+                         median_df_2017)
+
 # Remove unneeded df's from memory
-rm(median_df_2022, median_df_2021, median_df_2020, median_df_2019, median_df_2018, median_df_2017)
+rm(median_df_2023,
+  median_df_2022, 
+   median_df_2021, 
+   median_df_2020, 
+   median_df_2019, 
+   median_df_2018, 
+   median_df_2017)
 
 # Create function and apply to round to nearest $50
 round_any = function(x, accuracy, f=round){f(x/ accuracy) * accuracy}
@@ -466,7 +390,14 @@ median_df_final$median <- round_any(median_df_final$median, accuracy = 50)
 # Swap to wide format for presentation
 median_df_wide <- spread(median_df_final, group, median) |> 
   select(med_year, all, non_vm, vm, black, indigenous, pwd) |> 
-  arrange(desc(med_year))
+  arrange(desc(med_year)) |> 
+  rename("Year" = "med_year",
+         "All Employees" = "all",
+         "Non-Visible Minority Employees" = "non_vm",
+          "Visible Minority Employees" = "vm",
+         "Black Employees" = "black",
+        "Indigenous Employees" = "indigenous", 
+         "Employees with Disabilities" = "pwd")
 
 
 ```
@@ -475,23 +406,14 @@ median_df_wide <- spread(median_df_final, group, median) |>
 ## Median Salary Table
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-# Add better group labels 
-colnames(median_df_wide) <-
-  c(
-    "Year",
-    "All Employees",
-    "Non-Visible Minority Employees",
-    "Visible Minority Employees",
-    "Black Employees",
-    "Indigenous Employees",
-    "Employees with Disabilities"
-  )
 
 # Color matrix to color table
 colors <- met.brewer("Hiroshige", 5)[c(1,4)]
+
+# If bigger than all employees, make organge. If less, make blue
 colormatrix <- ifelse(median_df_wide[, -(1:2)] > median_df_wide$`All Employees`, colors[1], colors[2])
 
-# Make formatted table
+# Make formatted median salary table
 flextable(median_df_wide) |>
   align(align = "center", part = "body") |>
   align(align = "center", part = "header") |> 
@@ -506,33 +428,29 @@ Median salaries (CDN per annum) of Canadian core public service employees from 2
 ## Tableau des salaires médians
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-# Add better group labels 
-colnames(median_df_wide) <-
-  c(
-    "Année",
-    "Tous les employés",
-    "Employés Non-Minorité visible",
-    "Employés Minorité visible",
-    "Employés de race noire",
-    "Employés autochtones",
-    "Employés handicapées"
-  )
+# Function for applying french formatting to numbers
+fr_format <- function(cols) { 
+  
+ format(x = cols, big.mark = " ", scientific = FALSE, trim = TRUE)
 
-# Color matrix to color table
-colors <- met.brewer("Hiroshige", 5)[c(1,4)]
-colormatrix <- ifelse(median_df_wide[, -(1:2)] > median_df_wide$`Tous les employés`, colors[1], colors[2]) 
+}
 
-# HERE
-median_df_wide_fr <- median_df_wide[]
-
-
-format([], round(as.numeric(), nsmall=1, big.mark=" "))
+# Add french group labels 
+median_df_wide_fr <- median_df_wide |> 
+  rename("Année" = "Year",
+         "Tous les employés" = "All Employees",
+         "Employés Non-Minorité visible" = "Non-Visible Minority Employees",
+          "Employés Minorité visible" = "Visible Minority Employees",
+         "Employés de race noire" = "Black Employees",
+        "Employés autochtones" = "Indigenous Employees", 
+         "Employés handicapées" = "Employees with Disabilities") |> 
+  
+  # french formatting of numbers
+  mutate_at(vars(!`Année`), fr_format) 
   
 
-
-
 # Make formatted table
-flextable(median_df_wide) |>
+flextable(median_df_wide_fr) |>
   align(align = "center", part = "body") |>
   align(align = "center", part = "header") |> 
   valign(valign = "center", part = "header") |>
