@@ -59,16 +59,72 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <link rel="stylesheet" href="styles.css">
 </head>
 
-<body>
+<body class="nav-sidebar docked">
+
 
 <div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">About the Disproportionality Index</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-center sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      <img src="./images/android-chrome-512x512.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Employment Equity</a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/Employment-Equity/employment-equity.github.io" title="Github" class="sidebar-tool px-1"><i class="bi bi-github"></i></a>
+    <a href="https://www.canada.ca/en/privy-council/corporate/clerk/call-to-action-anti-racism-equity-inclusion-federal-public-service.html" title="Privy Council Clerk's Call to Action" class="sidebar-tool px-1"><i class="bi bi-compass"></i></a>
+    <a href="./../fr" title="Francais" class="sidebar-tool px-1"><i class="bi bi-translate"></i></a>
+</div>
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Home</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Visualizations.html" class="sidebar-item-text sidebar-link">Tables and Visualizations</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./DI.html" class="sidebar-item-text sidebar-link active">About the Disproportionality Index</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./FAQ.html" class="sidebar-item-text sidebar-link">FAQ</a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         
@@ -78,7 +134,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">About the Disproportionality Index</h1>
+<h1 class="title d-none d-lg-block">About the Disproportionality Index</h1>
 </div>
 
 
@@ -93,6 +149,43 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
+<div>
+<section id="estimating-median-salary" class="level2">
+<h2 class="anchored" data-anchor-id="estimating-median-salary">Estimating Median Salary</h2>
+<p><a href="https://employment-equity.github.io/Visualizations.html#median-salary-tables">Median salaries</a> for each group were estimated using the following formula:</p>
+<p><span class="math display">\[median = L + \frac{ (\frac{n}{2} – F) }{f}  * w\]</span></p>
+</section>
+<section id="calculating-di" class="level2">
+<h2 class="anchored" data-anchor-id="calculating-di">Calculating DI</h2>
+<p>In this analysis, Disproportionality Index (DI) is used as a measure of equitable representation. It is calculated as below.</p>
+<p><span class="math display">\[\frac{\%_{Group\: X; \:salary\: range \: i}}{\% _{All \:Employees; \:salary\: range \: i}} = DI _{Group\:X; \:salary\:range\:i}\]</span></p>
+<p>For example, 23.51% of Black employees and 16.70% of all employees are are within the &lt;60K salary range. This gives us a DI of 1.41.</p>
+<p><span class="math display">\[ DI_{Black \: employees; &lt;60K } =\frac{23.51\%}{16.70\%} = 1.41\]</span></p>
+<p>For a table of DI’s per year, <a href="https://employment-equity.github.io/Visualizations.html#disproportionality-tables">please see here</a>.</p>
+</section>
+<section id="understanding-di---an-example" class="level2">
+<h2 class="anchored" data-anchor-id="understanding-di---an-example">Understanding DI - An Example</h2>
+<p>Suppose that we have a department of 500 employees. There are two groups of self-identifying minority employees, A and B. Group C is composed of the majority at 460 employees. Groups A and B make up 4% of employees at 20 employees each, which happens to mirror the Canadian population. At a glance, representation seems equal.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="DI_files/figure-html/Plot-1-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>However, if you take a closer look at how the 20 employees from group A and B are distributed across salary levels, a different story appears. Group A is equally distributed among salary level, but the majority of group B employees remain at the lowest salary levels.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/salary-scaffold.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Salary Scaffold</figcaption><p></p>
+</figure>
+</div>
+<p>Calculating DI further illustrates the differences in salary distribution. Above a DI of 1, a group’s representation at a salary level is higher than the average of all employees. Below a DI of 1, a group’s representation at a salary level is lower than the average of all employees.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="DI_files/figure-html/Plot 2-DI Example-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</div>
 
 
 
@@ -231,6 +324,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">Last updated: June 22, 2024</div>   
+    <div class="nav-footer-right">This page is built with 💖 and <a href="https://quarto.org/">Quarto</a> by <a href="https://alburycatalina.github.io/">Albury C.</a></div>
+  </div>
+</footer>
 
 
 

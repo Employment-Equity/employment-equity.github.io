@@ -63,12 +63,67 @@ ul.task-list li input[type="checkbox"] {
 <link rel="stylesheet" href="styles.css">
 </head>
 
-<body>
+<body class="nav-sidebar docked">
+
 
 <div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Home</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-center sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      <img src="./images/android-chrome-512x512.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Employment Equity</a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/Employment-Equity/employment-equity.github.io" title="Github" class="sidebar-tool px-1"><i class="bi bi-github"></i></a>
+    <a href="https://www.canada.ca/en/privy-council/corporate/clerk/call-to-action-anti-racism-equity-inclusion-federal-public-service.html" title="Privy Council Clerk's Call to Action" class="sidebar-tool px-1"><i class="bi bi-compass"></i></a>
+    <a href="./../fr" title="Francais" class="sidebar-tool px-1"><i class="bi bi-translate"></i></a>
+</div>
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link active">Home</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Visualizations.html" class="sidebar-item-text sidebar-link">Tables and Visualizations</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./DI.html" class="sidebar-item-text sidebar-link">About the Disproportionality Index</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./FAQ.html" class="sidebar-item-text sidebar-link">FAQ</a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         
@@ -78,7 +133,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Home</h1>
+<h1 class="title d-none d-lg-block">Home</h1>
 </div>
 
 
@@ -93,6 +148,35 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
+<div>
+<section id="the-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="the-analysis">The Analysis</h2>
+<p>This analysis explores the salary distributions of Canadian Public Service Employees in employment equity groups. For more information and to access the scripts used to produce this analysis, visit the project’s <a href="LINK">GitHub repository</a> or see <a href="https://www.isi2023.org/abstracts/submission/617/view/">our publication in the 2023 ISI World Statistical Congress proceedings.</a></p>
+</section>
+<section id="the-data" class="level2">
+<h2 class="anchored" data-anchor-id="the-data">The Data</h2>
+<p>The data represents pre-tax salary ranges excluding bonuses and promotions, <a href="https://www.canada.ca/en/treasury-board-secretariat/services/innovation/human-resources-statistics/diversity-inclusion-statistics.html">publicly available here</a>. Each data series from 2017 to 2022 represents the salaries of public servants (excluding the CRA) at a single time point, not reflecting changes across an entire year.</p>
+<p>The collection of the data used in this analysis follows standards set by the <a href="https://laws-lois.justice.gc.ca/eng/acts/e-5.401/">Employment Equity act</a>, meaning that 4 “equity-deserving groups” (defined as women, indigenous people, people with disabilities, and visible minorities) are surveyed. This data is particularly interesting as it is disaggregated, meaning that additional questions to used identify subgroups within the equity-deserving groups were included in the survey. Therefore, when information about the visible minority group is presented, Black employees (but not Indigenous employees) are included.</p>
+<p>Please note that this data was imputed for suppressed numbers <a href="LINK">(see here for more information)</a>.</p>
+</section>
+<section id="limitations" class="level2">
+<h2 class="anchored" data-anchor-id="limitations">Limitations</h2>
+<p>This analysis cannot account for the effects of additional factors such as age, gender, job qualification, and tenure. The data in it’s current form is also not amenable to calculating measures of uncertainty and determining statistical difference.</p>
+</section>
+<section id="conclusions" class="level2">
+<h2 class="anchored" data-anchor-id="conclusions">Conclusions</h2>
+<p>This analysis indicates that additional challenges may be faced by Black public servants in the Government of Canada. The results also highlight that more information may be able to be yielded from further investigation into the Treasury Board’s disaggregated microdata.</p>
+<p>A <a href="https://www.canada.ca/en/privy-council/corporate/clerk/call-to-action-anti-racism-equity-inclusion-federal-public-service.html">Call to Action on Anti-Racism, Equity, and Inclusion</a> has already been made as of 2021, encouraging those in positions of power to take action to address racism and discrimination in the Federal Public Service. The anecdotal experiences of Black public servants which are validated by this analysis must be taken seriously and continued to be quantified via further analysis of the available data.</p>
+</section>
+<section id="acknowledgements" class="level2">
+<h2 class="anchored" data-anchor-id="acknowledgements">Acknowledgements</h2>
+<p>This analysis could not have been completed without the help of Brittny Vongdara, Dr.&nbsp;Martin Nicholas, and Shamir Kanji.</p>
+</section>
+<section id="disclaimer" class="level2">
+<h2 class="anchored" data-anchor-id="disclaimer">Disclaimer</h2>
+<p>The opinions contained on this website are personal, and not a reflection of our employers.</p>
+</section>
+</div>
 
 
 
@@ -231,6 +315,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">Last updated: June 22, 2024</div>   
+    <div class="nav-footer-right">This page is built with 💖 and <a href="https://quarto.org/">Quarto</a> by <a href="https://alburycatalina.github.io/">Albury C.</a></div>
+  </div>
+</footer>
 
 
 
