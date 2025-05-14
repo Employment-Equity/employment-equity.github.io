@@ -16,6 +16,7 @@ library(MetBrewer)
 library(data.table)
 library(crosstalk)
 library(conflicted)
+library(here)
 
 # Set session-wide pref for library conflicts
 conflicts_prefer(dplyr::filter())
@@ -25,16 +26,15 @@ conflicts_prefer(dplyr::first())
 
 ```{r echo = FALSE, message = FALSE, include = FALSE, warning = FALSE}
 
+# Load webscraping functions
 source("functions/webscraping_fns.R")
 
-# Get data for all years
-# This step usually takes a while to run due to accessing the API
 
 # Record start time
 start.time <- Sys.time()
 
 # Pull salary data for all years
-# Run time: ~ 
+# Run time: ~ 1.5 mins
 lapply(years, get_salary_data)  |>
   bind_rows()
 
@@ -70,10 +70,10 @@ years_data_cat <- paste("salary_df",
   summarise_all(list(~ sum(., na.rm = TRUE))) 
 
 # Write intermediate dataset if needed
-# write.csv(years_data_cat, file = "years_data_cat.csv")
+write.csv(years_data_cat, file = here("intermediate_data/years_data_cat.csv"))
 
 # Read in csv version
-# years_data_cat <- read.csv("years_data_cat.csv")
+years_data_cat <- read.csv(here("intermediate_data/years_data_cat.csv"))
 
 # Imputation: add in imputed values to replace suppressed numbers 
 imputation_data <- read.csv("imputation_estimates.csv", encoding = "UTF-8") |> 
@@ -459,14 +459,12 @@ flextable(median_df_wide_fr) |>
 ```
 
 Salaires médians (en dollars canadiens par an) des employés du noyau de la fonction publique canadienne de 2017 à 2021, arrondis aux 50 dollars les plus proches. Pour savoir comment le salaire médian a été calculé, veuillez consulter la page [Sur l'indice de disproportionnalité.](https://employment-equity.github.io/fr/DI.html) Les valeurs orange indiquent une valeur supérieure à celle du groupe "tous les salariés", et les valeurs bleues une valeur inférieure par an. Les données proviennent de [Secrétariat du Conseil du Trésor du Canada Statistiques sur la diversité et l'inclusion.](https://www.canada.ca/fr/secretariat-conseil-tresor/services/innovation/statistiques-ressources-humaines/statistiques-diversite-inclusion.html)
-
 :::
 
-
-::: {.content-visible when-profile="english"}
+:::: {.content-visible when-profile="english"}
 ## Disproportionality Tables
 
-::: {.panel-tabset}
+::: panel-tabset
 ### 2023
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -1438,13 +1436,12 @@ export_table_2017 |>
   align(align = "center", part = "header")
 ```
 :::
-:::
+::::
 
-
-::: {.content-visible when-profile="french"}
+:::: {.content-visible when-profile="french"}
 ## Tableaux de disproportionnalité
 
-::: {.panel-tabset}
+::: panel-tabset
 ### 2023
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -1732,7 +1729,7 @@ export_table_2017 <-
 
 ```
 :::
-:::
+::::
 
 ```{r echo = FALSE, message=FALSE, warning=FALSE, include = FALSE}
 
@@ -2129,8 +2126,6 @@ ggplot(plot4_df) +
 
 ```
 
-
-
 ```{r Plot 5, echo = FALSE, message = FALSE, warning = FALSE, output = FALSE, fig.width = 10, fig.height = 7.5}
 ## Plot 5: An analysis of disparity over time 
 
@@ -2171,11 +2166,7 @@ ggplot(data = plot5_df) +
   
 
 ```
-
 :::
-
-
-
 
 ::: {.content-visible when-profile="french"}
 ## Graphique 1: ID de tous les groupes par tranche de salaire (2023)
