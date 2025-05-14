@@ -29,6 +29,13 @@ conflicts_prefer(dplyr::first())
 # Load webscraping functions
 source("functions/webscraping_fns.R")
 
+# Define root directory for TBS website with salary data
+url <- "https://www.canada.ca/en/treasury-board-secretariat/services/innovation/human-resources-statistics/diversity-inclusion-statistics/distribution-public-service-canada-employees-designated-sub-group-salary-range-"
+
+
+
+# List of years to get data for 
+years <- c("2023", "2022", "2021", "2020", "2019", "2018", "2017")
 
 # Record start time
 start.time <- Sys.time()
@@ -502,7 +509,7 @@ di_df_2023 <- years_data_clean |>
         "120,000 to 124,999",
         "125,000 to 149,999",
         "150,000 and over"
-      ) ~ "Over $150,000K",
+      ) ~ "Over $105,000K",
       TRUE ~ "All ranges"
     )
   ) |> 
