@@ -7,6 +7,7 @@ editor: visual
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 
+
 library(tidyverse)
 library(rvest)
 library(plotly)
@@ -29,19 +30,13 @@ conflicts_prefer(dplyr::first())
 # Load webscraping functions
 source("functions/webscraping_fns.R")
 
-# Define root directory for TBS website with salary data
-url <- "https://www.canada.ca/en/treasury-board-secretariat/services/innovation/human-resources-statistics/diversity-inclusion-statistics/distribution-public-service-canada-employees-designated-sub-group-salary-range-"
-
-
-
-# List of years to get data for 
-years <- c("2023", "2022", "2021", "2020", "2019", "2018", "2017")
 
 # Record start time
 start.time <- Sys.time()
 
 # Pull salary data for all years
 # Run time: ~ 1.5 mins
+# FIXME cache asked for every year. Can we make it so that it asks once and then that behaviour is remembered for the session?
 lapply(years, get_salary_data)  |>
   bind_rows()
 
@@ -53,7 +48,7 @@ time.taken <- end.time - start.time
 message(paste("Elaspsed time of", round(time.taken, digits = 2) , "mins.", sep = " "))
 
 # list of name of databases by year
-years_data_cat <- paste("salary_df",
+years_data_cat <- paste("salary_data",
                         years,
                         sep = "_") |>
   
@@ -62,9 +57,7 @@ years_data_cat <- paste("salary_df",
   bind_rows(.id = "Year") |>
   
   # Make a year column 
-  mutate(Year = substr(Year,
-                       11,
-                       14))  |>
+  mutate(Year = str_extract(Year, "\\d{4}"))  |>
   
     # Merge any rows with "Total" in name by year
   mutate(salary_range = 
@@ -76,11 +69,6 @@ years_data_cat <- paste("salary_df",
   group_by(salary_range, Year) |>
   summarise_all(list(~ sum(., na.rm = TRUE))) 
 
-# Write intermediate dataset if needed
-write.csv(years_data_cat, file = here("intermediate_data/years_data_cat.csv"))
-
-# Read in csv version
-years_data_cat <- read.csv(here("intermediate_data/years_data_cat.csv"))
 
 # Imputation: add in imputed values to replace suppressed numbers 
 imputation_data <- read.csv("imputation_estimates.csv", encoding = "UTF-8") |> 
@@ -142,6 +130,9 @@ years_data_clean <-
     count_pwd = sum(count_pwd, na.rm = TRUE), 
     count_non_vm = count_all - count_vm
   )
+
+# Save intermediate data
+write.csv(years_data_clean, here("intermediate_data/cleaned_imputed_salary_data.csv"))
 
 
 # Clear workspace of unneeded df's and functions in saved memory
@@ -341,6 +332,7 @@ est_median <- function(year, ee_group) {
 # run across all years and groups
 groups <- c("black", "vm", "indigenous", "pwd", "non_vm", "all")
 
+# FIXME edit this section to lapply over years
 # Create empty df's 
 median_df_2023 <- data.frame(median = NA, med_year = NA, group = NA)
 median_df_2022 <- data.frame(median = NA, med_year = NA, group = NA)

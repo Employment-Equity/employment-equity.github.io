@@ -52,33 +52,20 @@ table_cleanup <- function(messy_cols){
 }
 
 
-
-
-
-# FIXME set this up so that user is asked if cached data should be used
-# HERE working on getting function working. Need to match salary categories for 2023
 # Function to get salary data from website over years
 get_salary_data <- function(Year,
                             cache_dir = here("cached_data"), # place for cached data
-                            refresh = NULL) 
-  
-  {
-  
-  
-  # Check for cached files for the year 
-  cached_files <- list.files(cache_dir, 
-                             pattern = "\\.csv$", 
-                             full.names = TRUE)
-  
+                            refresh = NULL){
   
   
   
   # Ask user if refresh is not specified and cache exists
   if (is.null(refresh) && file.exists(here(paste0("cached_data/salary_data_", Year, ".csv")))) {
-    answer <- readline("Cached tables found. Refresh cache? (y/n): ")
+    answer <- readline(paste0("Cached table for", Year, "found. Refresh cache? (y/n): "))
     refresh <- tolower(answer) == "y"
   } else if (is.null(refresh)) {
     refresh <- TRUE # No cache exists, must scrape
+    stop(paste("Webscraping", Year, "data."))
   }
   
   
@@ -92,11 +79,11 @@ get_salary_data <- function(Year,
     assign(paste0("salary_data_", Year),
            {read.csv(here(paste0("cached_data/salary_data_", Year, ".csv")))},
            envir = globalenv())
+    
+    
   }
   
   if(refresh == TRUE){
-    # Progress message 
-    message(paste("Webscraping", Year, "data."))
     
     # Match years to their index in the data
     year_dictionary <- data.frame(year = years,
@@ -155,6 +142,7 @@ get_salary_data <- function(Year,
            {merged_df},
            envir = globalenv())
    
+    
    }
    
 }
