@@ -61,7 +61,7 @@ get_salary_data <- function(Year,
   
   # Ask user if refresh is not specified and cache exists
   if (is.null(refresh) && file.exists(here(paste0("cached_data/salary_data_", Year, ".csv")))) {
-    answer <- readline(paste0("Cached table for", Year, "found. Refresh cache? (y/n): "))
+    answer <- readline(paste0("Cached table for ", Year, " found. Refresh cache? (y/n): "))
     refresh <- tolower(answer) == "y"
   } else if (is.null(refresh)) {
     refresh <- TRUE # No cache exists, must scrape
