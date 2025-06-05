@@ -2,6 +2,7 @@
 format: html
 editor: visual
 ---
+
 ::: {.content-visible when-profile="english"}
 # Tables and Visualizations
 :::
@@ -268,8 +269,8 @@ labels <- read.csv(here("supplementary_tables/labels_en_fr.csv"))
 
 median_labels_en <- labels |> 
   filter(type == "median") |>
-  select(variable, en) |> 
-  with(setNames(en, variable))
+  select(en, variable) |> 
+  with(setNames(variable, en))
 
 
 # Swap to wide format for display
@@ -278,7 +279,7 @@ median_df_wide <- median_df |>
   spread(group, med) |> 
   select(year, all, non_vm, vm, black, indigenous, pwd) |> 
   arrange(desc(year)) |> 
-   rename_with(~ median_labels_en)
+   rename(all_of(median_labels_en))
 
 # Save median table
 write.csv(median_df_wide, file = here("intermediate_data/medians.csv"))
