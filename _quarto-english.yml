@@ -1,12 +1,14 @@
-
 project:
   type: website
   output-dir: ./_site
 
 website:
   title: Employment Equity
-  sidebar :
-    title: Employment Equity
+  
+  navbar: 
+    background: "#2b3f78"
+    
+  sidebar:
     logo: images/android-chrome-512x512.png
     pinned: true
     align: center
@@ -41,14 +43,14 @@ website:
   
   page-footer:
     right: "This page is built with 💖 and [Quarto](https://quarto.org/) by [Albury C.](https://alburycatalina.github.io/)"
-    left: "Last updated: June 22, 2024"
+    left: "Last updated: June 4, 2025"
     
 lang: en
 
 format:
   html:
-    css: styles.css
     toc: true
+    css: styles.css
     
 execute:
   freeze: auto

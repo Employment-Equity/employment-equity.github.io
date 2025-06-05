@@ -1,8 +1,14 @@
 ---
-title: "Tables and Visualizations"
 format: html
 editor: visual
 ---
+::: {.content-visible when-profile="english"}
+# Tables and Visualizations
+:::
+
+::: {.content-visible when-profile="french"}
+# Tableaux et visualisations
+:::
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE)
@@ -416,15 +422,12 @@ di_table_year("2017")
 :::: {.content-visible when-profile="french"}
 ## Tableaux de disproportionnalité
 
-
 ::: panel-tabset
 ### 2024
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 di_table_year_fr("2024")
 ```
-
-
 
 ### 2023
 
@@ -679,13 +682,7 @@ plot3 <- ggplotly(ggplot(plot3_df, aes(fill = Subgroup,
 
 
 
-bscols(widths = c(2, NA), 
-       filter_select(id = "fsid", 
-                     label = "Year", 
-                     sharedData = data_shared, 
-                     group = ~year,
-                     multiple = FALSE), 
-       plot3)
+plot3
 
 ```
 
@@ -727,12 +724,12 @@ ggplot(plot4_df) +
   guides(alpha=guide_legend(title="Salary Quintile"), 
          fill = guide_legend(title = "Group"))
 ```
+
 # Plot 5: Disparity between Non-visible Minority Employees and Black Employees Over Time (2017-2024)
 
-In this plot, DI disparity is calculated by subtracting the DI of Black employees from that of non-visible minority employees. It can be seen that the difference between the highest and lowest salaries percentiles are more or less remaining equal over time, with a small positive trend. 
+In this plot, DI disparity is calculated by subtracting the DI of Black employees from that of non-visible minority employees. It can be seen that the difference between the highest and lowest salaries percentiles are more or less remaining equal over time, with a small positive trend.
 
-
-```{r Plot 5, echo = FALSE, message = FALSE, warning = FALSE, output = FALSE, fig.width = 10, fig.height = 7.5}
+```{r Plot 5, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 7.5}
 ## Plot 5: An analysis of disparity over time 
 
 plot5_df <- plot3_df |> 
@@ -766,9 +763,7 @@ ggplot(data = plot5_df, aes(x = Year,
              linetype = "dashed") +
   ylim(-.6, .6)
   
-
 ```
-
 :::
 
 ::: {.content-visible when-profile="french"}
@@ -980,12 +975,12 @@ ggplot(plot4_df) +
 
 
 ```
+
 # Graphique 5 : Disparité entre les employés issus des minorités non visibles et les employés noirs au fil du temps (2017-2024)
 
 Dans ce graphique, la disparité DI est calculée en soustrayant la DI des employés noirs de celle des employés n'appartenant pas à une minorité visible. On constate que la différence entre les percentiles des salaires les plus élevés et les plus bas reste plus ou moins égale au fil du temps, avec une légère tendance positive.
 
-
-```{r Plot 5, echo = FALSE, message = FALSE, warning = FALSE, output = FALSE, fig.width = 10, fig.height = 7.5}
+```{r, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 7.5}
 ## Plot 5: An analysis of disparity over time 
 
 plot5_df_fr <- plot3_df_fr |> 
@@ -1021,5 +1016,4 @@ ggplot(data = plot5_df_fr, aes(x = Year,
   
 
 ```
-
 :::

@@ -1,5 +1,4 @@
 ---
-title: "About the Disproportionality Index"
 format: html
 editor: visual
 theme: default
@@ -20,6 +19,8 @@ library(tidyverse)
 ```
 
 ::: {.content-visible when-profile="english"}
+# About the Disproportionality Index
+
 ## Estimating Median Salary
 
 [Median salaries](https://employment-equity.github.io/Visualizations.html#median-salary-tables) for each group were estimated using the following formula:
@@ -123,6 +124,8 @@ ggplot(Salary_di) +
 :::
 
 ::: {.content-visible when-profile="french"}
+# Sur l'indice de disproportionnalité
+
 ## Estimation du salaire médian
 
 [Les salaires médians](https://employment-equity.github.io/Visualizations.html#median-salary-tables) pour chaque groupe ont été estimées à l'aide de la formule suivante:

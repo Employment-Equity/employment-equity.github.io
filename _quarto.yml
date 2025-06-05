@@ -3,7 +3,6 @@ project:
   output-dir: docs
   
 website:
-  title: "Employment Equity"
   favicon: "images/favicon-32x32.png"
 
 
@@ -11,7 +10,6 @@ website:
 format:
   html:
     theme: cosmo
-    css: styles.css
     toc: true
     
 execute:

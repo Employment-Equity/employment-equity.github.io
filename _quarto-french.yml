@@ -4,7 +4,11 @@ project:
 
 website:
   title: Équité dans l'emploi
-  sidebar :
+  
+  navbar: 
+    background: "#2b3f78"
+    
+  sidebar:
     title: Équité dans l'emploi
     logo: images/android-chrome-512x512.png
     pinned: true
@@ -18,7 +22,7 @@ website:
         href: https://www.canada.ca/fr/conseil-prive/organisation/greffier/appel-action-faveur-lutte-contre-racisme-equite-inclusion-fonction-publique-federale.html
         text: "Appel à l'action du greffier du Conseil privé"
       - icon: translate
-        href: ../
+        href: ../en
         text: English
 
     style: "docked"
@@ -40,14 +44,14 @@ website:
   
   page-footer:
     right: "Cette page est construite avec 💖 and [Quarto](https://quarto.org/) par [Albury C.](https://alburycatalina.github.io/)"
-    left: "Dernière mise à jour : 22 juin 2024"
+    left: "Dernière mise à jour : 4 juin 2025"
     
 lang: fr
 
 format:
   html:
-    css: styles.css
     toc: true
+    css: styles.css
     
 execute:
   freeze: auto

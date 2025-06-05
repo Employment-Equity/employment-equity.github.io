@@ -120,7 +120,6 @@ di_table_year <- function(year){
                               "Indigenous Employees",
                               "Employees with Disabilities")) |>
     width(j = 1, width = 3) |> # make fist column a little wider
-    theme_zebra() |> 
     align(align = "center", part = "body") |>
     align(align = "center", part = "header") 
   
@@ -176,7 +175,6 @@ di_table_year_fr <- function(year){
         "Employés autochtones",
         "Employés handicapées")) |>
     width(j = 1, width = 3) |> # make fist column a little wider
-    theme_zebra() |> 
     align(align = "center", part = "body") |>
     align(align = "center", part = "header")
   
