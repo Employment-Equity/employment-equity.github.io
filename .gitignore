@@ -1,6 +1,6 @@
 # ignore folder
 ignore/ 
-
+.DS_Store
 
 # History files
 .Rhistory

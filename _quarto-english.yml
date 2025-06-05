@@ -1,6 +1,6 @@
 project:
   type: website
-  output-dir: ./_site/en
+  output-dir: ./_site/
 
 website:
   title: Employment Equity
