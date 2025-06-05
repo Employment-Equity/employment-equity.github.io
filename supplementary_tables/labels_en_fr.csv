@@ -1,0 +1,33 @@
+﻿type,variable,en,fr
+quintile_comparable,,Bottom 20th,20e inférieur
+quintile_comparable,,20th to 40th,20e à 40e
+quintile_comparable,,40th to 60th,40e à 60e
+quintile_comparable,,60th to 80th,60e à 80e
+quintile_comparable,,Top 20th,20e supérieur
+median,year,Year,Année
+median,all,All Employees,Tous les employés
+median,non_vm,Non-Visible Minority Employees,Employés Non-Minorité visible
+median,vm,Visible Minority Employees,Employés Minorité visible
+median,pwd,Employees with Disabilities,Employés handicapées
+median,indigenous,Indigenous Employees,Employés autochtones
+median,black,Black Employees,Employés de race noire
+quintile,,"Less than $69,999",Moins de 69.999$
+quintile,,"$70,000 to $79,999","$70,000 à $79,999"
+quintile,,"$80,000 to $94,999",80.000$ à 94.999$
+quintile,,"$95,000 to $109,999",95.000$ à 109.999$
+quintile,,"Over $110,000",Plus de 110.000$
+quintile,,All ranges,Toutes les gammes
+quintile,,"Less than $65,000",Moins de 65.000$
+quintile,,"$65,000 to $74,999","$65,000 à $74,999"
+quintile,,"$75,000 to $89,999","$75,000 à $89,999"
+quintile,,"$90,000 to $104,999",90.000$ à 1094.999$
+quintile,,"Over $150,000",Plus de 150.000$
+quintile,,"Less than $60,000",Moins de 60.000$
+quintile,,"$60,000 to $69,999",60.000$ à 69.999$
+quintile,,"$70,000 to $84,999",70.000$ à 84.999$
+quintile,,"$85,000 to $99,999",85.000$ à 99.999$
+quintile,,"Over $100,000",Plus de 100.000$
+quintile,,"Less than $55,000",Moins de 55.000$
+quintile,,"$55,000 to $64,999",55.000$ à 64.999$
+quintile,,"$65,000 to $79,999",65.000$ à 79.999$
+quintile,,"Over $95,000",Plus de 95.000$

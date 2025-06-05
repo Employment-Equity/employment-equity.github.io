@@ -7,7 +7,7 @@ url <- "https://www.canada.ca/en/treasury-board-secretariat/services/innovation/
 
 
 # List of years to get data for 
-years <- c("2023", "2022", "2021", "2020", "2019", "2018", "2017")
+years <- c("2024", "2023", "2022", "2021", "2020", "2019", "2018", "2017")
 
 
 # Function for removing extra characters
@@ -57,6 +57,9 @@ get_salary_data <- function(Year,
                             cache_dir = here("cached_data"), # place for cached data
                             refresh = NULL){
   
+  # Match years to their index in the data
+  year_dictionary <- data.frame(year = years,
+                                index = c(1:length(years)))
   
   
   # Ask user if refresh is not specified and cache exists
@@ -65,7 +68,7 @@ get_salary_data <- function(Year,
     refresh <- tolower(answer) == "y"
   } else if (is.null(refresh)) {
     refresh <- TRUE # No cache exists, must scrape
-    stop(paste("Webscraping", Year, "data."))
+    message(paste("Webscraping", Year, "data."))
   }
   
   
@@ -85,9 +88,7 @@ get_salary_data <- function(Year,
   
   if(refresh == TRUE){
     
-    # Match years to their index in the data
-    year_dictionary <- data.frame(year = years,
-                                  index = c(1:length(years)))
+
     # Index for year
     year_index <- as.numeric(year_dictionary$index[year_dictionary$year == Year])
     
@@ -141,9 +142,11 @@ get_salary_data <- function(Year,
     assign(paste0("salary_data_", Year),
            {merged_df},
            envir = globalenv())
-   
     
-   }
-   
+    
+  }
+  assign("year_dictionary",
+         year_dictionary,
+         envir = globalenv()) 
 }
 
