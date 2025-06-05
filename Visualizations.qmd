@@ -27,25 +27,16 @@ conflicts_prefer(dplyr::first())
 
 ```{r echo = FALSE, message = FALSE, include = FALSE, warning = FALSE}
 
+# Declare location of this script with here package
+here::i_am("Visualizations.qmd")
+
 # Load webscraping functions
-source("functions/webscraping_fns.R")
-
-
-# Record start time
-start.time <- Sys.time()
+source(here("functions/webscraping_fns.R"))
 
 # Pull salary data for all years
-# Run time: ~ 1.5 mins
-# FIXME cache asked for every year. Can we make it so that it asks once and then that behaviour is remembered for the session?
 lapply(years, get_salary_data)  |>
   bind_rows()
 
-# Record end time
-end.time <- Sys.time()
-
-# Print elapsed time
-time.taken <- end.time - start.time
-message(paste("Elaspsed time of", round(time.taken, digits = 2) , "mins.", sep = " "))
 
 # list of name of databases by year
 years_data_cat <- paste("salary_data",
@@ -71,7 +62,7 @@ years_data_cat <- paste("salary_data",
 
 
 # Imputation: add in imputed values to replace suppressed numbers 
-imputation_data <- read.csv("imputation_estimates.csv", encoding = "UTF-8") |> 
+imputation_data <- read.csv(here("supplementary_tables/imputation_estimates.csv"), encoding = "UTF-8") |> 
   mutate(salary_range =  str_replace_all(salary_range, "\\s", " "))
 
 
@@ -136,10 +127,10 @@ write.csv(years_data_clean, here("intermediate_data/cleaned_imputed_salary_data.
 
 
 # Clear workspace of unneeded df's and functions in saved memory
-rm(salary_df_2017, salary_df_2018, salary_df_2019, salary_df_2020, salary_df_2021, salary_df_2022, salary_df_2023, url, remove_bullish, remove_spaces)
+rm(list = ls()[startsWith(ls(), "salary_data_")], url, remove_bullish, remove_spaces)
 
 # read in salary bin data
-temp <- read.csv("ee_dv_salarybins.csv", fileEncoding = "UTF-8-BOM")
+salary_bins <- read.csv(here("supplementary_tables/ee_dv_salarybins.csv"), fileEncoding = "UTF-8-BOM")
 
 # df for renaming cols
 median_colnames <- c("salary_range", 
@@ -170,30 +161,10 @@ df <-
   merge(
     x = years_data_clean, # read in yearly salary data by group
     y = { # match dataset to bin categories and widths from different years
-        bind_rows(
-      {temp[, c(1:2)] |> rename(bins = bins_2023, bin_width = bin_width_2023)},    
-      {temp[, c(3:4)] |> rename(bins = bins_2022, bin_width = bin_width_2022)},           
-    {temp[, c(5:6)] |> rename(bins = bins_2021, bin_width = bin_width_2021)}, 
-    {temp[, c(7:8)] |> rename(bins = bins_2020, bin_width = bin_width_2020)},
-    {temp[, c(9:10)] |> rename(bins = bins_2019, bin_width = bin_width_2019)},
-    {temp[, c(11:12)] |> rename(bins = bins_2018, bin_width = bin_width_2018)},
-    {temp[, c(13:14)] |> rename(bins = bins_2017, bin_width = bin_width_2017)},
-    .id = "key"
-  ) |>
-  mutate(year = case_when( # add year "keys" (html pull indexes years by numbers)
-    key == "1" ~ 2023,
-    key == "2" ~ 2022,
-    key == "3" ~ 2021,
-    key == "4" ~ 2020,
-    key == "5" ~ 2019,
-    key == "6" ~ 2018, 
-    key == "7" ~ 2017
-  )) |> 
-  select(-key) |>  # remove key data
-  filter(!is.na(bins))
+          salary_bins
     },
     by.x = c("salary_range", "Year"),
-    by.y = c("bins", "year"),
+    by.y = c("bins", "Year"),
     all.x = TRUE
   )  |> arrange( # arrange salary ranges from lowest to highest using factors
     Year,
@@ -260,145 +231,51 @@ rm(imputation_data, imputation_data_black, imputation_data_indigenous, imputatio
 
 # Median Calculations -----------------------------------------------------
 
-# Create a function that calculates median for each group for a year
-  # median = lower limit of median group + ((half pop - cum freq up to median)/ pop of median group) * width of median group
+# Pull in median calculating function 
+source(here("functions/median_fns.R"))
 
-
-est_median <- function(year, ee_group) {
-  # pull salary data by year and change back to wide format
-  median_df <-
-    df |>
-    filter(Year == year) |> # filter for selected year
-    pivot_wider(names_from = "group", # change back to wide format
-                values_from = c("count_cumsum", 
-                                "total", 
-                                "half_pop")) |>
-     dplyr::select(-contains(c("total_cumsum", # remove unneeded cols
-                               "total_count",
-                               "half_pop_cumsum"))) 
-  
-  # rename cols
-  median_colnames <- c("salary_range", 
-                       "Year", 
-                       "bin_width",
-                       "count_all", 
-                       "count_black", 
-                       "count_vm", 
-                       "count_indigenous", 
-                       "count_pwd", 
-                       "count_non_vm",
-                       "bin_width_cumsum", 
-                       "cumsum_all",
-                       "cumsum_black",
-                       "cumsum_vm",
-                       "cumsum_indigenous",
-                       "cumsum_pwd",
-                       "cumsum_non_vm",
-                       "half_pop_all",
-                       "half_pop_black",
-                       "half_pop_vm",
-                       "half_pop_indigenous",
-                       "half_pop_pwd",
-                       "half_pop_non_vm")
-  
-  colnames(median_df) <- median_colnames
-  half_pop <- as.numeric(first(median_df[paste("half_pop_", ee_group, sep = "")])[1])
-    
-  # find lower limit of median group
-  median_group_ll <- max(median_df$bin_width_cumsum[median_df[paste("cumsum_", ee_group, sep = "")] < half_pop], na.rm=TRUE)
-  
-  # find the cumulative frequncy up the median
-  cumsum_uptomedian <- max(median_df[paste("cumsum_", ee_group, sep = "")][median_df[paste("cumsum_", ee_group, sep = "")]< half_pop], na.rm=TRUE)
-  
-  # find the frequency of the median group
-  freq_mediangroup <- median_df[paste("count_", ee_group, sep = "")][median_df[paste("cumsum_", ee_group, sep = "")] > half_pop][1]
-  
-  # find the width of the median group 
-  width_mediangroup <- median_df$bin_width[median_df[paste("cumsum_", ee_group, sep = "")] > half_pop][1]
-  
-  # calculate median [finally (●'◡'●)]
-  median <- median_group_ll + ((half_pop - cumsum_uptomedian ) / freq_mediangroup) * width_mediangroup  
-  
-  # Create output and place in global environment
-  assign("median_table", 
-         {data.table(med = median, 
-                             med_year = year, 
-                             group = ee_group)}, 
-         envir=globalenv())
-}
-```
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
 # run across all years and groups
 groups <- c("black", "vm", "indigenous", "pwd", "non_vm", "all")
 
-# FIXME edit this section to lapply over years
-# Create empty df's 
-median_df_2023 <- data.frame(median = NA, med_year = NA, group = NA)
-median_df_2022 <- data.frame(median = NA, med_year = NA, group = NA)
-median_df_2021 <- data.frame(median = NA, med_year = NA, group = NA)
-median_df_2020 <- data.frame(median = NA, med_year = NA, group = NA)
-median_df_2019 <- data.frame(median = NA, med_year = NA, group = NA) 
-median_df_2018 <- data.frame(median = NA, med_year = NA, group = NA)
-median_df_2017 <- data.frame(median = NA, med_year = NA, group = NA)
+# Create a df with all combinations of years and groups 
+combinations <- expand.grid(year = years, 
+                            ee_group = groups, 
+                            stringsAsFactors = FALSE)
 
-# Get median for all years and groups
-for (i in 1:length(groups)){
-  median_df_2023[i,] <- est_median("2023", groups[i])
-}
-for (i in 1:length(groups)){
-  median_df_2022[i,] <- est_median("2022", groups[i])
-}
-for (i in 1:length(groups)){
-  median_df_2021[i,] <- est_median("2021", groups[i])
-}
-for (i in 1:length(groups)){
-  median_df_2020[i,] <- est_median("2020", groups[i])
-}
-for (i in 1:length(groups)){
-  median_df_2019[i,] <- est_median("2019", groups[i])
-}
-for (i in 1:length(groups)){
-  median_df_2018[i,] <- est_median("2018", groups[i])
-}
-for (i in 1:length(groups)){
-  median_df_2017[i,] <- est_median("2017", groups[i])
-}
-# Concat all median df's together with rbind
-median_df_final <- rbind(median_df_2023,
-                         median_df_2022,
-                         median_df_2021,
-                         median_df_2020,
-                         median_df_2019,
-                         median_df_2018,
-                         median_df_2017)
+# Calculate all medians
+median_df <- pmap(combinations, est_median) |> 
+  bind_rows() |> 
+    rename("year" = "med_year")
 
 # Remove unneeded df's from memory
-rm(median_df_2023,
-  median_df_2022, 
-   median_df_2021, 
-   median_df_2020, 
-   median_df_2019, 
-   median_df_2018, 
-   median_df_2017)
+rm(list = ls()[startsWith(ls(), "median_df_2")])
+
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 
 # Create function and apply to round to nearest $50
 round_any <-  function(x, accuracy, f=round){f(x/ accuracy) * accuracy}
 
-median_df_final$median <- round_any(median_df_final$median, accuracy = 50)
+# Load file with labels 
+labels <- read.csv(here("supplementary_tables/labels_en_fr.csv")) 
 
-# Swap to wide format for presentation
-median_df_wide <- spread(median_df_final, group, median) |> 
-  select(med_year, all, non_vm, vm, black, indigenous, pwd) |> 
-  arrange(desc(med_year)) |> 
-  rename("Year" = "med_year",
-         "All Employees" = "all",
-         "Non-Visible Minority Employees" = "non_vm",
-          "Visible Minority Employees" = "vm",
-         "Black Employees" = "black",
-        "Indigenous Employees" = "indigenous", 
-         "Employees with Disabilities" = "pwd")
+median_labels_en <- labels |> 
+  filter(type == "median") |>
+  select(variable, en) |> 
+  with(setNames(en, variable))
 
+
+# Swap to wide format for display
+median_df_wide <- median_df |> 
+  mutate(med = round_any(med, accuracy = 50)) |> 
+  spread(group, med) |> 
+  select(year, all, non_vm, vm, black, indigenous, pwd) |> 
+  arrange(desc(year)) |> 
+   rename_with(~ median_labels_en)
+
+# Save median table
+write.csv(median_df_wide, file = here("intermediate_data/medians.csv"))
 
 ```
 
@@ -414,14 +291,17 @@ colors <- met.brewer("Hiroshige", 5)[c(1,4)]
 colormatrix <- ifelse(median_df_wide[, -(1:2)] > median_df_wide$`All Employees`, colors[1], colors[2])
 
 # Make formatted median salary table
-flextable(median_df_wide) |>
+median_flextable <- flextable(median_df_wide) |>
   align(align = "center", part = "body") |>
   align(align = "center", part = "header") |> 
   valign(valign = "center", part = "header") |>
   color(j = 3:7, color = colormatrix) 
+
+median_flextable
+
 ```
 
-Median salaries (CDN per annum) of Canadian core public service employees from 2017-2021, rounded to the nearest \$50. Median salary was estimated with [Formula 1](https://employment-equity.github.io/DI.html#estimating-median-salary). Orange values indicate a higher value than the "all employees" group, and blue values indicate a lower value per year. Data from [Treasury Board of Canada Secretariat Diversity and Inclusion Statistics.](https://www.canada.ca/en/treasury-board-secretariat/services/innovation/human-resources-statistics/diversity-inclusion-statistics.html)
+Median salaries (CDN per annum) of Canadian core public service employees from 2017-2024, rounded to the nearest \$50. Median salary was estimated with [Formula 1](https://employment-equity.github.io/DI.html#estimating-median-salary). Orange values indicate a higher value than the "all employees" group, and blue values indicate a lower value per year. Data from [Treasury Board of Canada Secretariat Diversity and Inclusion Statistics.](https://www.canada.ca/en/treasury-board-secretariat/services/innovation/human-resources-statistics/diversity-inclusion-statistics.html)
 :::
 
 ::: {.content-visible when-profile="french"}
@@ -431,22 +311,23 @@ Median salaries (CDN per annum) of Canadian core public service employees from 2
 # Function for applying french formatting to numbers
 fr_format <- function(cols) { 
   
- format(x = cols, big.mark = " ", scientific = FALSE, trim = TRUE)
+ format(x = cols, 
+        big.mark = ".", 
+        scientific = FALSE, 
+        trim = TRUE)
 
 }
 
-# Add french group labels 
+# Get french labels 
+median_labels_fr <- labels |> 
+  filter(type == "median") |>
+  select(variable, fr) |> 
+  with(setNames(fr, variable))
+
+# Edits for french table
 median_df_wide_fr <- median_df_wide |> 
-  rename("Année" = "Year",
-         "Tous les employés" = "All Employees",
-         "Employés Non-Minorité visible" = "Non-Visible Minority Employees",
-          "Employés Minorité visible" = "Visible Minority Employees",
-         "Employés de race noire" = "Black Employees",
-        "Employés autochtones" = "Indigenous Employees", 
-         "Employés handicapées" = "Employees with Disabilities") |> 
-  
-  # french formatting of numbers
-  mutate_at(vars(!`Année`), fr_format) 
+  rename_with(~ median_labels_fr) |>  # french labels
+  mutate_at(vars(!`Année`), fr_format)   # french formatting of numbers
   
 
 # Make formatted table
@@ -457,982 +338,77 @@ flextable(median_df_wide_fr) |>
   color(j = 3:7, color = colormatrix) 
 ```
 
-Salaires médians (en dollars canadiens par an) des employés du noyau de la fonction publique canadienne de 2017 à 2021, arrondis aux 50 dollars les plus proches. Pour savoir comment le salaire médian a été calculé, veuillez consulter la page [Sur l'indice de disproportionnalité.](https://employment-equity.github.io/fr/DI.html) Les valeurs orange indiquent une valeur supérieure à celle du groupe "tous les salariés", et les valeurs bleues une valeur inférieure par an. Les données proviennent de [Secrétariat du Conseil du Trésor du Canada Statistiques sur la diversité et l'inclusion.](https://www.canada.ca/fr/secretariat-conseil-tresor/services/innovation/statistiques-ressources-humaines/statistiques-diversite-inclusion.html)
+Salaires médians (en dollars canadiens par an) des employés du noyau de la fonction publique canadienne de 2017 à 2024, arrondis aux 50 dollars les plus proches. Pour savoir comment le salaire médian a été calculé, veuillez consulter la page [Sur l'indice de disproportionnalité.](https://employment-equity.github.io/fr/DI.html) Les valeurs orange indiquent une valeur supérieure à celle du groupe "tous les salariés", et les valeurs bleues une valeur inférieure par an. Les données proviennent de [Secrétariat du Conseil du Trésor du Canada Statistiques sur la diversité et l'inclusion.](https://www.canada.ca/fr/secretariat-conseil-tresor/services/innovation/statistiques-ressources-humaines/statistiques-diversite-inclusion.html)
 :::
 
 :::: {.content-visible when-profile="english"}
 ## Disproportionality Tables
 
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Load in quintile ranges 
+quintile_ranges <- read.csv(here("supplementary_tables/quintile_ranges.csv"))
+
+# Bring in function for calculating DI
+source(here("functions/di_fns.R"))
+
+# Apply to all years
+di_df <- lapply(years, get_di)  |>
+  bind_rows()
+
+# Write file
+write.csv(di_df, file = here("intermediate_data/di.csv"))
+```
+
 ::: panel-tabset
-### 2023
+### 2024
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 
-# In this chunk: calculate DI's and flextable 2023 data
-di_df_2023 <- years_data_clean |>
-  filter(Year == "2023") |>
-  mutate(
-    range_group = case_when(# group salary ranges into quintiles
-      salary_range %in% c(
-        "Under 50,000",
-        "25,000 to 49,999",
-        "50,000 to 54,999",
-        "55,000 to 59,999",
-        "60,000 to 64,999" 
-      ) ~ "Less than $65,000",
-      salary_range %in% c(
-        "65,000 to 69,999",
-        "70,000 to 74,999"
-      ) ~ "$65,000 to $74,999",
-      salary_range %in% c(
-        "75,000 to 79,999", 
-        "80,000 to 84,999",
-        "85,000 to 89,999"
-      ) ~ "$75,000 to $89,999",
-      salary_range %in% c(
-        "90,000 to 94,999",
-        "95,000 to 99,999",
-        "100,000 to 104,999"
-      ) ~ "$90,000 to $104,999",
-      salary_range %in% c(
-        "105,000 to 109,999",
-        "110,000 to 114,999",
-        "115,000 to 119,999",
-        "120,000 to 124,999",
-        "125,000 to 149,999",
-        "150,000 and over"
-      ) ~ "Over $105,000K",
-      TRUE ~ "All ranges"
-    )
-  ) |> 
-  dplyr::group_by(range_group) |>
-  dplyr::summarize(
-    count_all = sum(count_all, na.rm = TRUE),
-    count_black = sum(count_black, na.rm = TRUE),
-    count_vm = sum(count_vm, na.rm = TRUE),
-    count_non_vm = count_all - count_vm,
-    count_indigenous = sum(count_indigenous, na.rm = TRUE),
-    count_pwd = sum(count_pwd, na.rm = TRUE)
-  ) |>
-  ungroup()
+di_table_year("2024")
 
+```
 
-di_df_2023 <- 
-  di_df_2023[c(5, 1, 2, 3, 6, 4), ] |> # reorder rows
-  dplyr::mutate(
-    # create new column for percentage of representation within subgroup
-    per_all = round(count_all / count_all[n()] * 100, 2),
-    per_black = round(count_black / count_black[n()] * 100, 2),
-    per_vm = round(count_vm / count_vm[n()] * 100, 2),
-    per_non_vm = round(count_non_vm / count_non_vm[n()] * 100, 2),
-    per_indigenous = round(count_indigenous / count_indigenous[n()] * 100, 2),
-    per_pwd = round(count_pwd / count_pwd[n()] * 100, 2),
-    
-    # create new column for disproportionality index (DI)
-    di_all = 1,
-    di_black = round(per_black / per_all, 2),
-    di_vm = round(per_vm / per_all, 2),
-    di_non_vm = round(per_non_vm / per_all, 2),
-    di_indigenous = round(per_indigenous / per_all, 2),
-    di_pwd = round(per_pwd / per_all, 2)
-  ) |>
-  select(range_group,
-         per_all,
-         di_all,
-         
-         per_black,
-         di_black,
-         
-         per_vm,
-         di_vm,
-         
-         per_non_vm,
-         di_non_vm,
-         
-         per_indigenous,
-         di_indigenous,
-         
-         per_pwd,
-         di_pwd) |> 
-  mutate(year = "2023")
+### 2023
 
-# ---- Export Table 2023
-# Create table to show raw data 
-# Remove chart columns amd convert to flextable object
-# REMOVE YEAR TOO
-export_table_2023 <- flextable(select(di_df_2023, -contains("chart")) |> 
-                                 select(-c("year"))) |>
-  set_header_labels(values = list(
-    range_group = "Salary Range",
-    per_all = "Percent",
-    di_all = "DI",
-    per_black = "Percent",
-    di_black = "DI",
-    per_vm = "Percent",
-    di_vm = "DI",
-    per_non_vm = "Percent",
-    di_non_vm = "DI",
-    per_indigenous = "Percent",
-    di_indigenous = "DI",
-    per_pwd = "Percent",
-    di_pwd = "DI")) |> 
-  add_header_row(colwidths = c(1, 2, 2, 2, 2, 2, 2),
-                 values = c(" ",
-                            "All Employees",
-                            "Black Employees",
-                            "All Visible Minority Employees",
-                            "Non-Visible Minority Employees",
-                            "Indigenous Employees",
-                            "Employees with Disabilities"))
-
-# Align center 
-export_table_2023 |>
-  align(align = "center", part = "body") |>
-  align(align = "center", part = "header")
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+di_table_year("2023")
 ```
 
 ### 2022
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-
-# In this chunk: calculate DI's and flextable 2022 data
-di_df_2022 <- years_data_clean |>
-  filter(Year == "2022") |>
-  mutate(
-    range_group = case_when(# group salary ranges into quintiles
-      salary_range %in% c(
-        "Under 50,000",
-        "25,000 to 49,999",
-        "50,000 to 54,999",
-        "55,000 to 59,999"
-      ) ~ "Less than $60,000",
-      salary_range %in% c(
-        "60,000 to 64,999", 
-        "65,000 to 69,999"
-      ) ~ "$60,000 to $69,999", 
-      salary_range %in% c(
-        "70,000 to 74,999", 
-        "75,000 to 79,999", 
-        "80,000 to 84,999"
-      ) ~ "$70,000 to $84,999",
-      salary_range %in% c(
-        "85,000 to 89,999",
-        "90,000 to 94,999",
-        "95,000 to 99,999"
-      ) ~ "$85,000 to $99,999",
-      salary_range %in% c(
-        "100,000 to 149,999",
-        "150,000 to 199,999",
-        "200,000 to 249,999",
-        "250,000 and over"
-      ) ~ "Over $100,000",
-      TRUE ~ "All ranges"
-    )
-  ) |> 
-  dplyr::group_by(range_group) |>
-  dplyr::summarize(
-    count_all = sum(count_all, na.rm = TRUE),
-    count_black = sum(count_black, na.rm = TRUE),
-    count_vm = sum(count_vm, na.rm = TRUE),
-    count_non_vm = count_all - count_vm,
-    count_indigenous = sum(count_indigenous, na.rm = TRUE),
-    count_pwd = sum(count_pwd, na.rm = TRUE)
-  ) |>
-  ungroup()
-
-
-di_df_2022 <- 
-  di_df_2022[c(5, 1, 2, 3, 6, 4), ] |> # reorder rows
-  dplyr::mutate(
-    # create new column for percentage of representation within subgroup
-    per_all = round(count_all / count_all[n()] * 100, 2),
-    per_black = round(count_black / count_black[n()] * 100, 2),
-    per_vm = round(count_vm / count_vm[n()] * 100, 2),
-    per_non_vm = round(count_non_vm / count_non_vm[n()] * 100, 2),
-    per_indigenous = round(count_indigenous / count_indigenous[n()] * 100, 2),
-    per_pwd = round(count_pwd / count_pwd[n()] * 100, 2),
-    
-    # create new column for disproportionality index (DI)
-    di_all = 1,
-    di_black = round(per_black / per_all, 2),
-    di_vm = round(per_vm / per_all, 2),
-    di_non_vm = round(per_non_vm / per_all, 2),
-    di_indigenous = round(per_indigenous / per_all, 2),
-    di_pwd = round(per_pwd / per_all, 2),
-    
-    # create new column to highlight difference from 1 for DI
-    chart_black = di_black - 1,
-    chart_vm = di_vm - 1,
-    chart_non_vm = di_non_vm - 1,
-    chart_indigenous = di_indigenous - 1,
-    chart_pwd = di_pwd - 1,
-  ) |>
-  dplyr::select(
-    range_group,
-    per_all,
-    di_all,
-    
-    per_black,
-    di_black,
-    chart_black,
-    
-    per_vm,
-    di_vm,
-    chart_vm,
-    
-    per_non_vm,
-    di_non_vm,
-    chart_non_vm,
-    
-    per_indigenous,
-    di_indigenous,
-    chart_indigenous,
-    
-    per_pwd,
-    di_pwd,
-    chart_pwd
-  ) |> 
-  mutate(year = "2022")
-
-# ---- Export Table 2022
-# Create table to show raw data 
-# Remove chart columns amd convert to flextable object
-# REMOVE YEAR TOO
-export_table_2022 <- flextable(select(di_df_2022, -contains("chart")) |> select(-c("year")))
-
-# Change header labels
-export_table_2022 <- set_header_labels(export_table_2022,
-                                       values = list(
-                                         range_group = "Salary Range",
-                                         per_all = "Percent",
-                                         di_all = "DI",
-                                         per_black = "Percent",
-                                         di_black = "DI",
-                                         per_vm = "Percent",
-                                         di_vm = "DI",
-                                         per_non_vm = "Percent",
-                                         di_non_vm = "DI",
-                                         per_indigenous = "Percent",
-                                         di_indigenous = "DI",
-                                         per_pwd = "Percent",
-                                         di_pwd = "DI"
-                                       )
-)
-
-export_table_2022 <-  add_header_row(
-  export_table_2022,
-  colwidths = c(1, 2, 2, 2, 2, 2, 2),
-  values = c(
-    " ",
-    "All Employees",
-    "Black Employees",
-    "All Visible Minority Employees",
-    "Non-Visible Minority Employees",
-    "Indigenous Employees",
-    "Employees with Disabilities"
-  )
-)
-
-export_table_2022 |>
-  align(align = "center", part = "body") |>
-  align(align = "center", part = "header")
+di_table_year("2022")
 ```
 
 ### 2021
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-# In this chunk: calculate DI's and flextable 2021 data
-di_df_2021 <- years_data_clean |>  
-  filter(Year == "2021") |>
-  mutate(range_group = case_when(
-    salary_range %in% c(
-      "Under 25,000",
-      "25,000 to 49,999",
-      "50,000 to 54,999",
-      "55,000 to 59,999"
-    ) ~ "Less than $60,000",
-    salary_range %in% c(
-      "60,000 to 64,999", 
-      "65,000 to 69,999"
-    ) ~ "$60,000 to $69,999",
-    salary_range %in% c(
-      "70,000 to 74,999", 
-      "75,000 to 79,999", 
-      "80,000 to 84,999"
-    ) ~ "$70,000 to $84,999",
-    salary_range %in% c(
-      "85,000 to 89,999",
-      "90,000 to 94,999",
-      "95,000 to 99,999"
-    ) ~ "$85,000 to $99,999",
-    salary_range %in% c(
-      "100,000 to 149,999",
-      "150,000 to 199,999",
-      "200,000 to 249,999",
-      "250,000 and over"
-    ) ~ "Over $100,000K",
-    TRUE ~ "All ranges"
-  )
-  ) |> # group salary ranges 
-  dplyr::group_by(range_group) |>
-  dplyr::summarize(
-    count_all = sum(count_all, na.rm = TRUE),
-    count_black = sum(count_black, na.rm = TRUE),
-    count_vm = sum(count_vm, na.rm = TRUE),
-    count_non_vm = count_all - count_vm,
-    count_indigenous = sum(count_indigenous, na.rm = TRUE),
-    count_pwd = sum(count_pwd, na.rm = TRUE)) |> 
-  ungroup()
-
-di_df_2021 <- 
-  di_df_2021[c(5, 1, 2, 3, 6, 4), ] |> # reorder rows
-  dplyr::mutate(
-    # create new column for percentage of representation within subgroup
-    per_all = round(count_all / count_all[n()] * 100, 2),
-    per_black = round(count_black / count_black[n()] * 100, 2),
-    per_vm = round(count_vm / count_vm[n()] * 100, 2),
-    per_non_vm = round(count_non_vm / count_non_vm[n()] * 100, 2),
-    per_indigenous = round(count_indigenous / count_indigenous[n()] * 100, 2),
-    per_pwd = round(count_pwd / count_pwd[n()] * 100, 2),
-    
-    # create new column for disproportionality index (DI)
-    di_all = 1,
-    di_black = round(per_black / per_all, 2),
-    di_vm = round(per_vm / per_all, 2),
-    di_non_vm = round(per_non_vm / per_all, 2),
-    di_indigenous = round(per_indigenous / per_all, 2),
-    di_pwd = round(per_pwd / per_all, 2),
-    
-    # create new column to highlight difference from 1 for DI
-    chart_black = di_black - 1,
-    chart_vm = di_vm - 1,
-    chart_non_vm = di_non_vm - 1,
-    chart_indigenous = di_indigenous - 1,
-    chart_pwd = di_pwd - 1,
-  ) |>
-  dplyr::select(
-    range_group,
-    per_all,
-    di_all,
-    
-    per_black,
-    di_black,
-    chart_black,
-    
-    per_vm,
-    di_vm,
-    chart_vm,
-    
-    per_non_vm,
-    di_non_vm,
-    chart_non_vm,
-    
-    per_indigenous,
-    di_indigenous,
-    chart_indigenous,
-    
-    per_pwd,
-    di_pwd,
-    chart_pwd
-  ) |> 
-  mutate(year = "2021")
-
-# ---- Export Table 2021
-# Create table to show raw data 
-# Remove chart columns amd convert to flextable object
-export_table_2021 <- flextable(select(di_df_2021, -contains("chart")) |> select(-c("year")))
-
-# Change header labels
-export_table_2021 <- set_header_labels(export_table_2021,
-                                       values = list(
-                                         range_group = "Salary Range",
-                                         per_all = "Percent",
-                                         di_all = "DI",
-                                         per_black = "Percent",
-                                         di_black = "DI",
-                                         per_vm = "Percent",
-                                         di_vm = "DI",
-                                         per_non_vm = "Percent",
-                                         di_non_vm = "DI",
-                                         per_indigenous = "Percent",
-                                         di_indigenous = "DI",
-                                         per_pwd = "Percent",
-                                         di_pwd = "DI"
-                                       )
-)
-
-export_table_2021 <-  add_header_row(
-  export_table_2021,
-  colwidths = c(1, 2, 2, 2, 2, 2, 2),
-  values = c(
-    " ",
-    "All Employees",
-    "Black Employees",
-    "All Visible Minority Employees",
-    "Non-Visible Minority Employees",
-    "Indigenous Employees",
-    "Employees with Disabilities"
-  )
-)
-
-export_table_2021 |>
-  align(align = "center", part = "body") |>
-  align(align = "center", part = "header")
+di_table_year("2021")
 ```
 
 ### 2020
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-# In this chunk: calculate DI's and flextable 2020 data
-di_df_2020 <- years_data_clean |>  
-  filter(Year == "2020") |> mutate(
-    salary_range = sub(
-      pattern = "    ",
-      replacement = " ",
-      x = salary_range
-    ), # remove extra spaces in salary range column
-    range_group = case_when(
-      salary_range %in% c(
-        "Under 50,000",
-        "50,000 to 54,999",
-        "55,000 to 59,999"
-      ) ~ "Less than $60,000",
-      salary_range %in% c(
-        "60,000 to 64,999",
-        "65,000 to 69,999"
-      ) ~ "$60,000 to $69,999",
-      salary_range %in% c(
-        "70,000 to 74,999",
-        "75,000 to 79,999",
-        "80,000 to 84,999"
-      ) ~ "$70,000 to $84,999",
-      salary_range %in% c(
-        "85,000 to 89,999",
-        "90,000 to 94,999",
-        "95,000 to 99,999"
-      ) ~ "$85,000 to $99,999",
-      salary_range %in% c(
-        "100,000 to 149,999",
-        "150,000 to 199,999",
-        "200,000 to 249,999",
-        "250,000 and over"
-      ) ~ "Over $100,000K",
-      TRUE ~ "All ranges"
-    )
-  ) |> # group salary ranges into quintiles
-  dplyr::group_by(range_group) |>
-  dplyr::summarize(
-    count_all = sum(count_all, na.rm = TRUE),
-    count_black = sum(count_black, na.rm = TRUE),
-    count_vm = sum(count_vm, na.rm = TRUE),
-    count_non_vm = count_all - count_vm,
-    count_indigenous = sum(count_indigenous, na.rm = TRUE),
-    count_pwd = sum(count_pwd, na.rm = TRUE)) |> 
-  ungroup() # summarize values in predetermined salary range groups
-
-di_df_2020 <- 
-  di_df_2020[c(5, 1, 2, 3, 6, 4), ] |> # reorder rows
-  dplyr::mutate(
-    # create new column for percentage of representation within subgroup
-    per_all = round(count_all / count_all[n()] * 100, 2),
-    per_black = round(count_black / count_black[n()] * 100, 2),
-    per_vm = round(count_vm / count_vm[n()] * 100, 2),
-    per_non_vm = round(count_non_vm / count_non_vm[n()] * 100, 2),
-    per_indigenous = round(count_indigenous / count_indigenous[n()] * 100, 2),
-    per_pwd = round(count_pwd / count_pwd[n()] * 100, 2),
-    
-    # create new column for disproportionality index (DI)
-    di_all = 1,
-    di_black = round(per_black / per_all, 2),
-    di_vm = round(per_vm / per_all, 2),
-    di_non_vm = round(per_non_vm / per_all, 2),
-    di_indigenous = round(per_indigenous / per_all, 2),
-    di_pwd = round(per_pwd / per_all, 2),
-    
-    # create new column to highlight difference from 1 for DI
-    chart_black = di_black - 1,
-    chart_vm = di_vm - 1,
-    chart_non_vm = di_non_vm - 1,
-    chart_indigenous = di_indigenous - 1,
-    chart_pwd = di_pwd - 1,
-  ) |>
-  select(
-    range_group,
-    per_all,
-    di_all,
-    
-    per_black,
-    di_black,
-    chart_black,
-    
-    per_vm,
-    di_vm,
-    chart_vm,
-    
-    per_non_vm,
-    di_non_vm,
-    chart_non_vm,
-    
-    per_indigenous,
-    di_indigenous,
-    chart_indigenous,
-    
-    per_pwd,
-    di_pwd,
-    chart_pwd
-  ) |> 
-  mutate(year = "2020")
-
-# ---- Export Table 2020
-# Create table to show raw data 
-# Remove chart columns amd convert to flextable object
-export_table_2020 <- flextable(select(di_df_2020, -contains("chart")) |> select(-c("year")))
-
-# Change header labels
-export_table_2020 <- set_header_labels(export_table_2020,
-                                       values = list(
-                                         range_group = "Salary Range",
-                                         per_all = "Percent",
-                                         di_all = "DI",
-                                         per_black = "Percent",
-                                         di_black = "DI",
-                                         per_vm = "Percent",
-                                         di_vm = "DI",
-                                         per_non_vm = "Percent",
-                                         di_non_vm = "DI",
-                                         per_indigenous = "Percent",
-                                         di_indigenous = "DI",
-                                         per_pwd = "Percent",
-                                         di_pwd = "DI"
-                                       )
-)
-export_table_2020 <-  add_header_row(export_table_2020,
-                                     colwidths = c(1, 2,2,2,2,2,2),
-                                     values = c(" ", "All Employees", "Black Employees", "All Visible Minority Employees", "Non-Visible Minority Employees", "Indigenous Employees", "Employees with Disabilities"))
-
-export_table_2020 |>
-  align(align = "center", part = "body") |>
-  align(align = "center", part = "header")
+di_table_year("2020")
 ```
 
 ### 2019
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-# In this chunk: calculate DI's and flextable 2019 data
-di_df_2019 <- years_data_clean |>  
-  filter(Year == "2019") |> mutate(
-    salary_range = sub(
-      pattern = "    ",
-      replacement = " ",
-      x = salary_range
-    ), # remove extra spaces in salary range column
-    range_group = case_when(
-      salary_range %in% c(
-        "Under 15,000",
-        "15,000 to 49,999",
-        "50,000 to 54,999",
-        "55,000 to 59,999"
-      ) ~ "Less than $60,000",
-      salary_range %in% c(
-        "60,000 to 64,999",
-        "65,000 to 69,999"
-      ) ~ "$60,000 to $69,999",
-      salary_range %in% c(
-        "70,000 to 74,999",
-        "75,000 to 79,999",
-        "80,000 to 84,999"
-      ) ~ "$70,000 to $84,999",
-      salary_range %in% c(
-        "85,000 to 89,999",
-        "90,000 to 94,999",
-        "95,000 to 99,999"
-      ) ~ "$85,000 to $99,999",
-      salary_range %in% c(
-        "100,000 to 149,999",
-        "150,000 to 199,999",
-        "200,000 to 249,999",
-        "250,000 and over"
-      ) ~ "Over $100,000K",
-      TRUE ~ "All ranges"
-    )
-  ) |> # group salary ranges into quintiles
-  dplyr::group_by(range_group) |>
-  dplyr::summarize(
-    count_all = sum(count_all, na.rm = TRUE),
-    count_black = sum(count_black, na.rm = TRUE),
-    count_vm = sum(count_vm, na.rm = TRUE),
-    count_non_vm = count_all - count_vm,
-    count_indigenous = sum(count_indigenous, na.rm = TRUE),
-    count_pwd = sum(count_pwd, na.rm = TRUE)) |> 
-  ungroup() # summarize values in predetermined salary range groups
-
-
-di_df_2019 <- 
-  di_df_2019[c(5, 1, 2, 3, 6, 4), ] |> # reorder rows
-  dplyr::mutate(
-    # create new column for percentage of representation within subgroup
-    per_all = round(count_all / count_all[n()] * 100, 2),
-    per_black = round(count_black / count_black[n()] * 100, 2),
-    per_vm = round(count_vm / count_vm[n()] * 100, 2),
-    per_non_vm = round(count_non_vm / count_non_vm[n()] * 100, 2),
-    per_indigenous = round(count_indigenous / count_indigenous[n()] * 100, 2),
-    per_pwd = round(count_pwd / count_pwd[n()] * 100, 2),
-    
-    # create new column for disproportionality index (DI)
-    di_all = 1,
-    di_black = round(per_black / per_all, 2),
-    di_vm = round(per_vm / per_all, 2),
-    di_non_vm = round(per_non_vm / per_all, 2),
-    di_indigenous = round(per_indigenous / per_all, 2),
-    di_pwd = round(per_pwd / per_all, 2),
-    
-    # create new column to highlight difference from 1 for DI
-    chart_black = di_black - 1,
-    chart_vm = di_vm - 1,
-    chart_non_vm = di_non_vm - 1,
-    chart_indigenous = di_indigenous - 1,
-    chart_pwd = di_pwd - 1,
-  ) |>
-  select(
-    range_group,
-    per_all,
-    di_all,
-    
-    per_black,
-    di_black,
-    chart_black,
-    
-    per_vm,
-    di_vm,
-    chart_vm,
-    
-    per_non_vm,
-    di_non_vm,
-    chart_non_vm,
-    
-    per_indigenous,
-    di_indigenous,
-    chart_indigenous,
-    
-    per_pwd,
-    di_pwd,
-    chart_pwd
-  ) |> 
-  mutate(year = "2019")
-
-# ---- Export Table 2019
-# Create table to show raw data 
-# Remove chart columns amd convert to flextable object
-export_table_2019 <- flextable(select(di_df_2019, -contains("chart")) |> select(-c("year")))
-
-# Change header labels
-export_table_2019 <- set_header_labels(export_table_2019,
-                                       values = list(
-                                         range_group = "Salary Range",
-                                         per_all = "Percent",
-                                         di_all = "DI",
-                                         per_black = "Percent",
-                                         di_black = "DI",
-                                         per_vm = "Percent",
-                                         di_vm = "DI",
-                                         per_non_vm = "Percent",
-                                         di_non_vm = "DI",
-                                         per_indigenous = "Percent",
-                                         di_indigenous = "DI",
-                                         per_pwd = "Percent",
-                                         di_pwd = "DI"
-                                       )
-)
-export_table_2019 <-  add_header_row(
-  export_table_2019,
-  colwidths = c(1, 2, 2, 2, 2, 2, 2),
-  values = c(
-    " ",
-    "All Employees",
-    "Black Employees",
-    "All Visible Minority Employees",
-    "Non-Visible Minority Employees",
-    "Indigenous Employees",
-    "Employees with Disabilities"
-  )
-)
-
-export_table_2019 |>
-  align(align = "center", part = "body") |>
-  align(align = "center", part = "header")
+di_table_year("2019")
 ```
 
 ### 2018
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-# In this chunk: calculate DI's and flextable 2018 data
-di_df_2018 <- years_data_clean |>  
-  filter(Year == "2018") |> mutate(
-    salary_range = sub(
-      pattern = "    ",
-      replacement = " ",
-      x = salary_range
-    ), # remove extra spaces in salary range column
-    range_group = case_when(
-      salary_range %in% c(
-        "Under 50,000",
-        "50,000 to 54,999",
-        "55,000 to 59,999"
-      ) ~ "Less than $60,000",
-      salary_range %in% c(
-        "60,000 to 64,999",
-        "65,000 to 69,999"
-      ) ~ "$60,000 to $69,999",
-      salary_range %in% c(
-        "70,000 to 74,999",
-        "75,000 to 79,999",
-        "80,000 to 84,999"
-      ) ~ "$70,000 to $84,999",
-      salary_range %in% c(
-        "85,000 to 89,999",
-        "90,000 to 94,999",
-        "95,000 to 99,999"
-      ) ~ "$85,000 to $99,999",
-      salary_range %in% c(
-        "100,000 and over"
-      ) ~ "Over $100,000K",
-      TRUE ~ "All ranges"
-    )
-  ) |> # group salary ranges to match Dr. Martin's numbers
-  dplyr::group_by(range_group) |>
-  dplyr::summarize(
-    count_all = sum(count_all, na.rm = TRUE),
-    count_black = sum(count_black, na.rm = TRUE),
-    count_vm = sum(count_vm, na.rm = TRUE),
-    count_non_vm = count_all - count_vm,
-    count_indigenous = sum(count_indigenous, na.rm = TRUE),
-    count_pwd = sum(count_pwd, na.rm = TRUE)) |> 
-  ungroup() # summarize values in predetermined salary range groups
-
-
-di_df_2018 <- 
-  di_df_2018[c(5, 1, 2, 3, 6, 4), ] |> # reorder rows
-  dplyr::mutate(
-    # create new column for percentage of representation within subgroup
-    per_all = round(count_all / count_all[n()] * 100, 2),
-    per_black = round(count_black / count_black[n()] * 100, 2),
-    per_vm = round(count_vm / count_vm[n()] * 100, 2),
-    per_non_vm = round(count_non_vm / count_non_vm[n()] * 100, 2),
-    per_indigenous = round(count_indigenous / count_indigenous[n()] * 100, 2),
-    per_pwd = round(count_pwd / count_pwd[n()] * 100, 2),
-    
-    # create new column for disproportionality index (DI)
-    di_all = 1,
-    di_black = round(per_black / per_all, 2),
-    di_vm = round(per_vm / per_all, 2),
-    di_non_vm = round(per_non_vm / per_all, 2),
-    di_indigenous = round(per_indigenous / per_all, 2),
-    di_pwd = round(per_pwd / per_all, 2),
-    
-    # create new column to highlight difference from 1 for DI
-    chart_black = di_black - 1,
-    chart_vm = di_vm - 1,
-    chart_non_vm = di_non_vm - 1,
-    chart_indigenous = di_indigenous - 1,
-    chart_pwd = di_pwd - 1,
-  ) |>
-  select(
-    range_group,
-    per_all,
-    di_all,
-    
-    per_black,
-    di_black,
-    chart_black,
-    
-    per_vm,
-    di_vm,
-    chart_vm,
-    
-    per_non_vm,
-    di_non_vm,
-    chart_non_vm,
-    
-    per_indigenous,
-    di_indigenous,
-    chart_indigenous,
-    
-    per_pwd,
-    di_pwd,
-    chart_pwd
-  ) |> 
-  mutate(year = "2018")
-
-
-# ---- Export Table 2018
-# Create table to show raw data 
-# Remove chart columns amd convert to flextable object
-export_table_2018 <- flextable(select(di_df_2018, -contains("chart")) |> select(-c("year")))
-
-# Change header labels
-export_table_2018 <- set_header_labels(export_table_2018,
-                                       values = list(
-                                         range_group = "Salary Range",
-                                         per_all = "Percent",
-                                         di_all = "DI",
-                                         per_black = "Percent",
-                                         di_black = "DI",
-                                         per_vm = "Percent",
-                                         di_vm = "DI",
-                                         per_non_vm = "Percent",
-                                         di_non_vm = "DI",
-                                         per_indigenous = "Percent",
-                                         di_indigenous = "DI",
-                                         per_pwd = "Percent",
-                                         di_pwd = "DI"
-                                       )
-)
-export_table_2018 <-  add_header_row(export_table_2018,
-                                     colwidths = c(1, 2,2,2,2,2,2),
-                                     values = c(" ", "All Employees", "Black Employees", "All Visible Minority Employees", "Non-Visible Minority Employees", "Indigenous Employees", "Employees with Disabilities"))
-
-
-export_table_2018 |>
-  align(align = "center", part = "body") |>
-  align(align = "center", part = "header")
+di_table_year("2018")
 ```
 
 ### 2017
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 
-# In this chunk: calculate DI's and flextable 2017 data
-di_df_2017 <- years_data_clean |>  
-  filter(Year == "2017") |> dplyr::mutate(
-    salary_range = sub(
-      pattern = "    ",
-      replacement = " ",
-      x = salary_range
-    ), # remove extra spaces in salary range column
-    range_group = case_when(
-      salary_range %in% c("Under 50,000",
-                          "50,000 to 54,999"
-      ) ~ "Less than $55,000",
-      salary_range %in% c("55,000 to 59,999", 
-                          "60,000 to 64,999"
-      ) ~ "$55,000 to $64,999",
-      salary_range %in% c("65,000 to 69,999", 
-                          "70,000 to 74,999", 
-                          "75,000 to 79,999"
-      ) ~ "$65,000 to $79,999",
-      salary_range %in% c("80,000 to 84,999", 
-                          "85,000 to 89,999",
-                          "90,000 to 94,999"
-      ) ~ "$80,000 to $94,999",
-      salary_range %in% c("95,000 to 99,999", 
-                          "100,000 and over"
-      ) ~ "Over $95,000K",
-      TRUE ~ "All ranges"
-    )
-  ) |> # group salary ranges into quintiles
-  dplyr::group_by(range_group) |>
-  dplyr::summarize(
-    count_all = sum(count_all, na.rm = TRUE),
-    count_black = sum(count_black, na.rm = TRUE),
-    count_vm = sum(count_vm, na.rm = TRUE),
-    count_non_vm = count_all - count_vm,
-    count_indigenous = sum(count_indigenous, na.rm = TRUE),
-    count_pwd = sum(count_pwd, na.rm = TRUE)) |> 
-  ungroup() # summarize values in predetermined salary range groups
-
-di_df_2017 <- 
-  di_df_2017[c(5, 1, 2, 3, 6, 4), ] |> # reorder rows
-  dplyr::mutate(
-    # create new column for percentage of representation within subgroup
-    per_all = round(count_all / count_all[n()] * 100, 2),
-    per_black = round(count_black / count_black[n()] * 100, 2),
-    per_vm = round(count_vm / count_vm[n()] * 100, 2),
-    per_non_vm = round(count_non_vm / count_non_vm[n()] * 100, 2),
-    per_indigenous = round(count_indigenous / count_indigenous[n()] * 100, 2),
-    per_pwd = round(count_pwd / count_pwd[n()] * 100, 2),
-    
-    # create new column for disproportionality index (DI)
-    di_all = 1,
-    di_black = round(per_black / per_all, 2),
-    di_vm = round(per_vm / per_all, 2),
-    di_non_vm = round(per_non_vm / per_all, 2),
-    di_indigenous = round(per_indigenous / per_all, 2),
-    di_pwd = round(per_pwd / per_all, 2),
-    
-    # create new column to highlight difference from 1 for DI
-    chart_black = di_black - 1,
-    chart_vm = di_vm - 1,
-    chart_non_vm = di_non_vm - 1,
-    chart_indigenous = di_indigenous - 1,
-    chart_pwd = di_pwd - 1,
-  ) |>
-  select(
-    range_group,
-    per_all,
-    di_all,
-    
-    per_black,
-    di_black,
-    chart_black,
-    
-    per_vm,
-    di_vm,
-    chart_vm,
-    
-    per_non_vm,
-    di_non_vm,
-    chart_non_vm,
-    
-    per_indigenous,
-    di_indigenous,
-    chart_indigenous,
-    
-    per_pwd,
-    di_pwd,
-    chart_pwd
-  ) |> 
-  mutate(year = "2017")
-
-# ---- Export Table 2017
-# Create table to show raw data 
-# Remove chart columns amd convert to flextable object
-export_table_2017 <- flextable(select(di_df_2017, -contains("chart")) |> select(-c("year")))
-# Change header labels
-export_table_2017 <- set_header_labels(export_table_2017,
-                                       values = list(
-                                         range_group = "Salary Range",
-                                         per_all = "Percent",
-                                         di_all = "DI",
-                                         per_black = "Percent",
-                                         di_black = "DI",
-                                         per_vm = "Percent",
-                                         di_vm = "DI",
-                                         per_non_vm = "Percent",
-                                         di_non_vm = "DI",
-                                         per_indigenous = "Percent",
-                                         di_indigenous = "DI",
-                                         per_pwd = "Percent",
-                                         di_pwd = "DI"
-                                       )
-)
-
-export_table_2017 <-  add_header_row(
-  export_table_2017,
-  colwidths = c(1, 2, 2, 2, 2, 2, 2),
-  values = c(
-    " ",
-    "All Employees",
-    "Black Employees",
-    "All Visible Minority Employees",
-    "Non-Visible Minority Employees",
-    "Indigenous Employees",
-    "Employees with Disabilities"
-  )
-)
-
-export_table_2017 |>
-  align(align = "center", part = "body") |>
-  align(align = "center", part = "header")
+di_table_year("2017")
 ```
 :::
 ::::
@@ -1440,498 +416,130 @@ export_table_2017 |>
 :::: {.content-visible when-profile="french"}
 ## Tableaux de disproportionnalité
 
+
 ::: panel-tabset
+### 2024
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+di_table_year_fr("2024")
+```
+
+
+
 ### 2023
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-export_table_2023 <-
-  flextable(select(di_df_2023,-contains("chart")) |>
-              select(-c("year"))) |> # Change header labels
-  set_header_labels(
-    values = list(
-      range_group = "Fourchette des salaires",
-      per_all = "Pourcentage",
-      di_all = "ID",
-      per_black = "Pourcentage",
-      di_black = "ID",
-      per_vm = "Pourcentage",
-      di_vm = "ID",
-      per_non_vm = "Pourcentage",
-      di_non_vm = "ID",
-      per_indigenous = "Pourcentage",
-      di_indigenous = "ID",
-      per_pwd = "Pourcentage",
-      di_pwd = "ID"
-    )) |>
-      add_header_row(
-        colwidths = c(1, 2, 2, 2, 2, 2, 2),
-        values = c(
-          " ",
-          "Tous les employés",
-          "Employés de race noire",
-          "Employés Minorité visible",
-          "Employés Non-Minorité visible",
-          "Employés autochtones",
-          "Employés handicapées"))
-    
-    export_table_2023 |>
-      align(align = "center", part = "body") |>
-      align(align = "center", part = "header"
-      )
-
+di_table_year_fr("2023")
 ```
 
 ### 2022
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-# Create table to show raw data 
-# Remove chart columns amd convert to flextable object
-export_table_2022 <- flextable(select(di_df_2022, -contains("chart")) |> select(-c("year")))
-
-# Change header labels
-export_table_2022 <- set_header_labels(export_table_2022,
-  values = list(
-    range_group = "Fourchette des salaires",
-    per_all = "Pourcentage",
-    di_all = "ID",
-    per_black = "Pourcentage",
-    di_black = "ID",
-    per_vm = "Pourcentage",
-    di_vm = "ID",
-    per_non_vm = "Pourcentage",
-    di_non_vm = "ID",
-    per_indigenous = "Pourcentage",
-    di_indigenous = "ID",
-    per_pwd = "Pourcentage",
-    di_pwd = "ID"
-  )
-)
-
-export_table_2022 <-  add_header_row(
-  export_table_2022,
-  colwidths = c(1, 2, 2, 2, 2, 2, 2),
-  values = c(
-    " ",
-    "Tous les employés",
-    "Employés de race noire",
-    "Employés Minorité visible",
-    "Employés Non-Minorité visible",
-    "Employés autochtones",
-    "Employés handicapées"
-  )
-)
-
-export_table_2022 |>
-  align(align = "center", part = "body") |>
-  align(align = "center", part = "header")
-
+di_table_year_fr("2022")
 ```
 
 ### 2021
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-# In this chunk: calculate DI's and flextable 2021 data
-export_table_2021 <-
-  flextable(select(di_df_2021,-contains("chart")) |>
-              select(-c("year"))) |> # Change header labels
-  set_header_labels(
-    values = list(
-      range_group = "Fourchette des salaires",
-      per_all = "Pourcentage",
-      di_all = "ID",
-      per_black = "Pourcentage",
-      di_black = "ID",
-      per_vm = "Pourcentage",
-      di_vm = "ID",
-      per_non_vm = "Pourcentage",
-      di_non_vm = "ID",
-      per_indigenous = "Pourcentage",
-      di_indigenous = "ID",
-      per_pwd = "Pourcentage",
-      di_pwd = "ID"
-    )) |>
-      add_header_row(
-        colwidths = c(1, 2, 2, 2, 2, 2, 2),
-        values = c(
-          " ",
-          "Tous les employés",
-          "Employés de race noire",
-          "Employés Minorité visible",
-          "Employés Non-Minorité visible",
-          "Employés autochtones",
-          "Employés handicapées"))
-    
-    export_table_2021 |>
-      align(align = "center", part = "body") |>
-      align(align = "center", part = "header"
-      )
-
-```
-
-### 2020
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-export_table_2020 <-
-  flextable(select(di_df_2020,-contains("chart")) |>
-              select(-c("year"))) |> # Change header labels
-  set_header_labels(
-    values = list(
-      range_group = "Fourchette des salaires",
-      per_all = "Pourcentage",
-      di_all = "ID",
-      per_black = "Pourcentage",
-      di_black = "ID",
-      per_vm = "Pourcentage",
-      di_vm = "ID",
-      per_non_vm = "Pourcentage",
-      di_non_vm = "ID",
-      per_indigenous = "Pourcentage",
-      di_indigenous = "ID",
-      per_pwd = "Pourcentage",
-      di_pwd = "ID"
-    )) |>
-      add_header_row(
-        colwidths = c(1, 2, 2, 2, 2, 2, 2),
-        values = c(
-          " ",
-          "Tous les employés",
-          "Employés de race noire",
-          "Employés Minorité visible",
-          "Employés Non-Minorité visible",
-          "Employés autochtones",
-          "Employés handicapées"))
-    
-    export_table_2020 |>
-      align(align = "center", part = "body") |>
-      align(align = "center", part = "header"
-      )
-
+di_table_year_fr("2021")
 ```
 
 ### 2019
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-export_table_2019 <-
-  flextable(select(di_df_2019,-contains("chart")) |>
-              select(-c("year"))) |> # Change header labels
-  set_header_labels(
-    values = list(
-      range_group = "Fourchette des salaires",
-      per_all = "Pourcentage",
-      di_all = "ID",
-      per_black = "Pourcentage",
-      di_black = "ID",
-      per_vm = "Pourcentage",
-      di_vm = "ID",
-      per_non_vm = "Pourcentage",
-      di_non_vm = "ID",
-      per_indigenous = "Pourcentage",
-      di_indigenous = "ID",
-      per_pwd = "Pourcentage",
-      di_pwd = "ID"
-    )) |>
-      add_header_row(
-        colwidths = c(1, 2, 2, 2, 2, 2, 2),
-        values = c(
-          " ",
-          "Tous les employés",
-          "Employés de race noire",
-          "Employés Minorité visible",
-          "Employés Non-Minorité visible",
-          "Employés autochtones",
-          "Employés handicapées"))
-    
-    export_table_2019 |>
-      align(align = "center", part = "body") |>
-      align(align = "center", part = "header"
-      )
-
+di_table_year_fr("2019")
 ```
 
 ### 2018
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-export_table_2018 <-
-  flextable(select(di_df_2018,-contains("chart")) |>
-              select(-c("year"))) |> # Change header labels
-  set_header_labels(
-    values = list(
-      range_group = "Fourchette des salaires",
-      per_all = "Pourcentage",
-      di_all = "ID",
-      per_black = "Pourcentage",
-      di_black = "ID",
-      per_vm = "Pourcentage",
-      di_vm = "ID",
-      per_non_vm = "Pourcentage",
-      di_non_vm = "ID",
-      per_indigenous = "Pourcentage",
-      di_indigenous = "ID",
-      per_pwd = "Pourcentage",
-      di_pwd = "ID"
-    )) |>
-      add_header_row(
-        colwidths = c(1, 2, 2, 2, 2, 2, 2),
-        values = c(
-          " ",
-          "Tous les employés",
-          "Employés de race noire",
-          "Employés Minorité visible",
-          "Employés Non-Minorité visible",
-          "Employés autochtones",
-          "Employés handicapées"))
-    
-    export_table_2018 |>
-      align(align = "center", part = "body") |>
-      align(align = "center", part = "header"
-      )
-
+di_table_year_fr("2018")
 ```
 
 ### 2017
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-export_table_2017 <-
-  flextable(select(di_df_2017,-contains("chart")) |>
-              select(-c("year"))) |> # Change header labels
-  set_header_labels(
-    values = list(
-      range_group = "Fourchette des salaires",
-      per_all = "Pourcentage",
-      di_all = "ID",
-      per_black = "Pourcentage",
-      di_black = "ID",
-      per_vm = "Pourcentage",
-      di_vm = "ID",
-      per_non_vm = "Pourcentage",
-      di_non_vm = "ID",
-      per_indigenous = "Pourcentage",
-      di_indigenous = "ID",
-      per_pwd = "Pourcentage",
-      di_pwd = "ID"
-    )) |>
-      add_header_row(
-        colwidths = c(1, 2, 2, 2, 2, 2, 2),
-        values = c(
-          " ",
-          "Tous les employés",
-          "Employés de race noire",
-          "Employés Minorité visible",
-          "Employés Non-Minorité visible",
-          "Employés autochtones",
-          "Employés handicapées"))
-    
-    export_table_2017 |>
-      align(align = "center", part = "body") |>
-      align(align = "center", part = "header"
-      )
-
+di_table_year_fr("2017")
 ```
 :::
 ::::
 
 ```{r echo = FALSE, message=FALSE, warning=FALSE, include = FALSE}
 
-# Function to move data to long format for DI plotting
-format_DI <- function(Year) {
-  assign(paste("di_df_long", Year, sep = "_"), # create an object with year
-         
-         {get(paste("di_df", Year, sep = "_")) |> # pull di_df_year df's
-             pivot_longer(cols = matches(c("per", "di", "chart")),
-                          names_to = "temp",
-                          values_to = "value") |> # reshape data so it's easier to deal with
-             mutate(
+# Establish factor level order for subgroups
+subgroup_order <- labels |> 
+  filter(type == "median") |> 
+  filter(variable != c("year", "all")) |> 
+  pull(en) 
+
+
+# Convert DI df to long format for plotting 
+di_df_long <- di_df |>  
+  rename("Year" = "year_di") |> 
+  pivot_longer(cols = matches(c("per", "di")),
+                                     names_to = "temp", #unit of measurement
+                                     values_to = "value") |> 
+  separate(col = temp, sep = "_", 
+           into = c("uom", "subgroup"),
+           extra = "merge",
+           fill = "left") |> 
+  mutate(
                # separate into unit of measure
                uom = case_when(
-                 grepl(pattern = "^per", x = as.character(temp)) ~ "Percent",
-                 grepl(pattern = "^di", x = as.character(temp)) ~ "DI",
-                 grepl(pattern = "^chart", x = as.character(temp)) ~ "Chart"
-               ),
-               # separate into subgroups
-               subgroup = case_when(
-                 grepl(pattern = "all$", x = temp) ~ "All",
-                 grepl(pattern = "black$", x = temp) ~ "Black",
-                 grepl(pattern = "non_vm$", x = temp) ~ "Non Visible Minorities",
-                 grepl(pattern = "_vm$", x = temp) ~ "Visible Minorities",
-                 grepl(pattern = "indigenous$", x = temp) ~ "Indigenous",
-                 grepl(pattern = "pwd$", x = temp) ~ "Persons with disabilities"
-               )
-             ) |>
-             dplyr::select(
-               "Salary range" = range_group,
-               Value = value,
-               "Unit of measure" = uom,
-               Subgroup = subgroup
-             ) |>
-             filter(`Salary range` != "All ranges") |>
-             filter(Subgroup != "All") |> # Remove "all" category entries
-             mutate(Subgroup = factor(
-               Subgroup,
-               levels = c(
-                 "Non Visible Minorities",
-                 "Visible Minorities",
-                 "Persons with disabilities",
-                 "Indigenous",
-                 "Black"
-               ),
-               labels = c(
-                 "Non-Visible Minority Employees",
-                 "Visible Minority Employees",
-                 "Employees with Disabilities",
-                 "Indigenous Employees",
-                 "Black Employees"
-               )
-             )) |> filter(`Unit of measure` == "DI") |> # Select only DI data
-             mutate(`Salary range` = factor(
-               `Salary range`,
-               levels = c(
-                 "Less than $65,000",
-                 "$65,000 to $74,999",
-                 "$75,000 to $89,999",
-                 "$90,000 to $104,999",
-                 "Over $150,000K",
-                 "Less than $60,000",
-                 "$60,000 to $69,999",
-                 "$70,000 to $84,999",
-                 "$85,000 to $99,999",
-                 "Over $100,000",
-                 "Over $100,000K",
-                 "Less than $55,000",
-                 "$55,000 to $64,999",
-                 "$65,000 to $79,999",
-                 "$80,000 to $94,999",
-                 "Over $95,000K"
-               ),
-               labels = c(
-                 "<65.0K",
-                 "65.0-74.9K",
-                 "75.0-89.9K",
-                 "90.0-104.9K",
-                 "105.0K+",
-                 "<60.0K",
-                 "60.0-69.9K",
-                 "70.0-84.9K",
-                 "85.0-99.9K",
-                 "100.0K+",
-                 "100.0K+",
-                 "<55.0K",
-                 "55.0-64.9K",
-                 "65.0-79.9K",
-                 "80.0-94.9K",
-                 "95.0K+"
-               )
-             )) |>
-             mutate(
-               quintile = dplyr::recode(
-                 `Salary range`,
-                 "<65.0K" = "Bottom 20th Percentile",
-                 "65.0-74.9K" = "20th to 40th Percentile",
-                 "75.0-89.9K" = "40th to 60th Percentile",
-                 "90.0-104.9K" = "60th to 80th Percentile",
-                 "105.0K+" = "Top 20th Percentile",
-                 "<60.0K" = "Bottom 20th Percentile",
-                 "60.0-69.9K" = "20th to 40th Percentile",
-                 "70.0-84.9K" = "40th to 60th Percentile",
-                 "85.0-99.9K" = "60th to 80th Percentile",
-                 "100.0K+" = "Top 20th Percentile",
-                 "<55.0K" = "Bottom 20th Percentile",
-                 "55.0-64.9K" = "20th to 40th Percentile",
-                 "65.0-79.9K" = "40th to 60th Percentile",
-                 "80.0-94.9K" = "60th to 80th Percentile",
-                 "95.0K+" = "Top 20th Percentile"
-               )
-             )
-           
-         }, envir = globalenv())
-  
-}        
+                 grepl(pattern = "^per", x = as.character(uom)) ~ "Percent",
+                 grepl(pattern = "^di", x = as.character(uom)) ~ "DI"
+               )) |> 
+  left_join(labels |>  filter(type == "median") |>  select(variable, en, fr),
+            by = c("subgroup" = "variable")) |> 
+  left_join(labels |> filter(type == "quintile_comparable") |> select(en, fr),
+            by = c("quintile_label" = "en")) |> 
+    rename("Salary range" = "range_label",
+           "Salary percentile" = "quintile_label",
+         "Subgroup" = "en",
+         "Sous-groupe" = "fr.x", 
+         "Percentile de salaire" = "fr.y") |> 
+  filter(uom == "DI",
+         subgroup != "all") |> 
+  mutate(Subgroup = factor(Subgroup,
+         levels = subgroup_order))
 
 
+# Factor level for quintiles (specific to year)
+quintile_order <- quintile_ranges |> 
+  select(quintile_year, range_label) |> 
+  group_by(quintile_year) |> 
+  unique(fromLast = TRUE) |> 
+  filter(range_label != "All ranges")
 
-# Apply to all years
-lapply(years, format_DI) |> 
-  bind_rows()
-
-# Load in Appending function
-AppendMe <- function(dfNames) {
-  do.call(rbind, lapply(dfNames, function(x) {
-    cbind(get(x), source = x)
-  }))
-}
-
-# Append salary data and keep a column with names
-di_datasets <- AppendMe(paste("di_df_long", years, sep = "_"))  |>
-  mutate(
-    source = dplyr::recode(
-      source,
-      # Change id columns to years using factors
-      di_df_long_2023 = "2023",
-      di_df_long_2022 = "2022",
-      di_df_long_2021 = "2021",
-      di_df_long_2020 = "2020",
-      di_df_long_2019 = "2019",
-      di_df_long_2018 = "2018",
-      di_df_long_2017 = "2017"
-    )
-  ) |>
-  rename(year = source) # rename source column to year
-
-# Create french dataset
-di_datasets_fr <-
-  di_datasets |>
-  mutate(Subgroup = factor(
-               Subgroup,
-               levels = c(
-                 "Non-Visible Minority Employees",
-                 "Visible Minority Employees",
-                 "Employees with Disabilities",
-                 "Indigenous Employees",
-                 "Black Employees"
-               ),
-               labels = c(
-                 "Employés Non-Minorité visible",
-                 "Employés Minorité visible",
-                 "Employés handicapées",
-                 "Employés autochtones",
-                 "Employés de race noire"
-               )
-             )) |>
-    mutate(quintile = factor(
-               quintile,
-               levels = c(
-                 "Bottom 20th Percentile",
-                 "20th to 40th Percentile",
-                 "40th to 60th Percentile",
-                 "60th to 80th Percentile",
-                 "Top 20th Percentile"
-               ),
-               labels = c(
-                 "20e inférieur",
-                 "20e à 40e",
-                 "40e à 60e",
-                 "60e à 80e",
-                 "20e supérieur"
-               )
-             ))
-
+# recent year next few plots will deal with 
+recent_year <- "2024"
 ```
 
 ::: {.content-visible when-profile="english"}
-## Plot 1: DI of all groups by salary range (2023)
+## Plot 1: DI of all groups by salary range (2024)
 
 The dotted line represents equitable representation (a DI of 1). It can been seen that Black employees are overrepresented at the lower salary ranges and underrepresented at higher ranges compared to the other groups. As can be seen by the "Non-Visible Minority Employees" bars, an equal DI across all salary ranges should be expected.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width = 10, fig.height = 7.5}
 
-# Grab just 2022 data
-plot1_df <-  di_datasets |> filter(year == "2023")
+# Establish quintile range orders
+quintile_order_plot1 <- quintile_order |> 
+  filter(quintile_year == recent_year) |> 
+  pull(range_label)
+
+
+# Grab  2024 data
+plot1_df <-  di_df_long |> 
+  filter(Year == recent_year & !is.na(`Salary range`)) |> 
+  mutate(`Salary range` = factor(`Salary range`, 
+                                 levels = quintile_order_plot1))
 
 # Make a vector with corresponding colors
 colors = met.brewer("Johnson", 5)
 
 # Bar plot showing salary ranges by group
 ggplot(plot1_df, aes(fill = Subgroup,
-                            y = Value,
+                            y = value,
                             x = `Salary range`)) +
   geom_bar(position = 'dodge',
            stat ='identity') +
@@ -1950,12 +558,12 @@ ggplot(plot1_df, aes(fill = Subgroup,
   guides(fill = guide_legend(nrow=2, byrow=TRUE)) +
   annotate("text",
            y = 1.02,
-            x= "105.0K+",
+            x= ">110.0K",
             hjust = .2,
             label = "Overrepresented") +
   annotate("text",
            y = 0.98,
-            x= "105.0K+",
+            x= ">110.0K",
             hjust = .2,
             label = "Underrepresented")
 ```
@@ -1968,8 +576,7 @@ This plot zooms in on our "baseline" group and compares it to the Black employee
 
 # Grab data 
 plot2_df <-
-  di_datasets |> filter(year == "2023" &
-                           Subgroup %in% c("Non-Visible Minority Employees", "Black Employees"))
+  plot1_df |> filter(Subgroup %in% c("Non-Visible Minority Employees", "Black Employees"))
 
 # Set color palette 
 colors <- met.brewer("Johnson", 5)[c(1,5)]
@@ -1981,7 +588,7 @@ ggplot(plot2_df) +
     position = "dodge",
     aes(
       x = Subgroup,
-      y = Value,
+      y = value,
       fill = Subgroup,
       alpha = `Salary range`
     )
@@ -2024,31 +631,35 @@ ggplot(plot2_df) +
 Here you can select years and groups to display. Click the drop down on the left to filter by year. Click each group's text under the subgroup heading on the right to remove and add data. Use your mouse to select a section to zoom into. You can also hover over each bars to see each individual data point.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width = 10, fig.height = 10}
-# Wrap text on labels
-plot3_df <- di_datasets |> mutate(quintile = recode(quintile,
-                 "Bottom 20th Percentile" = "Bottom 20th",
-                 "20th to 40th Percentile" = "20th to 40th",
-                 "40th to 60th Percentile" = "40th to 60th",
-                 "60th to 80th Percentile" = "60th to 80th",
-                 "Top 20th Percentile" = "Top 20th"))
+# Establish percentile orders
+percentile_order <- quintile_ranges |> 
+  select(quintile_year, quintile_label) |> 
+  filter(quintile_year == recent_year & quintile_label != "All ranges") |> 
+  pull(quintile_label) |> 
+  unique(fromLast = TRUE)
 
-# Get shared data for use with crosstalk
-data_shared <- SharedData$new(plot3_df)
+
+
+# Wrap text on labels
+plot3_df <- di_df_long |> 
+  filter(!is.na(`Salary percentile`)) |> 
+  mutate(`Salary percentile` = factor(`Salary percentile`,
+                                      levels = percentile_order ))
 
 # Make a vector with corresponding colors
 colors = met.brewer("Johnson", 5)
 
 # great plotly barplot
-plot3 <- ggplotly(ggplot(data_shared, aes(fill = Subgroup,
-                            y = Value,
-                            x = quintile,
-                            text = paste0("Year: ", year,
+plot3 <- ggplotly(ggplot(plot3_df, aes(fill = Subgroup,
+                            y = value,
+                            x = `Salary percentile`,
+                            text = paste0("Year: ", Year,
                           "<br>", # Create a new line in the tooltip
-                          "DI: ", Value,
+                          "DI: ", value,
                           "<br>",
                           "Subgroup: ", Subgroup,
                           "<br>",
-                          "Quintile: ", quintile))) +
+                          "Quintile: ", `Salary percentile`))) +
   geom_bar(position = 'dodge',
            stat ='identity') +
   theme_classic() +
@@ -2078,19 +689,14 @@ bscols(widths = c(2, NA),
 
 ```
 
-## Plot 4: A direct comparison of DI in Black Employees vs. Non-Visible Minority Employees Over All Years (2017-2023)
+## Plot 4: A direct comparison of DI in Black Employees vs. Non-Visible Minority Employees Over All Years (2017-2024)
 
 ```{r Plot 4, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 7.5}
 
 # set color pallette 
 colors <- met.brewer("Johnson", 5)[c(1,5)]
 
-plot4_df <- di_datasets |> mutate(quintile = recode(quintile,
-                 "Bottom 20th Percentile" = "Bottom 20th",
-                 "20th to 40th Percentile" = "20th to 40th",
-                 "40th to 60th Percentile" = "40th to 60th",
-                 "60th to 80th Percentile" = "60th to 80th",
-                 "Top 20th Percentile" = "Top 20th")) |> 
+plot4_df <- plot3_df |> 
   filter(Subgroup %in% c("Non-Visible Minority Employees", "Black Employees"))
   
 
@@ -2098,10 +704,10 @@ plot4_df <- di_datasets |> mutate(quintile = recode(quintile,
 ggplot(plot4_df) +
   geom_bar(stat = "identity",
            position = "dodge",
-           aes(x = year,
-               y = Value,
+           aes(x = Year,
+               y = value,
                fill = Subgroup,
-               alpha = quintile)) +
+               alpha = `Salary percentile`)) +
   theme_minimal() +
   theme(
     panel.grid.major = element_blank(),
@@ -2120,33 +726,30 @@ ggplot(plot4_df) +
              linetype = "dashed") +
   guides(alpha=guide_legend(title="Salary Quintile"), 
          fill = guide_legend(title = "Group"))
-
-
-
 ```
+# Plot 5: Disparity between Non-visible Minority Employees and Black Employees Over Time (2017-2024)
+
+In this plot, DI disparity is calculated by subtracting the DI of Black employees from that of non-visible minority employees. It can be seen that the difference between the highest and lowest salaries percentiles are more or less remaining equal over time, with a small positive trend. 
+
 
 ```{r Plot 5, echo = FALSE, message = FALSE, warning = FALSE, output = FALSE, fig.width = 10, fig.height = 7.5}
 ## Plot 5: An analysis of disparity over time 
 
-plot5_df <- di_datasets |> mutate(quintile = recode(quintile,
-                 "Bottom 20th Percentile" = "Bottom 20th",
-                 "20th to 40th Percentile" = "20th to 40th",
-                 "40th to 60th Percentile" = "40th to 60th",
-                 "60th to 80th Percentile" = "60th to 80th",
-                 "Top 20th Percentile" = "Top 20th")) |> 
+plot5_df <- plot3_df |> 
   filter(Subgroup %in% c("Non-Visible Minority Employees", "Black Employees"),
-         quintile %in% c("Bottom 20th", "Top 20th")) |> 
-  group_by(`Salary range`, quintile, year) |> 
-  mutate(disparity = Value - Value[Subgroup == 'Non-Visible Minority Employees']) |> 
+         `Salary percentile` %in% c("Bottom 20th", "Top 20th")) |> 
+  group_by(`Salary percentile`, Year) |> 
+  mutate(disparity = value - value[Subgroup == 'Non-Visible Minority Employees']) |> 
   filter(Subgroup == "Black Employees") |> 
-  select( quintile, disparity, year)
+  select( `Salary percentile`, disparity, Year)
 
 
-ggplot(data = plot5_df) +
-  geom_point(aes(x = year,
-                     y = disparity,
-                 color = quintile),
-             size = 8) +
+ggplot(data = plot5_df, aes(x = Year,
+                            y = disparity,
+                            group = `Salary percentile`,
+                            color = `Salary percentile`)) +
+         geom_line(size = 2,
+                   type = "dashed") +
   ylab("DI Disparity") +
   xlab("Year") +
   theme_minimal() +
@@ -2165,32 +768,42 @@ ggplot(data = plot5_df) +
   
 
 ```
+
 :::
 
 ::: {.content-visible when-profile="french"}
-## Graphique 1: ID de tous les groupes par tranche de salaire (2023)
+## Graphique 1: ID de tous les groupes par tranche de salaire (2024)
 
 La ligne en pointillé représente la représentation équitable (ID de 1). On constate que les salariés noirs sont surreprésentés dans les fourchettes de salaires inférieures et sous-représentés dans les fourchettes supérieures par rapport aux autres groupes. Comme le montrent les barres "Salariés n'appartenant pas à une minorité visible", on devrait s'attendre à une ID égale dans toutes les fourchettes de salaires.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width = 10, fig.height = 7.5}
 
-# Edit labels
-# Grab just 2022 data
-plot1_df <-  di_datasets_fr |> 
-  filter(year == "2023")
-  
-
 # Make a vector with corresponding colors
 colors = met.brewer("Johnson", 5)
 
+# Create french labels for levels 
+quintile_order_plot1_fr <- tolower(gsub("\\.", ",", quintile_order_plot1))
+subgroup_order_plot1_fr <- labels |> 
+  filter(type == "median") |> 
+  filter(variable != c("year", "all")) |> 
+  pull(fr) 
+
+# Create 
+plot_df_fr <- plot1_df |> 
+  mutate(`Échelle des salaires` = factor(tolower(gsub("\\.", ",",`Salary range`)),
+                                         levels = quintile_order_plot1_fr ),
+        `Sous-groupe` = factor(`Sous-groupe`, 
+                               levels = subgroup_order_plot1_fr))
+  
+
+
 # Bar plot showing salary ranges by group
-ggplot(plot1_df, aes(fill = Subgroup,
-                            y = Value,
-                            x = `Salary range`)) +
+ggplot(plot_df_fr, aes(fill = `Sous-groupe`,
+                            y = value,
+                            x = `Échelle des salaires`)) +
   geom_bar(position = 'dodge',
            stat ='identity') +
   theme_classic() +
-  xlab("Fourchette des salaires") +
   ylab("Indice de disproportionnalité") +
   geom_hline(yintercept = 1,
              linetype = "dashed") +
@@ -2204,43 +817,40 @@ ggplot(plot1_df, aes(fill = Subgroup,
   guides(fill = guide_legend(nrow=2, byrow=TRUE)) +
   annotate("text",
            y = 1.02,
-            x= "105.0K+",
+            x= ">110,0k",
             hjust = .2,
             label = "Surreprésentés") +
   annotate("text",
            y = 0.98,
-            x= "105.0K+",
+            x= ">110,0k",
             hjust = .2,
             label = "Sous-représentés")
 ```
 
-## Graphique 2: Comparaison directe de l'AI chez les employés du race noirs et chez les employés n'appartenant pas à une minorité visible (2023)
+## Graphique 2: Comparaison directe de l'AI chez les employés du race noirs et chez les employés n'appartenant pas à une minorité visible (2024)
 
 Ce graphique se concentre sur notre groupe de référence et le compare au groupe des employés noirs, qui semble être le plus touché par l'iniquité. Une diminution constante de la représentation avec chaque augmentation de l'échelle salariale est clairement visible pour le groupe des employés noirs.
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 7.5}
 
 # Grab data 
-plot2_df <-
-  di_datasets_fr |> filter(
-    year == "2023" &
-      Subgroup %in% c("Employés Non-Minorité visible", "Employés de race noire")
-  ) |>
-  rename("Fourchette des salaires" = "Salary range")
+plot2_df_fr <-
+  plot_df_fr |> filter(`Sous-groupe` %in% c("Employés Non-Minorité visible", "Employés de race noire")
+  )
 
 # Set color palette 
 colors <- met.brewer("Johnson", 5)[c(1,5)]
 
 # Plot 2 
-ggplot(plot2_df) +
+ggplot(plot2_df_fr) +
   geom_bar(
     stat = "identity",
     position = "dodge",
     aes(
-      x = Subgroup,
-      y = Value,
-      fill = Subgroup,
-      alpha = `Fourchette des salaires`
+      x = `Sous-groupe`,
+      y = value,
+      fill = `Sous-groupe`,
+      alpha = `Échelle des salaires`
     )
   ) +
   theme_minimal() +
@@ -2252,7 +862,7 @@ ggplot(plot2_df) +
     text = element_text(size = 15),
     legend.text = element_text(size = 12)
   ) +
-  scale_fill_manual  (values = colors, ) +
+  scale_fill_manual  (values = colors) +
   labs(title = NULL,
        x = NULL,
        y = "Indice de disproportionnalité",
@@ -2264,14 +874,14 @@ ggplot(plot2_df) +
     "text",
     y = 1.02,
     x = "Employés de race noire",
-    hjust = -.7,
+    hjust = -.5,
     label = "Surreprésentés"
   ) +
   annotate(
     "text",
     y = 0.98,
     x = "Employés de race noire",
-    hjust = -.7,
+    hjust = -.5,
     label = "Sous-représentés"
   )
 ```
@@ -2281,27 +891,36 @@ ggplot(plot2_df) +
 Vous pouvez ici sélectionner les années et les groupes à afficher. Cliquez sur le menu déroulant à gauche pour filtrer par année. Cliquez sur le texte de chaque groupe sous l'intitulé du sous-groupe à droite pour supprimer et ajouter des données. Utilisez votre souris pour sélectionner une section à agrandir. Vous pouvez également passer la souris sur chaque barre pour voir chaque point de données individuel.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width = 10, fig.height = 10}
-# Wrap text on labels
-plot3_df <- di_datasets_fr |>
-  rename("Sous-group" = "Subgroup")
+# Establish percentile orders
+percentile_order_fr <- quintile_ranges |> 
+  left_join(labels |>  filter(type == "quintile_comparable") |> select(en, fr),
+            by = c("quintile_label" = "en")) |> 
+  pull(fr) |> 
+  unique(fromLast = TRUE)
 
-# Get shared data for use with crosstalk
-data_shared <- SharedData$new(plot3_df)
+
+# Set factor levels
+plot3_df_fr <- di_df_long |> 
+  filter(quintile != "All ranges") |> 
+  mutate(`Percentile de salaire` = factor(`Percentile de salaire`, 
+                                          levels = percentile_order_fr),
+         `Sous-groupe` = factor(`Sous-groupe`, 
+                                levels = subgroup_order_plot1_fr))
 
 # Make a vector with corresponding colors
 colors = met.brewer("Johnson", 5)
 
 # great plotly barplot
-plot3 <- ggplotly(ggplot(data_shared, aes(fill = `Sous-group`,
-                            y = Value,
-                            x = quintile,
-                            text = paste0("Année: ", year,
+ggplotly(ggplot(plot3_df_fr, aes(fill = `Sous-groupe`,
+                            y = value,
+                            x = `Percentile de salaire`,
+                            text = paste0("Année: ", Year,
                           "<br>", # Create a new line in the tooltip
-                          "DI: ", Value,
+                          "DI: ", value,
                           "<br>",
-                          "Sous-groupe: ", `Sous-group`,
+                          "Sous-groupe: ", `Sous-groupe`,
                           "<br>",
-                          "Quintile: ", quintile))) +
+                          "Quintile: ", tolower(gsub("\\.", ",", `Salary range`))))) +
   geom_bar(position = 'dodge',
            stat ='identity') +
   theme_classic() +
@@ -2319,37 +938,27 @@ plot3 <- ggplotly(ggplot(data_shared, aes(fill = `Sous-group`,
        axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1)),
   tooltip = "text")
 
-
-
-bscols(widths = c(2, NA), 
-       filter_select(id = "fsid", 
-                     label = "Année", 
-                     sharedData = data_shared, 
-                     group = ~year,
-                     multiple = FALSE), 
-       plot3)
-
 ```
 
-## Graphique 4: Comparaison directe des DI des employés noirs par rapport aux employés n'appartenant pas à une minorité visible sur toutes les années. (2017-2023)
+## Graphique 4: Comparaison directe des DI des employés noirs par rapport aux employés n'appartenant pas à une minorité visible sur toutes les années. (2017-2024)
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 7.5}
 
 # set color pallette 
 colors <- met.brewer("Johnson", 5)[c(1,5)]
 
-plot4_df <- di_datasets_fr |> 
-  filter(Subgroup %in% c("Employés Non-Minorité visible", "Employés de race noire"))
+plot4_df <- plot3_df_fr |> 
+  filter(`Sous-groupe` %in% c("Employés Non-Minorité visible", "Employés de race noire"))
   
 
 # Bar plot showing salary ranges by group
 ggplot(plot4_df) +
   geom_bar(stat = "identity",
            position = "dodge",
-           aes(x = year,
-               y = Value,
-               fill = Subgroup,
-               alpha = quintile)) +
+           aes(x = Year,
+               y = value,
+               fill = `Sous-groupe`,
+               alpha = `Percentile de salaire`)) +
   theme_minimal() +
   theme(
     panel.grid.major = element_blank(),
@@ -2371,4 +980,46 @@ ggplot(plot4_df) +
 
 
 ```
+# Graphique 5 : Disparité entre les employés issus des minorités non visibles et les employés noirs au fil du temps (2017-2024)
+
+Dans ce graphique, la disparité DI est calculée en soustrayant la DI des employés noirs de celle des employés n'appartenant pas à une minorité visible. On constate que la différence entre les percentiles des salaires les plus élevés et les plus bas reste plus ou moins égale au fil du temps, avec une légère tendance positive.
+
+
+```{r Plot 5, echo = FALSE, message = FALSE, warning = FALSE, output = FALSE, fig.width = 10, fig.height = 7.5}
+## Plot 5: An analysis of disparity over time 
+
+plot5_df_fr <- plot3_df_fr |> 
+  filter(`Sous-groupe` %in% c("Employés Non-Minorité visible", "Employés de race noire") &
+         `Percentile de salaire` %in% c("20e inférieur", "20e supérieur")) |> 
+  group_by(`Percentile de salaire`, Year) |> 
+  mutate(disparity = value - value[`Sous-groupe` == "Employés Non-Minorité visible"]) |> 
+  filter(`Sous-groupe` == "Employés de race noire") |> 
+  select( `Percentile de salaire`, disparity, Year)
+
+
+ggplot(data = plot5_df_fr, aes(x = Year,
+                            y = disparity,
+                            group = `Percentile de salaire`,
+                            color = `Percentile de salaire`)) +
+         geom_line(size = 2,
+                   type = "dashed") +
+  ylab("Disparité de l'ID") +
+  xlab("Année") +
+  theme_minimal() +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    axis.line = element_line(colour = "black"),
+    text = element_text(size = 15),
+    legend.text = element_text(size = 12)
+  ) +
+  guides(color = guide_legend(title = "Quintile")) +
+    geom_hline(yintercept = 0,
+             linetype = "dashed") +
+  ylim(-.6, .6)
+  
+
+```
+
 :::
