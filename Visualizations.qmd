@@ -936,7 +936,7 @@ ggplotly(ggplot(plot3_df_fr, aes(fill = `Sous-groupe`,
 
 ```
 
-## Graphique 4: Comparaison directe des DI des employés noirs par rapport aux employés n'appartenant pas à une minorité visible sur toutes les années. (2017-2024)
+## Graphique 4: Comparaison directe des DI des employés noirs par rapport aux employés n'appartenant pas à une minorité visible sur toutes les années (2017-2024)
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 7.5}
 

@@ -3,8 +3,9 @@ title: "FAQ"
 format: html
 editor: visual
 ---
+
 ::: {.content-visible when-profile="english"}
-# Why was this analysis done?
+## Why was this analysis done?
 
 In 2021, the Canadian Privy Council Clerk made a [Call to Action on Anti-Racism, Equity, and Inclusion](https://www.canada.ca/en/privy-council/corporate/clerk/call-to-action-anti-racism-equity-inclusion-federal-public-service.html), urging the Government of Canada to take action against the effects of racism and discrimination within the Canadian Public Service. In particular, the call to action recommends that specific and targeted measures be taken to address the lack of diverse leadership. This analysis addresses one of the Privy Clerk's recommended actions, which is to:
 
@@ -30,7 +31,15 @@ Yes, Black employees are a subset of the VM group.
 
 To examine the effects of covariates, the Disproportionality Index (DI) would be need to be calculated directly from microdata (individual data) rather than aggregated counts, which is what is available on the Treasury Board site. This microdata contains personal and confidential information, and must be handled by personnel with the required security clearance. We highly recommend that DI be calculated on the complete and original dataset.
 
-The Treasury Board reports data on employee: \* Location \* Occupational group/category \* Number of executives \* Salary \* Age \* Tenure \* Language
+The Treasury Board reports data on employee: 
+
+* Location 
+* Occupational group/category 
+* Number of executives 
+* Salary 
+* Age 
+* Tenure 
+* Language
 
 Depending on data linkages and format, it could be possible to quantify the effects of these covariates.
 
@@ -43,13 +52,12 @@ As with the previous question, to quantify uncertainty and determine the statist
 The Employment Equity Act and the concept of Equality at large in Canada operates within the legal framework of *equal outcomes*, which means that employers have an obligation to ensure that employees success is not dependent on their race, gender, or any other factor related to the designated employment equity groups. This data illustrates that equal outcomes are not being achieved in the core Public Service, and therefore we defer to the recommendations outlined in the [Privy Council Clerk's Call to Action on Anti-Racism, Equity, and Inclusion in the Federal Public Service](https://www.canada.ca/en/privy-council/corporate/clerk/call-to-action-anti-racism-equity-inclusion-federal-public-service.html) for further action on resolving the career marginalization that Black public servants face.
 :::
 
-
 ::: {.content-visible when-profile="french"}
 ## Pourquoi cette analyse ?
 
-En 2021, le greffier du Conseil privé canadien a lancé un [Appel à l'action contre le racisme, pour l'équité et l'inclusion] (https://www.canada.ca/fr/conseil-prive/organisation/greffier/appel-action-faveur-lutte-contre-racisme-equite-inclusion-fonction-publique-federale.html), exhortant le gouvernement du Canada à prendre des mesures pour lutter contre les effets du racisme et de la discrimination au sein de la fonction publique canadienne. L'appel à l'action recommande notamment que des mesures spécifiques et ciblées soient prises pour remédier au manque de diversité des dirigeants. La présente analyse porte sur l'une des mesures recommandées par le greffier privé, à savoir :
+En 2021, le greffier du Conseil privé canadien a lancé un [Appel à l'action contre le racisme, pour l'équité et l'inclusion](https://www.canada.ca/fr/conseil-prive/organisation/greffier/appel-action-faveur-lutte-contre-racisme-equite-inclusion-fonction-publique-federale.html), exhortant le gouvernement du Canada à prendre des mesures pour lutter contre les effets du racisme et de la discrimination au sein de la fonction publique canadienne. L'appel à l'action recommande notamment que des mesures spécifiques et ciblées soient prises pour remédier au manque de diversité des dirigeants. La présente analyse porte sur l'une des mesures recommandées par le greffier privé, à savoir :
 
-«\mesurer\] les progrès et \favoriser\] l’amélioration de l’expérience des employés dans leur milieu de travail, en contrôlant les résultats désagrégés des enquêtes et les données opérationnelles connexes (taux de promotion et de mobilité, durée des fonctions, etc.) »
+*« \[mesurer\] les progrès et \[favoriser\] l’amélioration de l’expérience des employés dans leur milieu de travail, en contrôlant les résultats désagrégés des enquêtes et les données opérationnelles connexes (taux de promotion et de mobilité, durée des fonctions, etc.) (sic) »*
 
 ## Qu'est-ce que la catégorie « Minorité non visible » ?
 
@@ -67,12 +75,19 @@ Les employés autochtones ne sont pas inclus dans le groupe VM. En raison de la 
 
 Oui, les employés noirs constituent un sous-ensemble du groupe VM.
 
-
 ## Qu'en est-il des effets du niveau d'éducation, de l'âge, de l'ancienneté, de la capacité à parler les langues officielles et d'autres covariables ? Comment jouent-ils sur la représentation des employés noirs ? Est-il possible qu'ils expliquent les différences observées ?
 
 Pour examiner les effets des covariables, l'indice de disproportionnalité (ID) devrait être calculé directement à partir de microdonnées (données individuelles) plutôt que de comptes agrégés, ce qui est le cas sur le site du Conseil du Trésor. Ces microdonnées contiennent des informations personnelles et confidentielles et doivent être traitées par du personnel disposant de l'habilitation de sécurité requise. Nous recommandons vivement que l'AI soit calculée sur l'ensemble des données complètes et originales.
 
-Le Conseil du Trésor publie des données sur les employés : \* Lieu \* Groupe professionnel/catégorie \* Nombre de cadres \* Salaire \* Âge \* Durée d'emploi \* Langue
+Le Conseil du Trésor publie des données sur les employés :
+
+-   Lieu
+-   Groupe professionnel/catégorie
+-   Nombre de cadres
+-   Salaire
+-   Âge
+-   Durée d'emploi
+-   Langue
 
 En fonction des liens et du format des données, il pourrait être possible de quantifier les effets de ces covariables.
 
@@ -80,7 +95,8 @@ En fonction des liens et du format des données, il pourrait être possible de q
 
 Comme pour la question précédente, pour quantifier l'incertitude et déterminer la signification statistique des différences entre les groupes, l'indice de disproportionnalité (ID) devrait être calculé directement à partir de microdonnées, ce qui est disponible sur le site du Conseil du Trésor. Ces microdonnées contiennent des informations personnelles et confidentielles et doivent être manipulées par du personnel disposant de l'habilitation de sécurité requise. Nous recommandons vivement que l'ID soit calculé à partir de l'ensemble des données complètes et originales.
 
-## Si les différences sont dues à des covariables liées à des différences démographiques (par exemple, le niveau d'éducation, l'âge, l'ancienneté, la capacité à parler les langues officielles, etc.
+## Si les différences sont dues à des covariables liées à des différences démographiques (par exemple, le niveau d'éducation, l'âge, l'ancienneté, la capacité à parler les langues officielles, etc.) cela signifie-t-il qu'il n'est pas nécessaire de traiter ces différences ?
 
-La loi sur l'équité en matière d'emploi et le concept d'égalité au sens large au Canada s'inscrivent dans le cadre juridique de l'« égalité de résultats », ce qui signifie que les employeurs ont l'obligation de veiller à ce que le succès des employés ne dépende pas de leur race, de leur sexe ou de tout autre facteur lié aux groupes désignés au titre de l'équité en matière d'emploi. Ces données montrent que l'égalité des résultats n'est pas atteinte dans le noyau dur de la fonction publique, et nous nous en remettons donc aux recommandations formulées dans le [Appel à l'action du greffier du Conseil privé sur l'antiracisme, l'équité et l'inclusion dans la fonction publique fédérale] (https://www.canada.ca/en/privy-council/corporate/clerk/call-to-action-anti-racism-equity-inclusion-federal-public-service.html) pour prendre d'autres mesures visant à résoudre la marginalisation professionnelle à laquelle les fonctionnaires noirs sont confrontés.
+La loi sur l'équité en matière d'emploi et le concept d'égalité au sens large au Canada s'inscrivent dans le cadre juridique de *l'égalité de résultats*, ce qui signifie que les employeurs ont l'obligation de veiller à ce que le succès des employés ne dépende pas de leur race, de leur sexe ou de tout autre facteur lié aux groupes désignés au titre de l'équité en matière d'emploi. Ces données montrent que l'égalité des résultats n'est pas atteinte dans le noyau dur de la fonction publique, et nous nous en remettons donc aux recommandations formulées dans le [Appel à l'action du greffier du Conseil privé sur l'antiracisme, l'équité et l'inclusion dans la fonction publique fédérale](https://www.canada.ca/en/privy-council/corporate/clerk/call-to-action-anti-racism-equity-inclusion-federal-public-service.html) pour prendre d'autres mesures visant à résoudre la marginalisation professionnelle à laquelle les fonctionnaires noirs sont confrontés.
+
 :::
