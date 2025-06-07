@@ -4,7 +4,7 @@ editor: visual
 theme: default
 ---
 
-::: {.content-visible when-profile="english"}
+:::: {.content-visible when-profile="english"}
 # Home
 
 ## The Analysis
@@ -19,7 +19,7 @@ Please also refer to the [Employment Equity Demographic Snapshot 2023–2024](ht
 
 The collection of the data used in this analysis follows standards set by the [Employment Equity act](https://laws-lois.justice.gc.ca/eng/acts/e-5.401/), meaning that 4 "equity-deserving groups" (defined as women, indigenous people, people with disabilities, and visible minorities) are surveyed. This data is particularly interesting as it is disaggregated, meaning that additional questions to used identify subgroups within the equity-deserving groups were included in the survey. Therefore, when information about the visible minority group is presented, Black employees (but not Indigenous employees) are included.
 
-::: {.callout-note}
+::: callout-note
 Please note that this data was imputed for suppressed numbers [(see here for imputed values)](supplementary_tables/imputation_estimates.csv).
 :::
 
@@ -37,17 +37,16 @@ A [Call to Action on Anti-Racism, Equity, and Inclusion](https://www.canada.ca/e
 
 This analysis could not have been completed without the help of Brittny Vongdara, Dr. Martin Nicholas, and Shamir Kanji.
 
-Brittny Vongdara provided feedback on the initial visualizations and webpage. She also helped to translate the french version of the page. Dr. Nicholas developed the Disporportionlity Index and provided guidance on the analyses contained here. Shamir Kanji has provided feedback on the results here and acted as a champion for this page's message. 
+Brittny Vongdara provided feedback on the initial visualizations and webpage. She also helped to translate the french version of the page. Dr. Nicholas developed the Disporportionlity Index and provided guidance on the analyses contained here. Shamir Kanji has provided feedback on the results here and acted as a champion for this page's message.
 
-This page is developed and maintained by [Albury C](alburycatalina.github.io). 
-
+This page is developed and maintained by [Albury C](alburycatalina.github.io).
 
 ## Disclaimer
 
 The opinions contained on this website are personal, and not a reflection of our employers.
-:::
+::::
 
-::: {.content-visible when-profile="french"}
+:::: {.content-visible when-profile="french"}
 # Accueil
 
 ## L’analyse
@@ -58,13 +57,14 @@ Cette analyse explore la distribution des salaires des employés de la fonction 
 
 Les données représentent les fourchettes de salaires avant impôts, à l’exclusion des primes et des promotions, [accessibles au public ici](https://www.canada.ca/en/treasury-board-secretariat/services/innovation/human-resources-statistics/diversity-inclusion-statistics.html). Chaque série de données de 2017 à 2022 représente les salaires des fonctionnaires (à l’exclusion de l’ARC) à un moment donné, et ne reflète pas les changements survenus au cours d’une année entière.
 
-Veuillez également vous référer au [Portrait démographique de l'équité en matière d'emploi 2023-2024] (https://www.canada.ca/en/treasury-board-secretariat/services/innovation/human-resources-statistics/diversity-inclusion-statistics/employment-equity-demographic-snapshot-2023-2024.html) pour des visualisations supplémentaires.
+Veuillez également vous référer au \[Portrait démographique de l'équité en matière d'emploi 2023-2024\] (https://www.canada.ca/en/treasury-board-secretariat/services/innovation/human-resources-statistics/diversity-inclusion-statistics/employment-equity-demographic-snapshot-2023-2024.html) pour des visualisations supplémentaires.
 
 La collecte des données utilisées dans cette analyse suit les normes établies par la [loi sur l’équité en matière d’emploi](https://laws-lois.justice.gc.ca/eng/acts/e-5.401/), ce qui signifie que quatre “groupes méritant l’équité” (définis comme les femmes, les populations autochtones, les personnes handicapées et les minorités visibles) font l’objet d’une enquête. Ces données sont particulièrement intéressantes car elles sont désagrégées, ce qui signifie que des questions supplémentaires visant à identifier les sous-groupes au sein des groupes visés par l’équité ont été incluses dans l’enquête. Par conséquent, lorsque les informations sur les minorités visibles sont présentées, les employés noirs (mais pas les employés autochtones) sont inclus.
 
-::: {.callout-note}
+::: callout-note
 Veuillez noter que ces données ont été imputées pour les nombres supprimés [(voir ici pour les valeurs imputées)](supplementary_tables/imputation_estimates.csv).
 :::
+
 ## Limites
 
 Cette analyse ne peut tenir compte des effets de facteurs supplémentaires tels que l’âge, le sexe, la qualification professionnelle et la durée d’emploi. Les données, dans leur forme actuelle, ne permettent pas non plus de calculer des mesures d’incertitude et de déterminer des différences statistiques.
@@ -79,11 +79,11 @@ Un [Appel à l’action contre le racisme, l’équité et l’inclusion](https:
 
 Cette analyse n'aurait pas pu être réalisée sans l'aide de Brittny Vongdara, du Dr Martin Nicholas et de Shamir Kanji.
 
-Brittny Vongdara a donné son avis sur les premières visualisations et la page web. Elle a également participé à la traduction de la version française de la page. Le Dr. Nicholas a développé l'indice de disproportionnalité et a fourni des conseils sur les analyses contenues dans ce document. Shamir Kanji a donné son avis sur les résultats présentés ici et a défendu le message de cette page. 
+Brittny Vongdara a donné son avis sur les premières visualisations et la page web. Elle a également participé à la traduction de la version française de la page. Le Dr. Nicholas a développé l'indice de disproportionnalité et a fourni des conseils sur les analyses contenues dans ce document. Shamir Kanji a donné son avis sur les résultats présentés ici et a défendu le message de cette page.
 
-Cette page est développée et maintenue par [Albury C](alburycatalina.github.io). 
+Cette page est développée et maintenue par [Albury C](alburycatalina.github.io).
 
 ## Avis de non-responsabilité
 
 Les opinions exprimées sur ce site web sont personnelles et ne reflètent pas le point de vue de nos employeurs.
-:::
+::::

@@ -1,12 +1,12 @@
 project:
   type: website
-  output-dir: ./_site/fr
+  output-dir: ./docs/fr
 
 website:
   title: Équité dans l'emploi
   
   navbar: 
-    background: "#2b3f78"
+    background: "#d0d4e1"
     
   sidebar:
     title: Équité dans l'emploi
@@ -22,7 +22,7 @@ website:
         href: https://www.canada.ca/fr/conseil-prive/organisation/greffier/appel-action-faveur-lutte-contre-racisme-equite-inclusion-fonction-publique-federale.html
         text: "Appel à l'action du greffier du Conseil privé"
       - icon: translate
-        href: ../en
+        href: ../
         text: English
 
     style: "docked"

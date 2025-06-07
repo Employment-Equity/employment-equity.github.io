@@ -1,12 +1,13 @@
 project:
   type: website
-  output-dir: ./_site/
+  output-dir: ./docs/
 
 website:
   title: Employment Equity
   
   navbar: 
-    background: "#2b3f78"
+    background: "#d0d4e1"
+    pinned: false
     
   sidebar:
     logo: images/android-chrome-512x512.png
