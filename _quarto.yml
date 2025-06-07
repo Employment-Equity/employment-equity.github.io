@@ -5,8 +5,7 @@ project:
   
 website:
   favicon: "images/favicon-32x32.png"
-  cookie-consent: 
-    style: interstitial
+  cookie-consent: true
 
 format:
   html:
