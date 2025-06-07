@@ -6,7 +6,6 @@ project:
 website:
   favicon: "images/favicon-32x32.png"
   cookie-consent: 
-    type: express
     style: interstitial
 
 format:
