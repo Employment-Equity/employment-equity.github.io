@@ -52,7 +52,6 @@ format:
   html:
     toc: true
     css: styles.css
-    include-after-body: html/analytics.html
     
 execute:
   freeze: auto
