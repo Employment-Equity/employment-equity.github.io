@@ -11,12 +11,7 @@ format:
   html:
     theme: cosmo
     toc: true
-    include-after-body: 
-      text: |
-        <!-- Clicky tracking code for analytics -->
-        <script type="text/plain" cookie-consent="tracking">
-        <script async data-id="101486327" src="//static.getclicky.com/js"></script>
-        <!-- End of Clicky Code -->
+    include-after-body: html/analytics.html
 
 execute:
   freeze: auto
