@@ -7,11 +7,11 @@ url <- "https://www.canada.ca/en/treasury-board-secretariat/services/innovation/
 
 
 # List of years to get data for 
-years <- c("2024", "2023", "2022", "2021", "2020", "2019", "2018", "2017")
+years <- c("2025", "2024", "2023", "2022", "2021", "2020", "2019", "2018", "2017")
 
 
 # Function for removing extra characters
-remove_bullish <- function(bullish_cols) {
+remove_extra_char <- function(bullish_cols) {
   as.numeric(gsub(
     pattern = "[^0-9.-]",
     replacement = "",
@@ -44,7 +44,7 @@ table_cleanup <- function(messy_cols){
       mutate(across(where(is.character), ~na_if(., "Table 1 Footnote *"))) |>
       
       
-      mutate_at(vars(matches("count")), remove_bullish) |> # remove extra characters from counts
+      mutate_at(vars(matches("count")), remove_extra_char) |> # remove extra characters from counts
       
       
       mutate_at(vars(matches("salary")), remove_spaces) # remove extra spaces from counts
