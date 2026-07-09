@@ -127,9 +127,46 @@ years_data_clean <-
     count_indigenous = sum(count_indigenous, na.rm = TRUE),
     count_pwd = sum(count_pwd, na.rm = TRUE), 
     count_non_vm = count_all - count_vm
-  )
+  ) |> 
+  group_by(Year, salary_range) |> 
+  arrange( # arrange salary ranges from lowest to highest using factors
+    desc(Year),
+    factor(
+      salary_range,
+      levels = c(
+        "Under 15,000",
+        "Under 25,000",
+        "Under 50,000",
+        "15,000 to 49,999",
+        "25,000 to 49,999",
+        "50,000 to 54,999",
+        "55,000 to 59,999",
+        "60,000 to 64,999",
+        "65,000 to 69,999",
+        "70,000 to 74,999",
+        "75,000 to 79,999",
+        "80,000 to 84,999",
+        "85,000 to 89,999",
+        "90,000 to 94,999",
+        "95,000 to 99,999",
+        "100,000 to 149,999",
+        "100,000 to 104,999",
+        "105,000 to 109,999",
+        "110,000 to 114,999",
+        "115,000 to 119,999",
+        "120,000 to 124,999",
+        "125,000 to 149,999",
+        "150,000 to 199,999",
+        "200,000 to 249,999",
+        "100,000 and over",
+        "150,000 and over",
+        "250,000 and over",
+        "Total"
+      )
+  ))
 
-# Save intermediate data
+
+   # Save intermediate data
 write.csv(years_data_clean, here("intermediate_data/cleaned_imputed_salary_data.csv"))
 
 
@@ -137,7 +174,7 @@ write.csv(years_data_clean, here("intermediate_data/cleaned_imputed_salary_data.
 rm(list = ls()[startsWith(ls(), "salary_data_")], url, remove_bullish, remove_spaces)
 
 # read in salary bin data
-salary_bins <- read.csv(here("supplementary_tables/ee_dv_salarybins.csv"), fileEncoding = "UTF-8-BOM")
+salary_bins <- read.csv(here("supplementary_tables/ee_dv_salarybins.csv"))
 
 # df for renaming cols
 median_colnames <- c("salary_range", 
@@ -353,7 +390,7 @@ Salaires médians (en dollars canadiens par an) des employés du noyau de la fon
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 # Load in quintile ranges 
-quintile_ranges <- read.csv(here("supplementary_tables/quintile_ranges.csv"))
+quintile_ranges <- read.csv(here("supplementary_tables/quintile_ranges.csv"), encoding = "UTF-8-BOM")
 
 # Bring in function for calculating DI
 source(here("functions/di_fns.R"))
@@ -367,6 +404,14 @@ write.csv(di_df, file = here("intermediate_data/di.csv"))
 ```
 
 ::: panel-tabset
+### 2025
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+di_table_year("2025")
+
+```
+
 ### 2024
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -392,13 +437,11 @@ di_table_year("2022")
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 di_table_year("2021")
 ```
-
 ### 2020
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 di_table_year("2020")
 ```
-
 ### 2019
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -410,7 +453,6 @@ di_table_year("2019")
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 di_table_year("2018")
 ```
-
 ### 2017
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -424,6 +466,12 @@ di_table_year("2017")
 ## Tableaux de disproportionnalité
 
 ::: panel-tabset
+### 2025
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+di_table_year_fr("2025")
+```
+
 ### 2024
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -448,6 +496,11 @@ di_table_year_fr("2022")
 di_table_year_fr("2021")
 ```
 
+### 2020
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+di_table_year_fr("2021")
+```
 ### 2019
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -466,6 +519,7 @@ di_table_year_fr("2018")
 di_table_year_fr("2017")
 ```
 :::
+
 ::::
 
 ```{r echo = FALSE, message=FALSE, warning=FALSE, include = FALSE}
@@ -516,11 +570,15 @@ quintile_order <- quintile_ranges |>
   filter(range_label != "All ranges")
 
 # recent year next few plots will deal with 
-recent_year <- "2024"
+recent_year <- "2025"
 ```
 
+
+
+
 ::: {.content-visible when-profile="english"}
-## Plot 1: DI of all groups by salary range (2024)
+
+## Plot 1: DI of all groups by salary range (`r recent_year`)
 
 The dotted line represents equitable representation (a DI of 1). It can been seen that Black employees are overrepresented at the lower salary ranges and underrepresented at higher ranges compared to the other groups. As can be seen by the "Non-Visible Minority Employees" bars, an equal DI across all salary ranges should be expected.
 
@@ -532,7 +590,7 @@ quintile_order_plot1 <- quintile_order |>
   pull(range_label)
 
 
-# Grab  2024 data
+# Grab data
 plot1_df <-  di_df_long |> 
   filter(Year == recent_year & !is.na(`Salary range`)) |> 
   mutate(`Salary range` = factor(`Salary range`, 
@@ -572,7 +630,7 @@ ggplot(plot1_df, aes(fill = Subgroup,
             label = "Underrepresented")
 ```
 
-## Plot 2: A direct comparison of DI in Black Employees vs. Non-Visible Minority Employees (2023)
+## Plot 2: A direct comparison of DI in Black Employees vs. Non-Visible Minority Employees (`r recent_year`)
 
 This plot zooms in on our "baseline" group and compares it to the Black employee group, which appears to be the most affected by inequity. A steady decrease in representation with each increase in salary range is clearly visible for the Black employee group.
 
@@ -687,7 +745,7 @@ plot3
 
 ```
 
-## Plot 4: A direct comparison of DI in Black Employees vs. Non-Visible Minority Employees Over All Years (2017-2024)
+## Plot 4: A direct comparison of DI in Black Employees vs. Non-Visible Minority Employees Over All Years (2017-`r recent_year`)
 
 ```{r Plot 4, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 7.5}
 
@@ -726,7 +784,7 @@ ggplot(plot4_df) +
          fill = guide_legend(title = "Group"))
 ```
 
-# Plot 5: Disparity between Non-visible Minority Employees and Black Employees Over Time (2017-2024)
+## Plot 5: Disparity between Non-visible Minority Employees and Black Employees Over Time (2017- `r recent_year`)
 
 In this plot, DI disparity is calculated by subtracting the DI of Black employees from that of non-visible minority employees. It can be seen that the difference between the highest and lowest salaries percentiles are more or less remaining equal over time, with a small positive trend.
 
@@ -766,9 +824,10 @@ ggplot(data = plot5_df, aes(x = Year,
   
 ```
 :::
+::::
 
 ::: {.content-visible when-profile="french"}
-## Graphique 1: ID de tous les groupes par tranche de salaire (2024)
+## Graphique 1: ID de tous les groupes par tranche de salaire (`r recent_year`)
 
 La ligne en pointillé représente la représentation équitable (ID de 1). On constate que les salariés noirs sont surreprésentés dans les fourchettes de salaires inférieures et sous-représentés dans les fourchettes supérieures par rapport aux autres groupes. Comme le montrent les barres "Salariés n'appartenant pas à une minorité visible", on devrait s'attendre à une ID égale dans toutes les fourchettes de salaires.
 
@@ -823,7 +882,7 @@ ggplot(plot_df_fr, aes(fill = `Sous-groupe`,
             label = "Sous-représentés")
 ```
 
-## Graphique 2: Comparaison directe de l'AI chez les employés du race noirs et chez les employés n'appartenant pas à une minorité visible (2024)
+## Graphique 2: Comparaison directe de l'AI chez les employés du race noirs et chez les employés n'appartenant pas à une minorité visible (`r recent_year`)
 
 Ce graphique se concentre sur notre groupe de référence et le compare au groupe des employés noirs, qui semble être le plus touché par l'iniquité. Une diminution constante de la représentation avec chaque augmentation de l'échelle salariale est clairement visible pour le groupe des employés noirs.
 
@@ -936,7 +995,7 @@ ggplotly(ggplot(plot3_df_fr, aes(fill = `Sous-groupe`,
 
 ```
 
-## Graphique 4: Comparaison directe des DI des employés noirs par rapport aux employés n'appartenant pas à une minorité visible sur toutes les années (2017-2024)
+## Graphique 4: Comparaison directe des DI des employés noirs par rapport aux employés n'appartenant pas à une minorité visible sur toutes les années (2017-`r recent_year`)
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 7.5}
 
@@ -945,7 +1004,7 @@ colors <- met.brewer("Johnson", 5)[c(1,5)]
 
 plot4_df <- plot3_df_fr |> 
   filter(`Sous-groupe` %in% c("Employés Non-Minorité visible", "Employés de race noire"))
-  
+
 
 # Bar plot showing salary ranges by group
 ggplot(plot4_df) +
@@ -969,7 +1028,7 @@ ggplot(plot4_df) +
        x = "Année",
        y = "Indice de disproportionnalité") +
   coord_cartesian(ylim = c(.5, 1.5)) +
-    geom_hline(yintercept = 1,
+  geom_hline(yintercept = 1,
              linetype = "dashed") +
   guides(alpha=guide_legend(title="Quintile de salaire"), 
          fill = guide_legend(title = "Sous-group"))
@@ -977,7 +1036,7 @@ ggplot(plot4_df) +
 
 ```
 
-# Graphique 5 : Disparité entre les employés issus des minorités non visibles et les employés noirs au fil du temps (2017-2024)
+## Graphique 5 : Disparité entre les employés issus des minorités non visibles et les employés noirs au fil du temps (2017-`r recent_year`)
 
 Dans ce graphique, la disparité DI est calculée en soustrayant la DI des employés noirs de celle des employés n'appartenant pas à une minorité visible. On constate que la différence entre les percentiles des salaires les plus élevés et les plus bas reste plus ou moins égale au fil du temps, avec une légère tendance positive.
 

@@ -110,6 +110,46 @@
     ]
   },
   {
+    "objectID": "Visualizations.html#plot-1-di-of-all-groups-by-salary-range-2025",
+    "href": "Visualizations.html#plot-1-di-of-all-groups-by-salary-range-2025",
+    "title": "Tables and Visualizations",
+    "section": "",
+    "text": "The dotted line represents equitable representation (a DI of 1). It can been seen that Black employees are overrepresented at the lower salary ranges and underrepresented at higher ranges compared to the other groups. As can be seen by the “Non-Visible Minority Employees” bars, an equal DI across all salary ranges should be expected.",
+    "crumbs": [
+      "Tables and Visualizations"
+    ]
+  },
+  {
+    "objectID": "Visualizations.html#plot-2-a-direct-comparison-of-di-in-black-employees-vs.-non-visible-minority-employees-2025",
+    "href": "Visualizations.html#plot-2-a-direct-comparison-of-di-in-black-employees-vs.-non-visible-minority-employees-2025",
+    "title": "Tables and Visualizations",
+    "section": "",
+    "text": "This plot zooms in on our “baseline” group and compares it to the Black employee group, which appears to be the most affected by inequity. A steady decrease in representation with each increase in salary range is clearly visible for the Black employee group.",
+    "crumbs": [
+      "Tables and Visualizations"
+    ]
+  },
+  {
+    "objectID": "Visualizations.html#plot-3-interactive-di-visualization",
+    "href": "Visualizations.html#plot-3-interactive-di-visualization",
+    "title": "Tables and Visualizations",
+    "section": "",
+    "text": "Here you can select years and groups to display. Click the drop down on the left to filter by year. Click each group’s text under the subgroup heading on the right to remove and add data. Use your mouse to select a section to zoom into. You can also hover over each bars to see each individual data point.",
+    "crumbs": [
+      "Tables and Visualizations"
+    ]
+  },
+  {
+    "objectID": "Visualizations.html#plot-5-disparity-between-non-visible-minority-employees-and-black-employees-over-time-2017--2025",
+    "href": "Visualizations.html#plot-5-disparity-between-non-visible-minority-employees-and-black-employees-over-time-2017--2025",
+    "title": "Tables and Visualizations",
+    "section": "",
+    "text": "In this plot, DI disparity is calculated by subtracting the DI of Black employees from that of non-visible minority employees. It can be seen that the difference between the highest and lowest salaries percentiles are more or less remaining equal over time, with a small positive trend.\n\n\n\n\n\n\n\n\n\n::::",
+    "crumbs": [
+      "Tables and Visualizations"
+    ]
+  },
+  {
     "objectID": "DI.html",
     "href": "DI.html",
     "title": "About the Disproportionality Index",
@@ -217,106 +257,6 @@
     "text": "The opinions contained on this website are personal, and not a reflection of our employers.",
     "crumbs": [
       "Home"
-    ]
-  },
-  {
-    "objectID": "Visualizations.html#plot-1-di-of-all-groups-by-salary-range-printrecent_year",
-    "href": "Visualizations.html#plot-1-di-of-all-groups-by-salary-range-printrecent_year",
-    "title": "Tables and Visualizations",
-    "section": "",
-    "text": "The dotted line represents equitable representation (a DI of 1). It can been seen that Black employees are overrepresented at the lower salary ranges and underrepresented at higher ranges compared to the other groups. As can be seen by the “Non-Visible Minority Employees” bars, an equal DI across all salary ranges should be expected.",
-    "crumbs": [
-      "Tables and Visualizations"
-    ]
-  },
-  {
-    "objectID": "Visualizations.html#plot-2-a-direct-comparison-of-di-in-black-employees-vs.-non-visible-minority-employees-printrecent_year",
-    "href": "Visualizations.html#plot-2-a-direct-comparison-of-di-in-black-employees-vs.-non-visible-minority-employees-printrecent_year",
-    "title": "Tables and Visualizations",
-    "section": "",
-    "text": "This plot zooms in on our “baseline” group and compares it to the Black employee group, which appears to be the most affected by inequity. A steady decrease in representation with each increase in salary range is clearly visible for the Black employee group.",
-    "crumbs": [
-      "Tables and Visualizations"
-    ]
-  },
-  {
-    "objectID": "Visualizations.html#plot-3-interactive-di-visualization",
-    "href": "Visualizations.html#plot-3-interactive-di-visualization",
-    "title": "Tables and Visualizations",
-    "section": "",
-    "text": "Here you can select years and groups to display. Click the drop down on the left to filter by year. Click each group’s text under the subgroup heading on the right to remove and add data. Use your mouse to select a section to zoom into. You can also hover over each bars to see each individual data point.",
-    "crumbs": [
-      "Tables and Visualizations"
-    ]
-  },
-  {
-    "objectID": "Visualizations.html#plot-5-disparity-between-non-visible-minority-employees-and-black-employees-over-time-2017-2025",
-    "href": "Visualizations.html#plot-5-disparity-between-non-visible-minority-employees-and-black-employees-over-time-2017-2025",
-    "title": "Tables and Visualizations",
-    "section": "",
-    "text": "In this plot, DI disparity is calculated by subtracting the DI of Black employees from that of non-visible minority employees. It can be seen that the difference between the highest and lowest salaries percentiles are more or less remaining equal over time, with a small positive trend.\n\n\n\n\n\n\n\n\n\n::::",
-    "crumbs": [
-      "Tables and Visualizations"
-    ]
-  },
-  {
-    "objectID": "Visualizations.html#plot-4-a-direct-comparison-of-di-in-black-employees-vs.-non-visible-minority-employees-over-all-years-2017-printrecent_year",
-    "href": "Visualizations.html#plot-4-a-direct-comparison-of-di-in-black-employees-vs.-non-visible-minority-employees-over-all-years-2017-printrecent_year",
-    "title": "Tables and Visualizations",
-    "section": "Plot 4: A direct comparison of DI in Black Employees vs. Non-Visible Minority Employees Over All Years (2017-(print(recent_year))",
-    "text": "Plot 4: A direct comparison of DI in Black Employees vs. Non-Visible Minority Employees Over All Years (2017-(print(recent_year))",
-    "crumbs": [
-      "Tables and Visualizations"
-    ]
-  },
-  {
-    "objectID": "Visualizations.html#plot-5-disparity-between-non-visible-minority-employees-and-black-employees-over-time-2017-",
-    "href": "Visualizations.html#plot-5-disparity-between-non-visible-minority-employees-and-black-employees-over-time-2017-",
-    "title": "Tables and Visualizations",
-    "section": "",
-    "text": "In this plot, DI disparity is calculated by subtracting the DI of Black employees from that of non-visible minority employees. It can be seen that the difference between the highest and lowest salaries percentiles are more or less remaining equal over time, with a small positive trend.\n\n\n\n\n\n\n\n\n\n::::",
-    "crumbs": [
-      "Tables and Visualizations"
-    ]
-  },
-  {
-    "objectID": "Visualizations.html#plot-5-disparity-between-non-visible-minority-employees-and-black-employees-over-time-2017--2025",
-    "href": "Visualizations.html#plot-5-disparity-between-non-visible-minority-employees-and-black-employees-over-time-2017--2025",
-    "title": "Tables and Visualizations",
-    "section": "",
-    "text": "In this plot, DI disparity is calculated by subtracting the DI of Black employees from that of non-visible minority employees. It can be seen that the difference between the highest and lowest salaries percentiles are more or less remaining equal over time, with a small positive trend.\n\n\n\n\n\n\n\n\n\n::::",
-    "crumbs": [
-      "Tables and Visualizations"
-    ]
-  },
-  {
-    "objectID": "Visualizations.html#plot-1-di-of-all-groups-by-salary-range-rrecent_year",
-    "href": "Visualizations.html#plot-1-di-of-all-groups-by-salary-range-rrecent_year",
-    "title": "Tables and Visualizations",
-    "section": "",
-    "text": "The dotted line represents equitable representation (a DI of 1). It can been seen that Black employees are overrepresented at the lower salary ranges and underrepresented at higher ranges compared to the other groups. As can be seen by the “Non-Visible Minority Employees” bars, an equal DI across all salary ranges should be expected.",
-    "crumbs": [
-      "Tables and Visualizations"
-    ]
-  },
-  {
-    "objectID": "Visualizations.html#plot-2-a-direct-comparison-of-di-in-black-employees-vs.-non-visible-minority-employees-2025",
-    "href": "Visualizations.html#plot-2-a-direct-comparison-of-di-in-black-employees-vs.-non-visible-minority-employees-2025",
-    "title": "Tables and Visualizations",
-    "section": "",
-    "text": "This plot zooms in on our “baseline” group and compares it to the Black employee group, which appears to be the most affected by inequity. A steady decrease in representation with each increase in salary range is clearly visible for the Black employee group.",
-    "crumbs": [
-      "Tables and Visualizations"
-    ]
-  },
-  {
-    "objectID": "Visualizations.html#plot-1-di-of-all-groups-by-salary-range-2025",
-    "href": "Visualizations.html#plot-1-di-of-all-groups-by-salary-range-2025",
-    "title": "Tables and Visualizations",
-    "section": "",
-    "text": "The dotted line represents equitable representation (a DI of 1). It can been seen that Black employees are overrepresented at the lower salary ranges and underrepresented at higher ranges compared to the other groups. As can be seen by the “Non-Visible Minority Employees” bars, an equal DI across all salary ranges should be expected.",
-    "crumbs": [
-      "Tables and Visualizations"
     ]
   }
 ]

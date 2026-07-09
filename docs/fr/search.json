@@ -110,8 +110,8 @@
     ]
   },
   {
-    "objectID": "Visualizations.html#graphique-1-id-de-tous-les-groupes-par-tranche-de-salaire-printrecent_year",
-    "href": "Visualizations.html#graphique-1-id-de-tous-les-groupes-par-tranche-de-salaire-printrecent_year",
+    "objectID": "Visualizations.html#graphique-1-id-de-tous-les-groupes-par-tranche-de-salaire-2025",
+    "href": "Visualizations.html#graphique-1-id-de-tous-les-groupes-par-tranche-de-salaire-2025",
     "title": "Tableaux et visualisations",
     "section": "",
     "text": "La ligne en pointillé représente la représentation équitable (ID de 1). On constate que les salariés noirs sont surreprésentés dans les fourchettes de salaires inférieures et sous-représentés dans les fourchettes supérieures par rapport aux autres groupes. Comme le montrent les barres “Salariés n’appartenant pas à une minorité visible”, on devrait s’attendre à une ID égale dans toutes les fourchettes de salaires.",
@@ -120,8 +120,8 @@
     ]
   },
   {
-    "objectID": "Visualizations.html#graphique-2-comparaison-directe-de-lai-chez-les-employés-du-race-noirs-et-chez-les-employés-nappartenant-pas-à-une-minorité-visible-printrecent_year",
-    "href": "Visualizations.html#graphique-2-comparaison-directe-de-lai-chez-les-employés-du-race-noirs-et-chez-les-employés-nappartenant-pas-à-une-minorité-visible-printrecent_year",
+    "objectID": "Visualizations.html#graphique-2-comparaison-directe-de-lai-chez-les-employés-du-race-noirs-et-chez-les-employés-nappartenant-pas-à-une-minorité-visible-2025",
+    "href": "Visualizations.html#graphique-2-comparaison-directe-de-lai-chez-les-employés-du-race-noirs-et-chez-les-employés-nappartenant-pas-à-une-minorité-visible-2025",
     "title": "Tableaux et visualisations",
     "section": "",
     "text": "Ce graphique se concentre sur notre groupe de référence et le compare au groupe des employés noirs, qui semble être le plus touché par l’iniquité. Une diminution constante de la représentation avec chaque augmentation de l’échelle salariale est clairement visible pour le groupe des employés noirs.",
@@ -135,6 +135,16 @@
     "title": "Tableaux et visualisations",
     "section": "",
     "text": "Vous pouvez ici sélectionner les années et les groupes à afficher. Cliquez sur le menu déroulant à gauche pour filtrer par année. Cliquez sur le texte de chaque groupe sous l’intitulé du sous-groupe à droite pour supprimer et ajouter des données. Utilisez votre souris pour sélectionner une section à agrandir. Vous pouvez également passer la souris sur chaque barre pour voir chaque point de données individuel.",
+    "crumbs": [
+      "Tableaux et visualisations"
+    ]
+  },
+  {
+    "objectID": "Visualizations.html#graphique-5-disparité-entre-les-employés-issus-des-minorités-non-visibles-et-les-employés-noirs-au-fil-du-temps-2017-2025",
+    "href": "Visualizations.html#graphique-5-disparité-entre-les-employés-issus-des-minorités-non-visibles-et-les-employés-noirs-au-fil-du-temps-2017-2025",
+    "title": "Tableaux et visualisations",
+    "section": "",
+    "text": "Dans ce graphique, la disparité DI est calculée en soustrayant la DI des employés noirs de celle des employés n’appartenant pas à une minorité visible. On constate que la différence entre les percentiles des salaires les plus élevés et les plus bas reste plus ou moins égale au fil du temps, avec une légère tendance positive.",
     "crumbs": [
       "Tableaux et visualisations"
     ]
@@ -247,36 +257,6 @@
     "text": "Les opinions exprimées sur ce site web sont personnelles et ne reflètent pas le point de vue de nos employeurs.",
     "crumbs": [
       "Accueil"
-    ]
-  },
-  {
-    "objectID": "Visualizations.html#graphique-1-id-de-tous-les-groupes-par-tranche-de-salaire-2025",
-    "href": "Visualizations.html#graphique-1-id-de-tous-les-groupes-par-tranche-de-salaire-2025",
-    "title": "Tableaux et visualisations",
-    "section": "",
-    "text": "La ligne en pointillé représente la représentation équitable (ID de 1). On constate que les salariés noirs sont surreprésentés dans les fourchettes de salaires inférieures et sous-représentés dans les fourchettes supérieures par rapport aux autres groupes. Comme le montrent les barres “Salariés n’appartenant pas à une minorité visible”, on devrait s’attendre à une ID égale dans toutes les fourchettes de salaires.",
-    "crumbs": [
-      "Tableaux et visualisations"
-    ]
-  },
-  {
-    "objectID": "Visualizations.html#graphique-2-comparaison-directe-de-lai-chez-les-employés-du-race-noirs-et-chez-les-employés-nappartenant-pas-à-une-minorité-visible-2025",
-    "href": "Visualizations.html#graphique-2-comparaison-directe-de-lai-chez-les-employés-du-race-noirs-et-chez-les-employés-nappartenant-pas-à-une-minorité-visible-2025",
-    "title": "Tableaux et visualisations",
-    "section": "",
-    "text": "Ce graphique se concentre sur notre groupe de référence et le compare au groupe des employés noirs, qui semble être le plus touché par l’iniquité. Une diminution constante de la représentation avec chaque augmentation de l’échelle salariale est clairement visible pour le groupe des employés noirs.",
-    "crumbs": [
-      "Tableaux et visualisations"
-    ]
-  },
-  {
-    "objectID": "Visualizations.html#graphique-5-disparité-entre-les-employés-issus-des-minorités-non-visibles-et-les-employés-noirs-au-fil-du-temps-2017-2025",
-    "href": "Visualizations.html#graphique-5-disparité-entre-les-employés-issus-des-minorités-non-visibles-et-les-employés-noirs-au-fil-du-temps-2017-2025",
-    "title": "Tableaux et visualisations",
-    "section": "",
-    "text": "Dans ce graphique, la disparité DI est calculée en soustrayant la DI des employés noirs de celle des employés n’appartenant pas à une minorité visible. On constate que la différence entre les percentiles des salaires les plus élevés et les plus bas reste plus ou moins égale au fil du temps, avec une légère tendance positive.",
-    "crumbs": [
-      "Tableaux et visualisations"
     ]
   }
 ]
