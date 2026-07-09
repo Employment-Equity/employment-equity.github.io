@@ -620,12 +620,12 @@ ggplot(plot1_df, aes(fill = Subgroup,
   guides(fill = guide_legend(nrow=2, byrow=TRUE)) +
   annotate("text",
            y = 1.02,
-            x= ">110.0K",
+            x= ">115.0K",
             hjust = .2,
             label = "Overrepresented") +
   annotate("text",
            y = 0.98,
-            x= ">110.0K",
+            x= ">115.0K",
             hjust = .2,
             label = "Underrepresented")
 ```
@@ -872,12 +872,12 @@ ggplot(plot_df_fr, aes(fill = `Sous-groupe`,
   guides(fill = guide_legend(nrow=2, byrow=TRUE)) +
   annotate("text",
            y = 1.02,
-            x= ">110,0k",
+            x= ">115,0k",
             hjust = .2,
             label = "Surreprésentés") +
   annotate("text",
            y = 0.98,
-            x= ">110,0k",
+            x= ">115,0k",
             hjust = .2,
             label = "Sous-représentés")
 ```
